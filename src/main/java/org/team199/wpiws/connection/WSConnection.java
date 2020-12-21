@@ -31,7 +31,7 @@ public final class WSConnection {
     public static RunningObject<WebSocketClient> connectHALSim() throws URISyntaxException {
         Map<String, String> env = System.getenv();
         String host = env.containsKey("HALSIMWS_HOST") ? env.get("HALSIMWS_HOST") : "localhost";
-        String port = env.containsKey("HALSIMWS_PORT") ? env.get("HALSIMWS_PORT") : "8080";
+        String port = env.containsKey("HALSIMWS_PORT") ? env.get("HALSIMWS_PORT") : "3300";
         String resource = env.containsKey("HALSIMWS_URI") ? env.get("HALSIMWS_URI") : "/wpilibws";
         URI uri = new URI("ws://" + host + ":" + port + resource);
         RunningObject<WebSocketClient> client = connect(uri);
@@ -59,11 +59,11 @@ public final class WSConnection {
             try {
                 port = Integer.parseInt(env.get("HALSIMWS_PORT"));
             } catch(NumberFormatException e) {
-                System.err.println("Invalid port in HALSIMWS_PORT defaulting to 8080");
-                port = 8080;
+                System.err.println("Invalid port in HALSIMWS_PORT defaulting to 3300");
+                port = 3300;
             }
         } else {
-            port = 8080;
+            port = 3300;
         }
         RunningObject<WebSocketServer> server = startServer(new InetSocketAddress(port));
         server.object.setConnectionLostTimeout(0);
