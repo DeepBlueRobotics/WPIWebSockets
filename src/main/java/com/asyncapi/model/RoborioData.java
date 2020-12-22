@@ -21,29 +21,29 @@ public class RoborioData implements WpilibwsMsgPayload.OneOfDioDataAinDataAoutDa
     
     private @Valid Object vinCurrent;
     
-    private @Valid Object VVoltage6;
+    private @Valid Object Voltage6V;
     
-    private @Valid Object VCurrent6;
+    private @Valid Object Current6V;
     
-    private @Valid boolean VActive6;
+    private @Valid boolean Active6V;
     
-    private @Valid Object VFaults6;
+    private @Valid Object Faults6V;
     
-    private @Valid Object VVoltage5;
+    private @Valid Object Voltage5V;
     
-    private @Valid Object VCurrent5;
+    private @Valid Object Current5V;
     
-    private @Valid boolean VActive5;
+    private @Valid boolean Active5V;
     
-    private @Valid Object VFaults5;
+    private @Valid Object Faults5V;
     
-    private @Valid Object V3Voltage3;
+    private @Valid Object Voltage3V3;
     
-    private @Valid Object V3Current3;
+    private @Valid Object Current3V3;
     
-    private @Valid boolean V3Active3;
+    private @Valid boolean Active3V3;
     
-    private @Valid Object V3Faults3;
+    private @Valid Object Faults3V3;
     
 
     
@@ -91,12 +91,12 @@ public class RoborioData implements WpilibwsMsgPayload.OneOfDioDataAinDataAoutDa
      * Voltage on the 6V rail
      */
     @JsonProperty("&gt;6v_voltage")
-    public Object getVVoltage6() {
-        return VVoltage6;
+    public Object getVoltage6V() {
+        return Voltage6V;
     }
 
-    public void setVVoltage6(Object VVoltage6) {
-        this.VVoltage6 = VVoltage6;
+    public void setVVoltage6V(Object Voltage6V) {
+        this.Voltage6V = Voltage6V;
     }
     
 
@@ -104,12 +104,12 @@ public class RoborioData implements WpilibwsMsgPayload.OneOfDioDataAinDataAoutDa
      * Current on the 6V rail
      */
     @JsonProperty("&gt;6v_current")
-    public Object getVCurrent6() {
-        return VCurrent6;
+    public Object getCurrent6V() {
+        return Current6V;
     }
 
-    public void setVCurrent6(Object VCurrent6) {
-        this.VCurrent6 = VCurrent6;
+    public void setCurrent6V(Object Current6V) {
+        this.Current6V = Current6V;
     }
     
 
@@ -117,12 +117,12 @@ public class RoborioData implements WpilibwsMsgPayload.OneOfDioDataAinDataAoutDa
      * Whether or not the 6V rail is active
      */
     @JsonProperty("&gt;6v_active")
-    public boolean getVActive6() {
-        return VActive6;
+    public boolean getActive6V() {
+        return Active6V;
     }
 
-    public void setVActive6(boolean VActive6) {
-        this.VActive6 = VActive6;
+    public void setActive6V(boolean Active6V) {
+        this.Active6V = Active6V;
     }
     
 
@@ -130,12 +130,12 @@ public class RoborioData implements WpilibwsMsgPayload.OneOfDioDataAinDataAoutDa
      * Bitmask of faults on the 6V rail
      */
     @JsonProperty("&gt;6v_faults")
-    public Object getVFaults6() {
-        return VFaults6;
+    public Object getFaults6V() {
+        return Faults6V;
     }
 
-    public void setVFaults6(Object VFaults6) {
-        this.VFaults6 = VFaults6;
+    public void setFaults6(Object Faults6V) {
+        this.Faults6V = Faults6V;
     }
     
 
@@ -143,12 +143,12 @@ public class RoborioData implements WpilibwsMsgPayload.OneOfDioDataAinDataAoutDa
      * Voltage on the 5V rail
      */
     @JsonProperty("&gt;5v_voltage")
-    public Object getVVoltage5() {
-        return VVoltage5;
+    public Object getVoltage5V() {
+        return Voltage5V;
     }
 
-    public void setVVoltage5(Object VVoltage5) {
-        this.VVoltage5 = VVoltage5;
+    public void setVoltage5V(Object Voltage5V) {
+        this.Voltage5V = Voltage5V;
     }
     
 
@@ -156,12 +156,12 @@ public class RoborioData implements WpilibwsMsgPayload.OneOfDioDataAinDataAoutDa
      * Current on the 5V rail
      */
     @JsonProperty("&gt;5v_current")
-    public Object getVCurrent5() {
-        return VCurrent5;
+    public Object getCurrent5V() {
+        return Current5V;
     }
 
-    public void setVCurrent5(Object VCurrent5) {
-        this.VCurrent5 = VCurrent5;
+    public void setVCurrent5(Object Current5V) {
+        this.Current5V = Current5V;
     }
     
 
@@ -169,12 +169,12 @@ public class RoborioData implements WpilibwsMsgPayload.OneOfDioDataAinDataAoutDa
      * Whether or not the 5V rail is active
      */
     @JsonProperty("&gt;5v_active")
-    public boolean getVActive5() {
-        return VActive5;
+    public boolean getActive5V() {
+        return Active5V;
     }
 
-    public void setVActive5(boolean VActive5) {
-        this.VActive5 = VActive5;
+    public void setActive5(boolean Active5V) {
+        this.Active5V = Active5V;
     }
     
 
@@ -182,12 +182,12 @@ public class RoborioData implements WpilibwsMsgPayload.OneOfDioDataAinDataAoutDa
      * Bitmask of faults on the 5V rail
      */
     @JsonProperty("&gt;5v_faults")
-    public Object getVFaults5() {
-        return VFaults5;
+    public Object getFaults5V() {
+        return Faults5V;
     }
 
-    public void setVFaults5(Object VFaults5) {
-        this.VFaults5 = VFaults5;
+    public void setFaults5(Object Faults5V) {
+        this.Faults5V = Faults5V;
     }
     
 
@@ -195,12 +195,12 @@ public class RoborioData implements WpilibwsMsgPayload.OneOfDioDataAinDataAoutDa
      * Voltage on the 3.3V rail
      */
     @JsonProperty("&gt;3v3_voltage")
-    public Object getV3Voltage3() {
-        return V3Voltage3;
+    public Object getVoltage3V3() {
+        return Voltage3V3;
     }
 
-    public void setV3Voltage3(Object V3Voltage3) {
-        this.V3Voltage3 = V3Voltage3;
+    public void setVoltage3V3(Object V3Voltage3V3) {
+        this.Voltage3V3 = V3Voltage3V3;
     }
     
 
@@ -208,12 +208,12 @@ public class RoborioData implements WpilibwsMsgPayload.OneOfDioDataAinDataAoutDa
      * Current on the 3.3V rail
      */
     @JsonProperty("&gt;3v3_current")
-    public Object getV3Current3() {
-        return V3Current3;
+    public Object getCurrent3V3() {
+        return Current3V3;
     }
 
-    public void setV3Current3(Object V3Current3) {
-        this.V3Current3 = V3Current3;
+    public void setCurrent3V3(Object Current3V3) {
+        this.Current3V3 = Current3V3;
     }
     
 
@@ -221,12 +221,12 @@ public class RoborioData implements WpilibwsMsgPayload.OneOfDioDataAinDataAoutDa
      * Whether or not the 3.3V rail is active
      */
     @JsonProperty("&gt;3v3_active")
-    public boolean getV3Active3() {
-        return V3Active3;
+    public boolean getActive3V3() {
+        return Active3V3;
     }
 
-    public void setV3Active3(boolean V3Active3) {
-        this.V3Active3 = V3Active3;
+    public void setActive3V3(boolean Active3V3) {
+        this.Active3V3 = Active3V3;
     }
     
 
@@ -234,12 +234,12 @@ public class RoborioData implements WpilibwsMsgPayload.OneOfDioDataAinDataAoutDa
      * Bitmask of faults on the 3.3V rail
      */
     @JsonProperty("&gt;3v3_faults")
-    public Object getV3Faults3() {
-        return V3Faults3;
+    public Object getFaults3V3() {
+        return Faults3V3;
     }
 
-    public void setV3Faults3(Object V3Faults3) {
-        this.V3Faults3 = V3Faults3;
+    public void setFaults3(Object Faults3V3) {
+        this.Faults3V3 = Faults3V3;
     }
     
     @Override
@@ -255,23 +255,23 @@ public class RoborioData implements WpilibwsMsgPayload.OneOfDioDataAinDataAoutDa
             Objects.equals(this.fpgaButton, roborioData.fpgaButton) &&
             Objects.equals(this.vinVoltage, roborioData.vinVoltage) &&
             Objects.equals(this.vinCurrent, roborioData.vinCurrent) &&
-            Objects.equals(this.VVoltage6, roborioData.VVoltage6) &&
-            Objects.equals(this.VCurrent6, roborioData.VCurrent6) &&
-            Objects.equals(this.VActive6, roborioData.VActive6) &&
-            Objects.equals(this.VFaults6, roborioData.VFaults6) &&
-            Objects.equals(this.VVoltage5, roborioData.VVoltage5) &&
-            Objects.equals(this.VCurrent5, roborioData.VCurrent5) &&
-            Objects.equals(this.VActive5, roborioData.VActive5) &&
-            Objects.equals(this.VFaults5, roborioData.VFaults5) &&
-            Objects.equals(this.V3Voltage3, roborioData.V3Voltage3) &&
-            Objects.equals(this.V3Current3, roborioData.V3Current3) &&
-            Objects.equals(this.V3Active3, roborioData.V3Active3) &&
-            Objects.equals(this.V3Faults3, roborioData.V3Faults3);
+            Objects.equals(this.Voltage6V, roborioData.Voltage6V) &&
+            Objects.equals(this.Current6V, roborioData.Current6V) &&
+            Objects.equals(this.Active6V, roborioData.Active6V) &&
+            Objects.equals(this.Faults6V, roborioData.Faults6V) &&
+            Objects.equals(this.Voltage5V, roborioData.Voltage5V) &&
+            Objects.equals(this.Current5V, roborioData.Current5V) &&
+            Objects.equals(this.Active5V, roborioData.Active5V) &&
+            Objects.equals(this.Faults5V, roborioData.Faults5V) &&
+            Objects.equals(this.Voltage3V3, roborioData.Voltage3V3) &&
+            Objects.equals(this.Current3V3, roborioData.Current3V3) &&
+            Objects.equals(this.Active3V3, roborioData.Active3V3) &&
+            Objects.equals(this.Faults3V3, roborioData.Faults3V3);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(fpgaButton, vinVoltage, vinCurrent, VVoltage6, VCurrent6, VActive6, VFaults6, VVoltage5, VCurrent5, VActive5, VFaults5, V3Voltage3, V3Current3, V3Active3, V3Faults3);
+        return Objects.hash(fpgaButton, vinVoltage, vinCurrent, Voltage6V, Current6V, Active6V, Faults6V, Voltage5V, Current5V, Active5V, Faults5V, Voltage3V3, Current3V3, Active3V3, Faults3V3);
     }
 
     @Override
@@ -281,18 +281,18 @@ public class RoborioData implements WpilibwsMsgPayload.OneOfDioDataAinDataAoutDa
                 "    fpgaButton: " + toIndentedString(fpgaButton) + "\n" +
                 "    vinVoltage: " + toIndentedString(vinVoltage) + "\n" +
                 "    vinCurrent: " + toIndentedString(vinCurrent) + "\n" +
-                "    VVoltage6: " + toIndentedString(VVoltage6) + "\n" +
-                "    VCurrent6: " + toIndentedString(VCurrent6) + "\n" +
-                "    VActive6: " + toIndentedString(VActive6) + "\n" +
-                "    VFaults6: " + toIndentedString(VFaults6) + "\n" +
-                "    VVoltage5: " + toIndentedString(VVoltage5) + "\n" +
-                "    VCurrent5: " + toIndentedString(VCurrent5) + "\n" +
-                "    VActive5: " + toIndentedString(VActive5) + "\n" +
-                "    VFaults5: " + toIndentedString(VFaults5) + "\n" +
-                "    V3Voltage3: " + toIndentedString(V3Voltage3) + "\n" +
-                "    V3Current3: " + toIndentedString(V3Current3) + "\n" +
-                "    V3Active3: " + toIndentedString(V3Active3) + "\n" +
-                "    V3Faults3: " + toIndentedString(V3Faults3) + "\n" +
+                "    VVoltage6: " + toIndentedString(Voltage6V) + "\n" +
+                "    VCurrent6: " + toIndentedString(Current6V) + "\n" +
+                "    VActive6: " + toIndentedString(Active6V) + "\n" +
+                "    VFaults6: " + toIndentedString(Faults6V) + "\n" +
+                "    VVoltage5: " + toIndentedString(Voltage5V) + "\n" +
+                "    VCurrent5: " + toIndentedString(Current5V) + "\n" +
+                "    VActive5: " + toIndentedString(Active5V) + "\n" +
+                "    VFaults5: " + toIndentedString(Faults5V) + "\n" +
+                "    V3Voltage3: " + toIndentedString(Voltage3V3) + "\n" +
+                "    V3Current3: " + toIndentedString(Current3V3) + "\n" +
+                "    V3Active3: " + toIndentedString(Active3V3) + "\n" +
+                "    V3Faults3: " + toIndentedString(Faults3V3) + "\n" +
                 "}";
     }
 
