@@ -18,7 +18,7 @@ public abstract class StateDevice<T> {
      * The identifier associated with this StateEvent
      */
     protected final String id;
-    private final Map<String, T> stateMap;
+    private final T state;
 
     /**
      * Creates a new StateDevice
@@ -28,10 +28,10 @@ public abstract class StateDevice<T> {
     @SuppressWarnings("OverridableMethodCallInConstructor")
     public StateDevice(String id, Map<String, T> stateMap) {
         this.id = id;
-        this.stateMap = stateMap;
         if(!stateMap.containsKey(id)) {
             stateMap.put(id, generateState());
         }
+        this.state = stateMap.get(id);
     }
     
     /**
@@ -40,7 +40,7 @@ public abstract class StateDevice<T> {
      * @see #id
      */
     protected T getState() {
-        return stateMap.get(id);
+        return state;
     }
     
     /**

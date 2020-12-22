@@ -9,32 +9,65 @@ public class WSValue {
     private String key;
     private Object value;
 
+    /**
+     * Creates a WSValue from the given information
+     * @param direction the MessageDirection of this WSValue
+     * @param key the name of this WSValue without MessageDirection information
+     * @param value the value of this WSValue
+     */
     public WSValue(MessageDirection direction, String key, Object value) {
         this.direction = direction;
         this.key = key;
         this.value = value;
     }
 
+    /**
+     * @return the MessageDirection of this WSValue
+     * @see #setDirection(MessageDirection)
+     */
     public MessageDirection getDirection() {
         return direction;
     }
 
+    /**
+     * Sets the MessageDirection of this WSValue
+     * @param direction the new MessageDirection of this WSValue
+     * @see #getDirection()
+     */
     public void setDirection(MessageDirection direction) {
         this.direction = direction;
     }
 
+    /**
+     * @return the name of this WSValue without MessageDirection information
+     * @see #setKey(String)
+     */
     public String getKey() {
         return key;
     }
 
+    /**
+     * Sets the name of this WSValue
+     * @param key the new name of this WSValue
+     * @see #getKey()
+     */
     public void setKey(String key) {
         this.key = key;
     }
 
+    /**
+     * @return the value of this WSValue
+     * @see #setValue(Object)
+     */
     public Object getValue() {
         return value;
     }
 
+    /**
+     * Sets the value of this WSValue
+     * @param value the new value of this WSValue
+     * @see #getValue()
+     */
     public void setValue(Object value) {
         this.value = value;
     }

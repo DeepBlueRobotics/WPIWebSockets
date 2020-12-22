@@ -1,5 +1,8 @@
 package org.team199.wpiws.interfaces;
 
+/**
+ * Represents a function which is equivalent to {@link java.util.function.Consumer} with the ability to throw an {@link Exception}
+ */
 @FunctionalInterface
 public interface ExceptionConsumer<T> {
 

@@ -73,7 +73,7 @@ public final class WSConnection {
     private WSConnection() {}
     
     /**
-     * A WebsocketClient which forwards its method calls to {@link ConnectionProcessor}
+     * A WebSocketClient which forwards its method calls to {@link ConnectionProcessor}
      */
     private static class WSClientImpl extends WebSocketClient {
 
@@ -104,7 +104,7 @@ public final class WSConnection {
     }
     
     /**
-     * A WebsocketServer which forwards its method calls to {@link ConnectionProcessor}
+     * A WebSocketServer which forwards its method calls to {@link ConnectionProcessor}
      */
     private static class WSServerImpl extends WebSocketServer {
 

@@ -9,6 +9,9 @@ import org.team199.wpiws.PWMSim;
 import org.team199.wpiws.SimDeviceSim;
 import org.team199.wpiws.interfaces.DeviceMessageProcessor;
 
+/**
+ * Manages a list of {@link DeviceMessageProcessor} objects which handle messages for different device types
+ */
 public final class MessageProcessor {
     
     private static final HashMap<String, DeviceMessageProcessor> processors = new HashMap<>();
