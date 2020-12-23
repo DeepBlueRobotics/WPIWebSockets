@@ -4,38 +4,18 @@ package org.team199.wpiws.connection;
  * Represents a device value in the WPIWebSockets protocol
  */
 public class WSValue {
-    
-    private MessageDirection direction;
+
     private String key;
     private Object value;
 
     /**
      * Creates a WSValue from the given information
-     * @param direction the MessageDirection of this WSValue
      * @param key the name of this WSValue without MessageDirection information
      * @param value the value of this WSValue
      */
-    public WSValue(MessageDirection direction, String key, Object value) {
-        this.direction = direction;
+    public WSValue(String key, Object value) {
         this.key = key;
         this.value = value;
-    }
-
-    /**
-     * @return the MessageDirection of this WSValue
-     * @see #setDirection(MessageDirection)
-     */
-    public MessageDirection getDirection() {
-        return direction;
-    }
-
-    /**
-     * Sets the MessageDirection of this WSValue
-     * @param direction the new MessageDirection of this WSValue
-     * @see #getDirection()
-     */
-    public void setDirection(MessageDirection direction) {
-        this.direction = direction;
     }
 
     /**

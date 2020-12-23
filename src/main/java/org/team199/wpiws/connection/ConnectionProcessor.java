@@ -61,10 +61,9 @@ public final class ConnectionProcessor {
             String device = (String)jsonMessage.get("device");
             String type = (String)jsonMessage.get("type");
             JSONObject dataObject = (JSONObject)jsonMessage.get("data");
-            List<WSValue> data = ((Stream<String>)dataObject.keySet().stream().map(STRING_CAST)).map(key -> {
-                MessageDirection direction = MessageDirection.from(key);
-                return new WSValue(direction, key.substring(direction.identifier.length(), key.length()), dataObject.get(key));
-            }).collect(Collectors.toList());
+            List<WSValue> data = ((Stream<String>)dataObject.keySet().stream().map(STRING_CAST))
+                .map(key -> new WSValue(key, dataObject.get(key))
+                ).collect(Collectors.toList());
             threadExecutor.accept(() -> MessageProcessor.process(device, type, data));
         } catch(Exception e) {
             System.err.println("Invalid Message from: " + getSocketInfo(socket));
@@ -104,7 +103,7 @@ public final class ConnectionProcessor {
         message.put("device", device);
         message.put("type", type);
         JSONObject messageData = new JSONObject();
-        data.forEach(value -> messageData.put(value.getDirection().identifier + value.getKey(), value.getValue()));
+        data.forEach(value -> messageData.put(value.getKey(), value.getValue()));
         message.put("data", messageData);
         brodcastMessage(message.toJSONString());
     }
