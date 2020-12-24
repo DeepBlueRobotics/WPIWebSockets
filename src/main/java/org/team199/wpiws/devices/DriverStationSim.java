@@ -23,6 +23,38 @@ public class DriverStationSim {
         return STATE;
     }
     
+    public static ScopedObject<BooleanCallback> registerNewDataCallback(BooleanCallback callback, boolean initialNotify) {
+        getState().NEWDATA_CALLBACKS.addIfAbsent(callback);
+        if(initialNotify) {
+            callback.callback("", getState().newdata);
+        }
+        return new ScopedObject<>(callback, CANCEL_NEWDATA_CALLBACK);
+    }
+
+    public static final Consumer<BooleanCallback> CANCEL_NEWDATA_CALLBACK = DriverStationSim::cancelNewDataCallback;
+    public static void cancelNewDataCallback(BooleanCallback callback) {
+        getState().NEWDATA_CALLBACKS.remove(callback);
+    }
+
+    public static boolean getNewData() {
+        return getState().newdata;
+    }
+
+    public static void setNewData(boolean newdata) {
+        setNewData(newdata, true);
+    }
+
+    public static final Consumer<BooleanCallback> CALL_NEWDATA_CALLBACK = callback -> callback.callback("", getState().newdata);
+    private static void setNewData(boolean newdata, boolean notifyRobot) {
+        if(newdata != getState().newdata) {
+            getState().newdata = newdata;
+            getState().NEWDATA_CALLBACKS.forEach(CALL_NEWDATA_CALLBACK);
+        }
+        if(notifyRobot) {
+            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">new_data", newdata));
+        }
+    }
+
     public static ScopedObject<BooleanCallback> registerEnabledCallback(BooleanCallback callback, boolean initialNotify) {
         getState().ENABLED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -215,38 +247,6 @@ public class DriverStationSim {
         }
     }
 
-    public static ScopedObject<DoubleCallback> registerMatchTimeCallback(DoubleCallback callback, boolean initialNotify) {
-        getState().MATCHTIME_CALLBACKS.addIfAbsent(callback);
-        if(initialNotify) {
-            callback.callback("", getState().matchtime);
-        }
-        return new ScopedObject<>(callback, CANCEL_MATCHTIME_CALLBACK);
-    }
-
-    public static final Consumer<DoubleCallback> CANCEL_MATCHTIME_CALLBACK = DriverStationSim::cancelMatchTimeCallback;
-    public static void cancelMatchTimeCallback(DoubleCallback callback) {
-        getState().MATCHTIME_CALLBACKS.remove(callback);
-    }
-
-    public static double getMatchTime() {
-        return getState().matchtime;
-    }
-
-    public static void setMatchTime(double matchtime) {
-        setMatchTime(matchtime, true);
-    }
-
-    public static final Consumer<DoubleCallback> CALL_MATCHTIME_CALLBACK = callback -> callback.callback("", getState().matchtime);
-    private static void setMatchTime(double matchtime, boolean notifyRobot) {
-        if(matchtime != getState().matchtime) {
-            getState().matchtime = matchtime;
-            getState().MATCHTIME_CALLBACKS.forEach(CALL_MATCHTIME_CALLBACK);
-        }
-        if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue("<match_time", matchtime));
-        }
-    }
-
     public static ScopedObject<StringCallback> registerStationCallback(StringCallback callback, boolean initialNotify) {
         getState().STATION_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -279,35 +279,67 @@ public class DriverStationSim {
         }
     }
 
-    public static ScopedObject<BooleanCallback> registerNewDataCallback(BooleanCallback callback, boolean initialNotify) {
-        getState().NEWDATA_CALLBACKS.addIfAbsent(callback);
+    public static ScopedObject<DoubleCallback> registerMatchTimeCallback(DoubleCallback callback, boolean initialNotify) {
+        getState().MATCHTIME_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("", getState().newdata);
+            callback.callback("", getState().matchtime);
         }
-        return new ScopedObject<>(callback, CANCEL_NEWDATA_CALLBACK);
+        return new ScopedObject<>(callback, CANCEL_MATCHTIME_CALLBACK);
     }
 
-    public static final Consumer<BooleanCallback> CANCEL_NEWDATA_CALLBACK = DriverStationSim::cancelNewDataCallback;
-    public static void cancelNewDataCallback(BooleanCallback callback) {
-        getState().NEWDATA_CALLBACKS.remove(callback);
+    public static final Consumer<DoubleCallback> CANCEL_MATCHTIME_CALLBACK = DriverStationSim::cancelMatchTimeCallback;
+    public static void cancelMatchTimeCallback(DoubleCallback callback) {
+        getState().MATCHTIME_CALLBACKS.remove(callback);
     }
 
-    public static boolean getNewData() {
-        return getState().newdata;
+    public static double getMatchTime() {
+        return getState().matchtime;
     }
 
-    public static void setNewData(boolean newdata) {
-        setNewData(newdata, true);
+    public static void setMatchTime(double matchtime) {
+        setMatchTime(matchtime, true);
     }
 
-    public static final Consumer<BooleanCallback> CALL_NEWDATA_CALLBACK = callback -> callback.callback("", getState().newdata);
-    private static void setNewData(boolean newdata, boolean notifyRobot) {
-        if(newdata != getState().newdata) {
-            getState().newdata = newdata;
-            getState().NEWDATA_CALLBACKS.forEach(CALL_NEWDATA_CALLBACK);
+    public static final Consumer<DoubleCallback> CALL_MATCHTIME_CALLBACK = callback -> callback.callback("", getState().matchtime);
+    private static void setMatchTime(double matchtime, boolean notifyRobot) {
+        if(matchtime != getState().matchtime) {
+            getState().matchtime = matchtime;
+            getState().MATCHTIME_CALLBACKS.forEach(CALL_MATCHTIME_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">new_data", newdata));
+            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">match_time", matchtime));
+        }
+    }
+
+    public static ScopedObject<StringCallback> registerGameDataCallback(StringCallback callback, boolean initialNotify) {
+        getState().GAMEDATA_CALLBACKS.addIfAbsent(callback);
+        if(initialNotify) {
+            callback.callback("", getState().gamedata);
+        }
+        return new ScopedObject<>(callback, CANCEL_GAMEDATA_CALLBACK);
+    }
+
+    public static final Consumer<StringCallback> CANCEL_GAMEDATA_CALLBACK = DriverStationSim::cancelGameDataCallback;
+    public static void cancelGameDataCallback(StringCallback callback) {
+        getState().GAMEDATA_CALLBACKS.remove(callback);
+    }
+
+    public static String getGameData() {
+        return getState().gamedata;
+    }
+
+    public static void setGameData(String gamedata) {
+        setGameData(gamedata, true);
+    }
+
+    public static final Consumer<StringCallback> CALL_GAMEDATA_CALLBACK = callback -> callback.callback("", getState().gamedata);
+    private static void setGameData(String gamedata, boolean notifyRobot) {
+        if(gamedata != getState().gamedata) {
+            getState().gamedata = gamedata;
+            getState().GAMEDATA_CALLBACKS.forEach(CALL_GAMEDATA_CALLBACK);
+        }
+        if(notifyRobot) {
+            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">game_data", gamedata));
         }
     }
 
@@ -317,18 +349,24 @@ public class DriverStationSim {
         }
     }
 
+    private static final BiConsumer<Boolean, Boolean> SET_NEWDATA = DriverStationSim::setNewData;
     private static final BiConsumer<Boolean, Boolean> SET_ENABLED = DriverStationSim::setEnabled;
     private static final BiConsumer<Boolean, Boolean> SET_AUTONOMOUS = DriverStationSim::setAutonomous;
     private static final BiConsumer<Boolean, Boolean> SET_TEST = DriverStationSim::setTest;
     private static final BiConsumer<Boolean, Boolean> SET_ESTOP = DriverStationSim::setEstop;
     private static final BiConsumer<Boolean, Boolean> SET_FMS = DriverStationSim::setFms;
     private static final BiConsumer<Boolean, Boolean> SET_DS = DriverStationSim::setDs;
-    private static final BiConsumer<Double, Boolean> SET_MATCHTIME = DriverStationSim::setMatchTime;
     private static final BiConsumer<String, Boolean> SET_STATION = DriverStationSim::setStation;
-    private static final BiConsumer<Boolean, Boolean> SET_NEWDATA = DriverStationSim::setNewData;
+    private static final BiConsumer<Double, Boolean> SET_MATCHTIME = DriverStationSim::setMatchTime;
+    private static final BiConsumer<String, Boolean> SET_GAMEDATA = DriverStationSim::setGameData;
     private static void processValue(WSValue value) {
         if(value.getKey() instanceof String && value.getValue() != null) {
             switch((String)value.getKey()) {
+                
+                case ">new_data": {
+                    StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_NEWDATA);
+                    break;
+                }
                 case ">enabled": {
                     StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_ENABLED);
                     break;
@@ -353,16 +391,16 @@ public class DriverStationSim {
                     StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_DS);
                     break;
                 }
-                case "<match_time": {
-                    StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_MATCHTIME);
-                    break;
-                }
                 case ">station": {
                     StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), String.class, SET_STATION);
                     break;
                 }
-                case ">new_data": {
-                    StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_NEWDATA);
+                case ">match_time": {
+                    StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_MATCHTIME);
+                    break;
+                }
+                case ">game_data": {
+                    StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), String.class, SET_GAMEDATA);
                     break;
                 }
             }
@@ -370,16 +408,17 @@ public class DriverStationSim {
     }
 
     public static class State {
+        public boolean newdata = false;
         public boolean enabled = false;
         public boolean autonomous = false;
         public boolean test = false;
         public boolean estop = false;
         public boolean fms = false;
         public boolean ds = false;
-        public double matchtime = 0;
         public String station = "";
-        public boolean newdata = false;
-        public final CopyOnWriteArrayList<BooleanCallback> ENABLED_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> AUTONOMOUS_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> TEST_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> ESTOP_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> FMS_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> DS_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> MATCHTIME_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<StringCallback> STATION_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> NEWDATA_CALLBACKS = new CopyOnWriteArrayList<>();
+        public double matchtime = 0;
+        public String gamedata = "";
+        public final CopyOnWriteArrayList<BooleanCallback> NEWDATA_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> ENABLED_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> AUTONOMOUS_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> TEST_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> ESTOP_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> FMS_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> DS_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<StringCallback> STATION_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> MATCHTIME_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<StringCallback> GAMEDATA_CALLBACKS = new CopyOnWriteArrayList<>();
     }
 
 }

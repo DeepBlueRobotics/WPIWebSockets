@@ -16,14 +16,14 @@ import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
 
-public class PWMSim extends StateDevice<PWMSim.State> {
+public class dPWMSim extends StateDevice<dPWMSim.State> {
 
     private static final CopyOnWriteArrayList<String> INITIALIZED_DEVICES = new CopyOnWriteArrayList<>();
     private static final CopyOnWriteArrayList<BooleanCallback> STATIC_INITIALIZED_CALLBACKS = new CopyOnWriteArrayList<>();
     
-    private static final HashMap<String, PWMSim.State> STATE_MAP = new HashMap<>();
+    private static final HashMap<String, dPWMSim.State> STATE_MAP = new HashMap<>();
 
-    public PWMSim(String id) {
+    public dPWMSim(String id) {
         super(id, STATE_MAP);
     }
     
@@ -35,7 +35,7 @@ public class PWMSim extends StateDevice<PWMSim.State> {
         return new ScopedObject<>(callback, CANCEL_STATIC_INITIALIZED_CALLBACK);
     }
 
-    public static final Consumer<BooleanCallback> CANCEL_STATIC_INITIALIZED_CALLBACK = PWMSim::cancelStaticInitializedCallback;
+    public static final Consumer<BooleanCallback> CANCEL_STATIC_INITIALIZED_CALLBACK = dPWMSim::cancelStaticInitializedCallback;
     public static void cancelStaticInitializedCallback(BooleanCallback callback) {
         STATIC_INITIALIZED_CALLBACKS.remove(callback);
     }
@@ -72,7 +72,7 @@ public class PWMSim extends StateDevice<PWMSim.State> {
             INITIALIZED_DEVICES.remove(id);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "PWM", new WSValue("<init", initialized));
+            ConnectionProcessor.brodcastMessage(id, "dPWM", new WSValue("<init", initialized));
         }
     }
 
@@ -85,80 +85,80 @@ public class PWMSim extends StateDevice<PWMSim.State> {
         return new State();
     }
     
-    public ScopedObject<DoubleCallback> registerSpeedCallback(DoubleCallback callback, boolean initialNotify) {
-        getState().SPEED_CALLBACKS.addIfAbsent(callback);
+    public ScopedObject<DoubleCallback> registerDutyCycleCallback(DoubleCallback callback, boolean initialNotify) {
+        getState().DUTYCYCLE_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback(id, getState().speed);
+            callback.callback(id, getState().dutycycle);
         }
-        return new ScopedObject<>(callback, CANCEL_SPEED_CALLBACK);
+        return new ScopedObject<>(callback, CANCEL_DUTYCYCLE_CALLBACK);
     }
 
-    public final Consumer<DoubleCallback> CANCEL_SPEED_CALLBACK = this::cancelSpeedCallback;
-    public void cancelSpeedCallback(DoubleCallback callback) {
-        getState().SPEED_CALLBACKS.remove(callback);
+    public final Consumer<DoubleCallback> CANCEL_DUTYCYCLE_CALLBACK = this::cancelDutyCycleCallback;
+    public void cancelDutyCycleCallback(DoubleCallback callback) {
+        getState().DUTYCYCLE_CALLBACKS.remove(callback);
     }
 
-    public double getSpeed() {
-        return getState().speed;
+    public double getDutyCycle() {
+        return getState().dutycycle;
     }
 
-    public void setSpeed(double speed) {
-        setSpeed(speed, true);
+    public void setDutyCycle(double dutycycle) {
+        setDutyCycle(dutycycle, true);
     }
 
-    public final Consumer<DoubleCallback> CALL_SPEED_CALLBACK = callback -> callback.callback(id, getState().speed);
-    private void setSpeed(double speed, boolean notifyRobot) {
-        if(speed != getState().speed) {
-            getState().speed = speed;
-            getState().SPEED_CALLBACKS.forEach(CALL_SPEED_CALLBACK);
+    public final Consumer<DoubleCallback> CALL_DUTYCYCLE_CALLBACK = callback -> callback.callback(id, getState().dutycycle);
+    private void setDutyCycle(double dutycycle, boolean notifyRobot) {
+        if(dutycycle != getState().dutycycle) {
+            getState().dutycycle = dutycycle;
+            getState().DUTYCYCLE_CALLBACKS.forEach(CALL_DUTYCYCLE_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "PWM", new WSValue("<speed", speed));
+            ConnectionProcessor.brodcastMessage(id, "dPWM", new WSValue("<duty_cycle", dutycycle));
         }
     }
 
-    public ScopedObject<DoubleCallback> registerPositionCallback(DoubleCallback callback, boolean initialNotify) {
-        getState().POSITION_CALLBACKS.addIfAbsent(callback);
+    public ScopedObject<IntegerCallback> registerDioPinCallback(IntegerCallback callback, boolean initialNotify) {
+        getState().DIOPIN_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback(id, getState().position);
+            callback.callback(id, getState().diopin);
         }
-        return new ScopedObject<>(callback, CANCEL_POSITION_CALLBACK);
+        return new ScopedObject<>(callback, CANCEL_DIOPIN_CALLBACK);
     }
 
-    public final Consumer<DoubleCallback> CANCEL_POSITION_CALLBACK = this::cancelPositionCallback;
-    public void cancelPositionCallback(DoubleCallback callback) {
-        getState().POSITION_CALLBACKS.remove(callback);
+    public final Consumer<IntegerCallback> CANCEL_DIOPIN_CALLBACK = this::cancelDioPinCallback;
+    public void cancelDioPinCallback(IntegerCallback callback) {
+        getState().DIOPIN_CALLBACKS.remove(callback);
     }
 
-    public double getPosition() {
-        return getState().position;
+    public int getDioPin() {
+        return getState().diopin;
     }
 
-    public void setPosition(double position) {
-        setPosition(position, true);
+    public void setDioPin(int diopin) {
+        setDioPin(diopin, true);
     }
 
-    public final Consumer<DoubleCallback> CALL_POSITION_CALLBACK = callback -> callback.callback(id, getState().position);
-    private void setPosition(double position, boolean notifyRobot) {
-        if(position != getState().position) {
-            getState().position = position;
-            getState().POSITION_CALLBACKS.forEach(CALL_POSITION_CALLBACK);
+    public final Consumer<IntegerCallback> CALL_DIOPIN_CALLBACK = callback -> callback.callback(id, getState().diopin);
+    private void setDioPin(int diopin, boolean notifyRobot) {
+        if(diopin != getState().diopin) {
+            getState().diopin = diopin;
+            getState().DIOPIN_CALLBACKS.forEach(CALL_DIOPIN_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "PWM", new WSValue("<position", position));
+            ConnectionProcessor.brodcastMessage(id, "dPWM", new WSValue("<dio_pin", diopin));
         }
     }
 
     public static void processMessage(String device, List<WSValue> data) {
-        PWMSim simDevice = new PWMSim(device);
+        dPWMSim simDevice = new dPWMSim(device);
         for(WSValue value: data) {
             simDevice.processValue(value);
         }
     }
 
     private final BiConsumer<Boolean, Boolean> SET_INITIALIZED = this::setInitialized;
-    private final BiConsumer<Double, Boolean> SET_SPEED = this::setSpeed;
-    private final BiConsumer<Double, Boolean> SET_POSITION = this::setPosition;
+    private final BiConsumer<Double, Boolean> SET_DUTYCYCLE = this::setDutyCycle;
+    private final BiConsumer<Integer, Boolean> SET_DIOPIN = this::setDioPin;
     private void processValue(WSValue value) {
         if(value.getKey() instanceof String && value.getValue() != null) {
             switch((String)value.getKey()) {
@@ -166,12 +166,12 @@ public class PWMSim extends StateDevice<PWMSim.State> {
                     filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_INITIALIZED);
                     break;
                 }
-                case "<speed": {
-                    filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_SPEED);
+                case "<duty_cycle": {
+                    filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_DUTYCYCLE);
                     break;
                 }
-                case "<position": {
-                    filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_POSITION);
+                case "<dio_pin": {
+                    filterMessageAndIgnoreRobotState(value.getValue(), Integer.class, SET_DIOPIN);
                     break;
                 }
             }
@@ -180,10 +180,10 @@ public class PWMSim extends StateDevice<PWMSim.State> {
 
     public static class State {
         public boolean init = false;
-        public double speed = 0;
-        public double position = 0;
+        public double dutycycle = 0;
+        public int diopin = 0;
         public final CopyOnWriteArrayList<BooleanCallback> INITIALIZED_CALLBACKS = new CopyOnWriteArrayList<>();
-        public final CopyOnWriteArrayList<DoubleCallback> SPEED_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> POSITION_CALLBACKS = new CopyOnWriteArrayList<>();
+        public final CopyOnWriteArrayList<DoubleCallback> DUTYCYCLE_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<IntegerCallback> DIOPIN_CALLBACKS = new CopyOnWriteArrayList<>();
     }
 
 }

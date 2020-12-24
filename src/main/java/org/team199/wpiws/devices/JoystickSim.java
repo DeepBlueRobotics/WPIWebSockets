@@ -4,6 +4,7 @@
 // 'ag -o "WebotsWebSocketsImpl/src/main/org/team199/wpiws/devices" "<path/to/wpilib-ws.yaml>" "https://github.com/DeepBlueRobotics/WPIWebSocketsTemplate.git"'
 package org.team199.wpiws.devices;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
@@ -15,132 +16,213 @@ import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
 
-public class JoystickSim {
+public class JoystickSim extends StateDevice<JoystickSim.State> {
 
-    private static final JoystickSim.State STATE = new State();
-    
-    protected static JoystickSim.State getState() {
-        return STATE;
+    private static final HashMap<String, JoystickSim.State> STATE_MAP = new HashMap<>();
+
+    public JoystickSim(String id) {
+        super(id, STATE_MAP);
     }
     
-    public static ScopedObject<BooleanArrayCallback> registerButtonsCallback(BooleanArrayCallback callback, boolean initialNotify) {
-        getState().BUTTONS_CALLBACKS.addIfAbsent(callback);
-        if(initialNotify) {
-            callback.callback("", getState().buttons);
-        }
-        return new ScopedObject<>(callback, CANCEL_BUTTONS_CALLBACK);
+    @Override
+    protected State generateState() {
+        return new State();
     }
-
-    public static final Consumer<BooleanArrayCallback> CANCEL_BUTTONS_CALLBACK = JoystickSim::cancelButtonsCallback;
-    public static void cancelButtonsCallback(BooleanArrayCallback callback) {
-        getState().BUTTONS_CALLBACKS.remove(callback);
-    }
-
-    public static boolean[] getButtons() {
-        return getState().buttons;
-    }
-
-    public static void setButtons(boolean[] buttons) {
-        setButtons(buttons, true);
-    }
-
-    public static final Consumer<BooleanArrayCallback> CALL_BUTTONS_CALLBACK = callback -> callback.callback("", getState().buttons);
-    private static void setButtons(boolean[] buttons, boolean notifyRobot) {
-        if(buttons != getState().buttons) {
-            getState().buttons = buttons;
-            getState().BUTTONS_CALLBACKS.forEach(CALL_BUTTONS_CALLBACK);
-        }
-        if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "Joystick", new WSValue(">buttons", buttons));
-        }
-    }
-
-    public static ScopedObject<DoubleArrayCallback> registerPovsCallback(DoubleArrayCallback callback, boolean initialNotify) {
-        getState().POVS_CALLBACKS.addIfAbsent(callback);
-        if(initialNotify) {
-            callback.callback("", getState().povs);
-        }
-        return new ScopedObject<>(callback, CANCEL_POVS_CALLBACK);
-    }
-
-    public static final Consumer<DoubleArrayCallback> CANCEL_POVS_CALLBACK = JoystickSim::cancelPovsCallback;
-    public static void cancelPovsCallback(DoubleArrayCallback callback) {
-        getState().POVS_CALLBACKS.remove(callback);
-    }
-
-    public static double[] getPovs() {
-        return getState().povs;
-    }
-
-    public static void setPovs(double[] povs) {
-        setPovs(povs, true);
-    }
-
-    public static final Consumer<DoubleArrayCallback> CALL_POVS_CALLBACK = callback -> callback.callback("", getState().povs);
-    private static void setPovs(double[] povs, boolean notifyRobot) {
-        if(povs != getState().povs) {
-            getState().povs = povs;
-            getState().POVS_CALLBACKS.forEach(CALL_POVS_CALLBACK);
-        }
-        if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "Joystick", new WSValue(">povs", povs));
-        }
-    }
-
-    public static ScopedObject<DoubleArrayCallback> registerAxesCallback(DoubleArrayCallback callback, boolean initialNotify) {
+    
+    public ScopedObject<DoubleArrayCallback> registerAxesCallback(DoubleArrayCallback callback, boolean initialNotify) {
         getState().AXES_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("", getState().axes);
+            callback.callback(id, getState().axes);
         }
         return new ScopedObject<>(callback, CANCEL_AXES_CALLBACK);
     }
 
-    public static final Consumer<DoubleArrayCallback> CANCEL_AXES_CALLBACK = JoystickSim::cancelAxesCallback;
-    public static void cancelAxesCallback(DoubleArrayCallback callback) {
+    public final Consumer<DoubleArrayCallback> CANCEL_AXES_CALLBACK = this::cancelAxesCallback;
+    public void cancelAxesCallback(DoubleArrayCallback callback) {
         getState().AXES_CALLBACKS.remove(callback);
     }
 
-    public static double[] getAxes() {
+    public double[] getAxes() {
         return getState().axes;
     }
 
-    public static void setAxes(double[] axes) {
+    public void setAxes(double[] axes) {
         setAxes(axes, true);
     }
 
-    public static final Consumer<DoubleArrayCallback> CALL_AXES_CALLBACK = callback -> callback.callback("", getState().axes);
-    private static void setAxes(double[] axes, boolean notifyRobot) {
+    public final Consumer<DoubleArrayCallback> CALL_AXES_CALLBACK = callback -> callback.callback(id, getState().axes);
+    private void setAxes(double[] axes, boolean notifyRobot) {
         if(axes != getState().axes) {
             getState().axes = axes;
             getState().AXES_CALLBACKS.forEach(CALL_AXES_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "Joystick", new WSValue(">axes", axes));
+            ConnectionProcessor.brodcastMessage(id, "Joystick", new WSValue(">axes", axes));
+        }
+    }
+
+    public ScopedObject<IntegerArrayCallback> registerPovsCallback(IntegerArrayCallback callback, boolean initialNotify) {
+        getState().POVS_CALLBACKS.addIfAbsent(callback);
+        if(initialNotify) {
+            callback.callback(id, getState().povs);
+        }
+        return new ScopedObject<>(callback, CANCEL_POVS_CALLBACK);
+    }
+
+    public final Consumer<IntegerArrayCallback> CANCEL_POVS_CALLBACK = this::cancelPovsCallback;
+    public void cancelPovsCallback(IntegerArrayCallback callback) {
+        getState().POVS_CALLBACKS.remove(callback);
+    }
+
+    public int[] getPovs() {
+        return getState().povs;
+    }
+
+    public void setPovs(int[] povs) {
+        setPovs(povs, true);
+    }
+
+    public final Consumer<IntegerArrayCallback> CALL_POVS_CALLBACK = callback -> callback.callback(id, getState().povs);
+    private void setPovs(int[] povs, boolean notifyRobot) {
+        if(povs != getState().povs) {
+            getState().povs = povs;
+            getState().POVS_CALLBACKS.forEach(CALL_POVS_CALLBACK);
+        }
+        if(notifyRobot) {
+            ConnectionProcessor.brodcastMessage(id, "Joystick", new WSValue(">povs", povs));
+        }
+    }
+
+    public ScopedObject<BooleanArrayCallback> registerButtonsCallback(BooleanArrayCallback callback, boolean initialNotify) {
+        getState().BUTTONS_CALLBACKS.addIfAbsent(callback);
+        if(initialNotify) {
+            callback.callback(id, getState().buttons);
+        }
+        return new ScopedObject<>(callback, CANCEL_BUTTONS_CALLBACK);
+    }
+
+    public final Consumer<BooleanArrayCallback> CANCEL_BUTTONS_CALLBACK = this::cancelButtonsCallback;
+    public void cancelButtonsCallback(BooleanArrayCallback callback) {
+        getState().BUTTONS_CALLBACKS.remove(callback);
+    }
+
+    public boolean[] getButtons() {
+        return getState().buttons;
+    }
+
+    public void setButtons(boolean[] buttons) {
+        setButtons(buttons, true);
+    }
+
+    public final Consumer<BooleanArrayCallback> CALL_BUTTONS_CALLBACK = callback -> callback.callback(id, getState().buttons);
+    private void setButtons(boolean[] buttons, boolean notifyRobot) {
+        if(buttons != getState().buttons) {
+            getState().buttons = buttons;
+            getState().BUTTONS_CALLBACKS.forEach(CALL_BUTTONS_CALLBACK);
+        }
+        if(notifyRobot) {
+            ConnectionProcessor.brodcastMessage(id, "Joystick", new WSValue(">buttons", buttons));
+        }
+    }
+
+    public ScopedObject<DoubleCallback> registerRumbleLeftCallback(DoubleCallback callback, boolean initialNotify) {
+        getState().RUMBLELEFT_CALLBACKS.addIfAbsent(callback);
+        if(initialNotify) {
+            callback.callback(id, getState().rumbleleft);
+        }
+        return new ScopedObject<>(callback, CANCEL_RUMBLELEFT_CALLBACK);
+    }
+
+    public final Consumer<DoubleCallback> CANCEL_RUMBLELEFT_CALLBACK = this::cancelRumbleLeftCallback;
+    public void cancelRumbleLeftCallback(DoubleCallback callback) {
+        getState().RUMBLELEFT_CALLBACKS.remove(callback);
+    }
+
+    public double getRumbleLeft() {
+        return getState().rumbleleft;
+    }
+
+    public void setRumbleLeft(double rumbleleft) {
+        setRumbleLeft(rumbleleft, true);
+    }
+
+    public final Consumer<DoubleCallback> CALL_RUMBLELEFT_CALLBACK = callback -> callback.callback(id, getState().rumbleleft);
+    private void setRumbleLeft(double rumbleleft, boolean notifyRobot) {
+        if(rumbleleft != getState().rumbleleft) {
+            getState().rumbleleft = rumbleleft;
+            getState().RUMBLELEFT_CALLBACKS.forEach(CALL_RUMBLELEFT_CALLBACK);
+        }
+        if(notifyRobot) {
+            ConnectionProcessor.brodcastMessage(id, "Joystick", new WSValue("<rumble_left", rumbleleft));
+        }
+    }
+
+    public ScopedObject<DoubleCallback> registerRumbleRightCallback(DoubleCallback callback, boolean initialNotify) {
+        getState().RUMBLERIGHT_CALLBACKS.addIfAbsent(callback);
+        if(initialNotify) {
+            callback.callback(id, getState().rumbleright);
+        }
+        return new ScopedObject<>(callback, CANCEL_RUMBLERIGHT_CALLBACK);
+    }
+
+    public final Consumer<DoubleCallback> CANCEL_RUMBLERIGHT_CALLBACK = this::cancelRumbleRightCallback;
+    public void cancelRumbleRightCallback(DoubleCallback callback) {
+        getState().RUMBLERIGHT_CALLBACKS.remove(callback);
+    }
+
+    public double getRumbleRight() {
+        return getState().rumbleright;
+    }
+
+    public void setRumbleRight(double rumbleright) {
+        setRumbleRight(rumbleright, true);
+    }
+
+    public final Consumer<DoubleCallback> CALL_RUMBLERIGHT_CALLBACK = callback -> callback.callback(id, getState().rumbleright);
+    private void setRumbleRight(double rumbleright, boolean notifyRobot) {
+        if(rumbleright != getState().rumbleright) {
+            getState().rumbleright = rumbleright;
+            getState().RUMBLERIGHT_CALLBACKS.forEach(CALL_RUMBLERIGHT_CALLBACK);
+        }
+        if(notifyRobot) {
+            ConnectionProcessor.brodcastMessage(id, "Joystick", new WSValue("<rumble_right", rumbleright));
         }
     }
 
     public static void processMessage(String device, List<WSValue> data) {
+        JoystickSim simDevice = new JoystickSim(device);
         for(WSValue value: data) {
-            processValue(value);
+            simDevice.processValue(value);
         }
     }
 
-    private static final BiConsumer<boolean[], Boolean> SET_BUTTONS = JoystickSim::setButtons;
-    private static final BiConsumer<double[], Boolean> SET_POVS = JoystickSim::setPovs;
-    private static final BiConsumer<double[], Boolean> SET_AXES = JoystickSim::setAxes;
-    private static void processValue(WSValue value) {
+    private final BiConsumer<double[], Boolean> SET_AXES = this::setAxes;
+    private final BiConsumer<int[], Boolean> SET_POVS = this::setPovs;
+    private final BiConsumer<boolean[], Boolean> SET_BUTTONS = this::setButtons;
+    private final BiConsumer<Double, Boolean> SET_RUMBLELEFT = this::setRumbleLeft;
+    private final BiConsumer<Double, Boolean> SET_RUMBLERIGHT = this::setRumbleRight;
+    private void processValue(WSValue value) {
         if(value.getKey() instanceof String && value.getValue() != null) {
             switch((String)value.getKey()) {
-                case ">buttons": {
-                    StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), boolean[].class, SET_BUTTONS);
+                
+                case ">axes": {
+                    filterMessageAndIgnoreRobotState(value.getValue(), double[].class, SET_AXES);
                     break;
                 }
                 case ">povs": {
-                    StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), double[].class, SET_POVS);
+                    filterMessageAndIgnoreRobotState(value.getValue(), int[].class, SET_POVS);
                     break;
                 }
-                case ">axes": {
-                    StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), double[].class, SET_AXES);
+                case ">buttons": {
+                    filterMessageAndIgnoreRobotState(value.getValue(), boolean[].class, SET_BUTTONS);
+                    break;
+                }
+                case "<rumble_left": {
+                    filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_RUMBLELEFT);
+                    break;
+                }
+                case "<rumble_right": {
+                    filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_RUMBLERIGHT);
                     break;
                 }
             }
@@ -148,10 +230,12 @@ public class JoystickSim {
     }
 
     public static class State {
-        public boolean[] buttons = new boolean[0];
-        public double[] povs = new double[0];
         public double[] axes = new double[0];
-        public final CopyOnWriteArrayList<BooleanArrayCallback> BUTTONS_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleArrayCallback> POVS_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleArrayCallback> AXES_CALLBACKS = new CopyOnWriteArrayList<>();
+        public int[] povs = new int[0];
+        public boolean[] buttons = new boolean[0];
+        public double rumbleleft = 0;
+        public double rumbleright = 0;
+        public final CopyOnWriteArrayList<DoubleArrayCallback> AXES_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<IntegerArrayCallback> POVS_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanArrayCallback> BUTTONS_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> RUMBLELEFT_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> RUMBLERIGHT_CALLBACKS = new CopyOnWriteArrayList<>();
     }
 
 }

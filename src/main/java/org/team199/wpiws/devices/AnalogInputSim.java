@@ -16,13 +16,14 @@ import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
 
-public class AOSim extends StateDevice<AOSim.State> {
+public class AnalogInputSim extends StateDevice<AnalogInputSim.State> {
 
-    private static final HashMap<String, AOSim.State> STATE_MAP = new HashMap<>();
     private static final CopyOnWriteArrayList<String> INITIALIZED_DEVICES = new CopyOnWriteArrayList<>();
     private static final CopyOnWriteArrayList<BooleanCallback> STATIC_INITIALIZED_CALLBACKS = new CopyOnWriteArrayList<>();
+    
+    private static final HashMap<String, AnalogInputSim.State> STATE_MAP = new HashMap<>();
 
-    public AOSim(String id) {
+    public AnalogInputSim(String id) {
         super(id, STATE_MAP);
     }
     
@@ -34,7 +35,7 @@ public class AOSim extends StateDevice<AOSim.State> {
         return new ScopedObject<>(callback, CANCEL_STATIC_INITIALIZED_CALLBACK);
     }
 
-    public static final Consumer<BooleanCallback> CANCEL_STATIC_INITIALIZED_CALLBACK = AOSim::cancelStaticInitializedCallback;
+    public static final Consumer<BooleanCallback> CANCEL_STATIC_INITIALIZED_CALLBACK = AnalogInputSim::cancelStaticInitializedCallback;
     public static void cancelStaticInitializedCallback(BooleanCallback callback) {
         STATIC_INITIALIZED_CALLBACKS.remove(callback);
     }
@@ -71,14 +72,14 @@ public class AOSim extends StateDevice<AOSim.State> {
             INITIALIZED_DEVICES.remove(id);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "AO", new WSValue("<init", initialized));
+            ConnectionProcessor.brodcastMessage(id, "AI", new WSValue("<init", initialized));
         }
     }
 
     public static String[] enumerateDevices() {
         return INITIALIZED_DEVICES.toArray(CREATE_STRING_ARRAY);
     }
-
+    
     @Override
     protected State generateState() {
         return new State();
@@ -112,12 +113,12 @@ public class AOSim extends StateDevice<AOSim.State> {
             getState().VOLTAGE_CALLBACKS.forEach(CALL_VOLTAGE_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "AO", new WSValue("<voltage", voltage));
+            ConnectionProcessor.brodcastMessage(id, "AI", new WSValue(">voltage", voltage));
         }
     }
 
     public static void processMessage(String device, List<WSValue> data) {
-        AOSim simDevice = new AOSim(device);
+        AnalogInputSim simDevice = new AnalogInputSim(device);
         for(WSValue value: data) {
             simDevice.processValue(value);
         }
@@ -127,11 +128,12 @@ public class AOSim extends StateDevice<AOSim.State> {
     private final BiConsumer<Double, Boolean> SET_VOLTAGE = this::setVoltage;
     private void processValue(WSValue value) {
         if(value.getKey() instanceof String && value.getValue() != null) {
-            switch((String)value.getKey()) {case "<init": {
+            switch((String)value.getKey()) {
+                case "<init": {
                     filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_INITIALIZED);
                     break;
                 }
-                case "<voltage": {
+                case ">voltage": {
                     filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_VOLTAGE);
                     break;
                 }

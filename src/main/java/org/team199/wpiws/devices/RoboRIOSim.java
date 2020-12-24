@@ -215,7 +215,7 @@ public class RoboRIOSim {
         }
     }
 
-    public static ScopedObject<DoubleCallback> registerFaults6vCallback(DoubleCallback callback, boolean initialNotify) {
+    public static ScopedObject<IntegerCallback> registerFaults6vCallback(IntegerCallback callback, boolean initialNotify) {
         getState().FAULTS6V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
             callback.callback("", getState().faults6v);
@@ -223,21 +223,21 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_FAULTS6V_CALLBACK);
     }
 
-    public static final Consumer<DoubleCallback> CANCEL_FAULTS6V_CALLBACK = RoboRIOSim::cancelFaults6vCallback;
-    public static void cancelFaults6vCallback(DoubleCallback callback) {
+    public static final Consumer<IntegerCallback> CANCEL_FAULTS6V_CALLBACK = RoboRIOSim::cancelFaults6vCallback;
+    public static void cancelFaults6vCallback(IntegerCallback callback) {
         getState().FAULTS6V_CALLBACKS.remove(callback);
     }
 
-    public static double getFaults6v() {
+    public static int getFaults6v() {
         return getState().faults6v;
     }
 
-    public static void setFaults6v(double faults6v) {
+    public static void setFaults6v(int faults6v) {
         setFaults6v(faults6v, true);
     }
 
-    public static final Consumer<DoubleCallback> CALL_FAULTS6V_CALLBACK = callback -> callback.callback("", getState().faults6v);
-    private static void setFaults6v(double faults6v, boolean notifyRobot) {
+    public static final Consumer<IntegerCallback> CALL_FAULTS6V_CALLBACK = callback -> callback.callback("", getState().faults6v);
+    private static void setFaults6v(int faults6v, boolean notifyRobot) {
         if(faults6v != getState().faults6v) {
             getState().faults6v = faults6v;
             getState().FAULTS6V_CALLBACKS.forEach(CALL_FAULTS6V_CALLBACK);
@@ -343,7 +343,7 @@ public class RoboRIOSim {
         }
     }
 
-    public static ScopedObject<DoubleCallback> registerFaults5vCallback(DoubleCallback callback, boolean initialNotify) {
+    public static ScopedObject<IntegerCallback> registerFaults5vCallback(IntegerCallback callback, boolean initialNotify) {
         getState().FAULTS5V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
             callback.callback("", getState().faults5v);
@@ -351,21 +351,21 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_FAULTS5V_CALLBACK);
     }
 
-    public static final Consumer<DoubleCallback> CANCEL_FAULTS5V_CALLBACK = RoboRIOSim::cancelFaults5vCallback;
-    public static void cancelFaults5vCallback(DoubleCallback callback) {
+    public static final Consumer<IntegerCallback> CANCEL_FAULTS5V_CALLBACK = RoboRIOSim::cancelFaults5vCallback;
+    public static void cancelFaults5vCallback(IntegerCallback callback) {
         getState().FAULTS5V_CALLBACKS.remove(callback);
     }
 
-    public static double getFaults5v() {
+    public static int getFaults5v() {
         return getState().faults5v;
     }
 
-    public static void setFaults5v(double faults5v) {
+    public static void setFaults5v(int faults5v) {
         setFaults5v(faults5v, true);
     }
 
-    public static final Consumer<DoubleCallback> CALL_FAULTS5V_CALLBACK = callback -> callback.callback("", getState().faults5v);
-    private static void setFaults5v(double faults5v, boolean notifyRobot) {
+    public static final Consumer<IntegerCallback> CALL_FAULTS5V_CALLBACK = callback -> callback.callback("", getState().faults5v);
+    private static void setFaults5v(int faults5v, boolean notifyRobot) {
         if(faults5v != getState().faults5v) {
             getState().faults5v = faults5v;
             getState().FAULTS5V_CALLBACKS.forEach(CALL_FAULTS5V_CALLBACK);
@@ -471,7 +471,7 @@ public class RoboRIOSim {
         }
     }
 
-    public static ScopedObject<DoubleCallback> registerFaults3v3Callback(DoubleCallback callback, boolean initialNotify) {
+    public static ScopedObject<IntegerCallback> registerFaults3v3Callback(IntegerCallback callback, boolean initialNotify) {
         getState().FAULTS3V3_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
             callback.callback("", getState().faults3v3);
@@ -479,21 +479,21 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_FAULTS3V3_CALLBACK);
     }
 
-    public static final Consumer<DoubleCallback> CANCEL_FAULTS3V3_CALLBACK = RoboRIOSim::cancelFaults3v3Callback;
-    public static void cancelFaults3v3Callback(DoubleCallback callback) {
+    public static final Consumer<IntegerCallback> CANCEL_FAULTS3V3_CALLBACK = RoboRIOSim::cancelFaults3v3Callback;
+    public static void cancelFaults3v3Callback(IntegerCallback callback) {
         getState().FAULTS3V3_CALLBACKS.remove(callback);
     }
 
-    public static double getFaults3v3() {
+    public static int getFaults3v3() {
         return getState().faults3v3;
     }
 
-    public static void setFaults3v3(double faults3v3) {
+    public static void setFaults3v3(int faults3v3) {
         setFaults3v3(faults3v3, true);
     }
 
-    public static final Consumer<DoubleCallback> CALL_FAULTS3V3_CALLBACK = callback -> callback.callback("", getState().faults3v3);
-    private static void setFaults3v3(double faults3v3, boolean notifyRobot) {
+    public static final Consumer<IntegerCallback> CALL_FAULTS3V3_CALLBACK = callback -> callback.callback("", getState().faults3v3);
+    private static void setFaults3v3(int faults3v3, boolean notifyRobot) {
         if(faults3v3 != getState().faults3v3) {
             getState().faults3v3 = faults3v3;
             getState().FAULTS3V3_CALLBACKS.forEach(CALL_FAULTS3V3_CALLBACK);
@@ -515,18 +515,19 @@ public class RoboRIOSim {
     private static final BiConsumer<Double, Boolean> SET_VOLTAGE6V = RoboRIOSim::setVoltage6v;
     private static final BiConsumer<Double, Boolean> SET_CURRENT6V = RoboRIOSim::setCurrent6v;
     private static final BiConsumer<Boolean, Boolean> SET_ACTIVE6V = RoboRIOSim::setActive6v;
-    private static final BiConsumer<Double, Boolean> SET_FAULTS6V = RoboRIOSim::setFaults6v;
+    private static final BiConsumer<Integer, Boolean> SET_FAULTS6V = RoboRIOSim::setFaults6v;
     private static final BiConsumer<Double, Boolean> SET_VOLTAGE5V = RoboRIOSim::setVoltage5v;
     private static final BiConsumer<Double, Boolean> SET_CURRENT5V = RoboRIOSim::setCurrent5v;
     private static final BiConsumer<Boolean, Boolean> SET_ACTIVE5V = RoboRIOSim::setActive5v;
-    private static final BiConsumer<Double, Boolean> SET_FAULTS5V = RoboRIOSim::setFaults5v;
+    private static final BiConsumer<Integer, Boolean> SET_FAULTS5V = RoboRIOSim::setFaults5v;
     private static final BiConsumer<Double, Boolean> SET_VOLTAGE3V3 = RoboRIOSim::setVoltage3v3;
     private static final BiConsumer<Double, Boolean> SET_CURRENT3V3 = RoboRIOSim::setCurrent3v3;
     private static final BiConsumer<Boolean, Boolean> SET_ACTIVE3V3 = RoboRIOSim::setActive3v3;
-    private static final BiConsumer<Double, Boolean> SET_FAULTS3V3 = RoboRIOSim::setFaults3v3;
+    private static final BiConsumer<Integer, Boolean> SET_FAULTS3V3 = RoboRIOSim::setFaults3v3;
     private static void processValue(WSValue value) {
         if(value.getKey() instanceof String && value.getValue() != null) {
             switch((String)value.getKey()) {
+                
                 case ">fpga_button": {
                     StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_FPGABUTTON);
                     break;
@@ -552,7 +553,7 @@ public class RoboRIOSim {
                     break;
                 }
                 case ">6v_faults": {
-                    StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_FAULTS6V);
+                    StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), Integer.class, SET_FAULTS6V);
                     break;
                 }
                 case ">5v_voltage": {
@@ -568,7 +569,7 @@ public class RoboRIOSim {
                     break;
                 }
                 case ">5v_faults": {
-                    StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_FAULTS5V);
+                    StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), Integer.class, SET_FAULTS5V);
                     break;
                 }
                 case ">3v3_voltage": {
@@ -584,7 +585,7 @@ public class RoboRIOSim {
                     break;
                 }
                 case ">3v3_faults": {
-                    StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_FAULTS3V3);
+                    StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), Integer.class, SET_FAULTS3V3);
                     break;
                 }
             }
@@ -598,16 +599,16 @@ public class RoboRIOSim {
         public double voltage6v = 0;
         public double current6v = 0;
         public boolean active6v = false;
-        public double faults6v = 0;
+        public int faults6v = 0;
         public double voltage5v = 0;
         public double current5v = 0;
         public boolean active5v = false;
-        public double faults5v = 0;
+        public int faults5v = 0;
         public double voltage3v3 = 0;
         public double current3v3 = 0;
         public boolean active3v3 = false;
-        public double faults3v3 = 0;
-        public final CopyOnWriteArrayList<BooleanCallback> FPGABUTTON_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> VINVOLTAGE_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> VINCURRENT_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> VOLTAGE6V_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> CURRENT6V_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> ACTIVE6V_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> FAULTS6V_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> VOLTAGE5V_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> CURRENT5V_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> ACTIVE5V_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> FAULTS5V_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> VOLTAGE3V3_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> CURRENT3V3_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> ACTIVE3V3_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> FAULTS3V3_CALLBACKS = new CopyOnWriteArrayList<>();
+        public int faults3v3 = 0;
+        public final CopyOnWriteArrayList<BooleanCallback> FPGABUTTON_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> VINVOLTAGE_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> VINCURRENT_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> VOLTAGE6V_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> CURRENT6V_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> ACTIVE6V_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<IntegerCallback> FAULTS6V_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> VOLTAGE5V_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> CURRENT5V_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> ACTIVE5V_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<IntegerCallback> FAULTS5V_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> VOLTAGE3V3_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> CURRENT3V3_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> ACTIVE3V3_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<IntegerCallback> FAULTS3V3_CALLBACKS = new CopyOnWriteArrayList<>();
     }
 
 }

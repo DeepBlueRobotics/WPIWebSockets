@@ -18,9 +18,10 @@ import org.team199.wpiws.interfaces.*;
 
 public class EncoderSim extends StateDevice<EncoderSim.State> {
 
-    private static final HashMap<String, EncoderSim.State> STATE_MAP = new HashMap<>();
     private static final CopyOnWriteArrayList<String> INITIALIZED_DEVICES = new CopyOnWriteArrayList<>();
     private static final CopyOnWriteArrayList<BooleanCallback> STATIC_INITIALIZED_CALLBACKS = new CopyOnWriteArrayList<>();
+    
+    private static final HashMap<String, EncoderSim.State> STATE_MAP = new HashMap<>();
 
     public EncoderSim(String id) {
         super(id, STATE_MAP);
@@ -78,7 +79,7 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
     public static String[] enumerateDevices() {
         return INITIALIZED_DEVICES.toArray(CREATE_STRING_ARRAY);
     }
-
+    
     @Override
     protected State generateState() {
         return new State();
@@ -148,6 +149,38 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         }
     }
 
+    public ScopedObject<IntegerCallback> registerSamplesToAvgCallback(IntegerCallback callback, boolean initialNotify) {
+        getState().SAMPLESTOAVG_CALLBACKS.addIfAbsent(callback);
+        if(initialNotify) {
+            callback.callback(id, getState().samplestoavg);
+        }
+        return new ScopedObject<>(callback, CANCEL_SAMPLESTOAVG_CALLBACK);
+    }
+
+    public final Consumer<IntegerCallback> CANCEL_SAMPLESTOAVG_CALLBACK = this::cancelSamplesToAvgCallback;
+    public void cancelSamplesToAvgCallback(IntegerCallback callback) {
+        getState().SAMPLESTOAVG_CALLBACKS.remove(callback);
+    }
+
+    public int getSamplesToAvg() {
+        return getState().samplestoavg;
+    }
+
+    public void setSamplesToAvg(int samplestoavg) {
+        setSamplesToAvg(samplestoavg, true);
+    }
+
+    public final Consumer<IntegerCallback> CALL_SAMPLESTOAVG_CALLBACK = callback -> callback.callback(id, getState().samplestoavg);
+    private void setSamplesToAvg(int samplestoavg, boolean notifyRobot) {
+        if(samplestoavg != getState().samplestoavg) {
+            getState().samplestoavg = samplestoavg;
+            getState().SAMPLESTOAVG_CALLBACKS.forEach(CALL_SAMPLESTOAVG_CALLBACK);
+        }
+        if(notifyRobot) {
+            ConnectionProcessor.brodcastMessage(id, "Encoder", new WSValue("<samples_to_avg", samplestoavg));
+        }
+    }
+
     public ScopedObject<IntegerCallback> registerCountCallback(IntegerCallback callback, boolean initialNotify) {
         getState().COUNT_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -212,102 +245,6 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         }
     }
 
-    public ScopedObject<BooleanCallback> registerResetCallback(BooleanCallback callback, boolean initialNotify) {
-        getState().RESET_CALLBACKS.addIfAbsent(callback);
-        if(initialNotify) {
-            callback.callback(id, getState().reset);
-        }
-        return new ScopedObject<>(callback, CANCEL_RESET_CALLBACK);
-    }
-
-    public final Consumer<BooleanCallback> CANCEL_RESET_CALLBACK = this::cancelResetCallback;
-    public void cancelResetCallback(BooleanCallback callback) {
-        getState().RESET_CALLBACKS.remove(callback);
-    }
-
-    public boolean getReset() {
-        return getState().reset;
-    }
-
-    public void setReset(boolean reset) {
-        setReset(reset, true);
-    }
-
-    public final Consumer<BooleanCallback> CALL_RESET_CALLBACK = callback -> callback.callback(id, getState().reset);
-    private void setReset(boolean reset, boolean notifyRobot) {
-        if(reset != getState().reset) {
-            getState().reset = reset;
-            getState().RESET_CALLBACKS.forEach(CALL_RESET_CALLBACK);
-        }
-        if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Encoder", new WSValue("<reset", reset));
-        }
-    }
-
-    public ScopedObject<BooleanCallback> registerReverseDirectionCallback(BooleanCallback callback, boolean initialNotify) {
-        getState().REVERSEDIRECTION_CALLBACKS.addIfAbsent(callback);
-        if(initialNotify) {
-            callback.callback(id, getState().reversedirection);
-        }
-        return new ScopedObject<>(callback, CANCEL_REVERSEDIRECTION_CALLBACK);
-    }
-
-    public final Consumer<BooleanCallback> CANCEL_REVERSEDIRECTION_CALLBACK = this::cancelReverseDirectionCallback;
-    public void cancelReverseDirectionCallback(BooleanCallback callback) {
-        getState().REVERSEDIRECTION_CALLBACKS.remove(callback);
-    }
-
-    public boolean getReverseDirection() {
-        return getState().reversedirection;
-    }
-
-    public void setReverseDirection(boolean reversedirection) {
-        setReverseDirection(reversedirection, true);
-    }
-
-    public final Consumer<BooleanCallback> CALL_REVERSEDIRECTION_CALLBACK = callback -> callback.callback(id, getState().reversedirection);
-    private void setReverseDirection(boolean reversedirection, boolean notifyRobot) {
-        if(reversedirection != getState().reversedirection) {
-            getState().reversedirection = reversedirection;
-            getState().REVERSEDIRECTION_CALLBACKS.forEach(CALL_REVERSEDIRECTION_CALLBACK);
-        }
-        if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Encoder", new WSValue("<reverse_direction", reversedirection));
-        }
-    }
-
-    public ScopedObject<IntegerCallback> registerSamplesToAvgCallback(IntegerCallback callback, boolean initialNotify) {
-        getState().SAMPLESTOAVG_CALLBACKS.addIfAbsent(callback);
-        if(initialNotify) {
-            callback.callback(id, getState().samplestoavg);
-        }
-        return new ScopedObject<>(callback, CANCEL_SAMPLESTOAVG_CALLBACK);
-    }
-
-    public final Consumer<IntegerCallback> CANCEL_SAMPLESTOAVG_CALLBACK = this::cancelSamplesToAvgCallback;
-    public void cancelSamplesToAvgCallback(IntegerCallback callback) {
-        getState().SAMPLESTOAVG_CALLBACKS.remove(callback);
-    }
-
-    public int getSamplesToAvg() {
-        return getState().samplestoavg;
-    }
-
-    public void setSamplesToAvg(int samplestoavg) {
-        setSamplesToAvg(samplestoavg, true);
-    }
-
-    public final Consumer<IntegerCallback> CALL_SAMPLESTOAVG_CALLBACK = callback -> callback.callback(id, getState().samplestoavg);
-    private void setSamplesToAvg(int samplestoavg, boolean notifyRobot) {
-        if(samplestoavg != getState().samplestoavg) {
-            getState().samplestoavg = samplestoavg;
-            getState().SAMPLESTOAVG_CALLBACKS.forEach(CALL_SAMPLESTOAVG_CALLBACK);
-        }
-        if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Encoder", new WSValue("<samples_to_avg", samplestoavg));
-        }
-    }
-
     public static void processMessage(String device, List<WSValue> data) {
         EncoderSim simDevice = new EncoderSim(device);
         for(WSValue value: data) {
@@ -318,14 +255,13 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
     private final BiConsumer<Boolean, Boolean> SET_INITIALIZED = this::setInitialized;
     private final BiConsumer<Integer, Boolean> SET_CHANNELA = this::setChannelA;
     private final BiConsumer<Integer, Boolean> SET_CHANNELB = this::setChannelB;
+    private final BiConsumer<Integer, Boolean> SET_SAMPLESTOAVG = this::setSamplesToAvg;
     private final BiConsumer<Integer, Boolean> SET_COUNT = this::setCount;
     private final BiConsumer<Double, Boolean> SET_PERIOD = this::setPeriod;
-    private final BiConsumer<Boolean, Boolean> SET_RESET = this::setReset;
-    private final BiConsumer<Boolean, Boolean> SET_REVERSEDIRECTION = this::setReverseDirection;
-    private final BiConsumer<Integer, Boolean> SET_SAMPLESTOAVG = this::setSamplesToAvg;
     private void processValue(WSValue value) {
         if(value.getKey() instanceof String && value.getValue() != null) {
-            switch((String)value.getKey()) {case "<init": {
+            switch((String)value.getKey()) {
+                case "<init": {
                     filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_INITIALIZED);
                     break;
                 }
@@ -337,24 +273,16 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
                     filterMessageAndIgnoreRobotState(value.getValue(), Integer.class, SET_CHANNELB);
                     break;
                 }
+                case "<samples_to_avg": {
+                    filterMessageAndIgnoreRobotState(value.getValue(), Integer.class, SET_SAMPLESTOAVG);
+                    break;
+                }
                 case ">count": {
                     filterMessageAndIgnoreRobotState(value.getValue(), Integer.class, SET_COUNT);
                     break;
                 }
                 case ">period": {
                     filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_PERIOD);
-                    break;
-                }
-                case "<reset": {
-                    filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_RESET);
-                    break;
-                }
-                case "<reverse_direction": {
-                    filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_REVERSEDIRECTION);
-                    break;
-                }
-                case "<samples_to_avg": {
-                    filterMessageAndIgnoreRobotState(value.getValue(), Integer.class, SET_SAMPLESTOAVG);
                     break;
                 }
             }
@@ -365,13 +293,11 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         public boolean init = false;
         public int channela = 0;
         public int channelb = 0;
+        public int samplestoavg = 0;
         public int count = 0;
         public double period = 0;
-        public boolean reset = false;
-        public boolean reversedirection = false;
-        public int samplestoavg = 0;
         public final CopyOnWriteArrayList<BooleanCallback> INITIALIZED_CALLBACKS = new CopyOnWriteArrayList<>();
-        public final CopyOnWriteArrayList<IntegerCallback> CHANNELA_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<IntegerCallback> CHANNELB_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<IntegerCallback> COUNT_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> PERIOD_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> RESET_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<BooleanCallback> REVERSEDIRECTION_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<IntegerCallback> SAMPLESTOAVG_CALLBACKS = new CopyOnWriteArrayList<>();
+        public final CopyOnWriteArrayList<IntegerCallback> CHANNELA_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<IntegerCallback> CHANNELB_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<IntegerCallback> SAMPLESTOAVG_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<IntegerCallback> COUNT_CALLBACKS = new CopyOnWriteArrayList<>();public final CopyOnWriteArrayList<DoubleCallback> PERIOD_CALLBACKS = new CopyOnWriteArrayList<>();
     }
 
 }
