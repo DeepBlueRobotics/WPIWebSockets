@@ -1,6 +1,17 @@
+
+
+
+
+
+
+
+
+
 package org.team199.wpiws.devices;
 
+
 import java.util.HashMap;
+
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
@@ -12,16 +23,23 @@ import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
 
+
 public class DIOSim extends StateDevice<DIOSim.State> {
 
+
+    
     private static final HashMap<String, DIOSim.State> STATE_MAP = new HashMap<>();
     private static final CopyOnWriteArrayList<String> INITIALIZED_DEVICES = new CopyOnWriteArrayList<>();
     private static final CopyOnWriteArrayList<BooleanCallback> STATIC_INITIALIZED_CALLBACKS = new CopyOnWriteArrayList<>();
+    
 
+    
     public DIOSim(String id) {
         super(id, STATE_MAP);
     }
+    
 
+    
     public static ScopedObject<BooleanCallback> registerStaticInitializedCallback(BooleanCallback callback, boolean initialNotify) {
         STATIC_INITIALIZED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -75,6 +93,14 @@ public class DIOSim extends StateDevice<DIOSim.State> {
         return INITIALIZED_DEVICES.toArray(CREATE_STRING_ARRAY);
     }
 
+    @Override
+    protected State generateState() {
+        return new State();
+    }
+    
+
+    
+    
     public ScopedObject<BooleanCallback> registerValueCallback(BooleanCallback callback, boolean initialNotify) {
         getState().VALUE_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -106,6 +132,8 @@ public class DIOSim extends StateDevice<DIOSim.State> {
             ConnectionProcessor.brodcastMessage(id, "DIO", new WSValue("<>value", value));
         }
     }
+    
+    
     public ScopedObject<IntegerCallback> registerPulseLengthCallback(IntegerCallback callback, boolean initialNotify) {
         getState().PULSELENGTH_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -137,6 +165,8 @@ public class DIOSim extends StateDevice<DIOSim.State> {
             ConnectionProcessor.brodcastMessage(id, "DIO", new WSValue("<pulse_length", pulselength));
         }
     }
+    
+    
     public ScopedObject<BooleanCallback> registerInputCallback(BooleanCallback callback, boolean initialNotify) {
         getState().INPUT_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -168,55 +198,95 @@ public class DIOSim extends StateDevice<DIOSim.State> {
             ConnectionProcessor.brodcastMessage(id, "DIO", new WSValue("<input", input));
         }
     }
+    
 
     public static void processMessage(String device, List<WSValue> data) {
+        
         DIOSim simDevice = new DIOSim(device);
         for(WSValue value: data) {
             simDevice.processValue(value);
         }
+        
     }
 
+    
     private final BiConsumer<Boolean, Boolean> SET_INITIALIZED = this::setInitialized;
+    
+    
+    
     private final BiConsumer<Boolean, Boolean> SET_VALUE = this::setValue;
+    
+    
     private final BiConsumer<Integer, Boolean> SET_PULSELENGTH = this::setPulseLength;
+    
+    
     private final BiConsumer<Boolean, Boolean> SET_INPUT = this::setInput;
+    
     private void processValue(WSValue value) {
         if(value.getKey() instanceof String && value.getValue() != null) {
             switch((String)value.getKey()) {
+                
                 case "<init": {
                     filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_INITIALIZED);
                     break;
                 }
+                
+                
+                
                 case "<>value": {
+                    
                     filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_VALUE);
+                    
                     break;
                 }
+                
+                
                 case "<pulse_length": {
+                    
                     filterMessageAndIgnoreRobotState(value.getValue(), Integer.class, SET_PULSELENGTH);
+                    
                     break;
                 }
+                
+                
                 case "<input": {
+                    
                     filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_INPUT);
+                    
                     break;
                 }
+                
             }
         }
     }
 
-    @Override
-    protected State generateState() {
-        return new State();
-    }
-
     public static class State {
+        
         public boolean init = false;
+        
+        
+        
         public boolean value = false;
+        
+        
         public int pulselength = 0;
+        
+        
         public boolean input = false;
+        
+        
         public final CopyOnWriteArrayList<BooleanCallback> INITIALIZED_CALLBACKS = new CopyOnWriteArrayList<>();
+        
+        
+        
         public final CopyOnWriteArrayList<BooleanCallback> VALUE_CALLBACKS = new CopyOnWriteArrayList<>();
+        
+        
         public final CopyOnWriteArrayList<IntegerCallback> PULSELENGTH_CALLBACKS = new CopyOnWriteArrayList<>();
+        
+        
         public final CopyOnWriteArrayList<BooleanCallback> INPUT_CALLBACKS = new CopyOnWriteArrayList<>();
+        
     }
 
 }

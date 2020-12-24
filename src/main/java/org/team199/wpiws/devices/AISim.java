@@ -1,6 +1,17 @@
+
+
+
+
+
+
+
+
+
 package org.team199.wpiws.devices;
 
+
 import java.util.HashMap;
+
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
@@ -12,16 +23,23 @@ import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
 
+
 public class AISim extends StateDevice<AISim.State> {
 
+
+    
     private static final HashMap<String, AISim.State> STATE_MAP = new HashMap<>();
     private static final CopyOnWriteArrayList<String> INITIALIZED_DEVICES = new CopyOnWriteArrayList<>();
     private static final CopyOnWriteArrayList<BooleanCallback> STATIC_INITIALIZED_CALLBACKS = new CopyOnWriteArrayList<>();
+    
 
+    
     public AISim(String id) {
         super(id, STATE_MAP);
     }
+    
 
+    
     public static ScopedObject<BooleanCallback> registerStaticInitializedCallback(BooleanCallback callback, boolean initialNotify) {
         STATIC_INITIALIZED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -75,6 +93,14 @@ public class AISim extends StateDevice<AISim.State> {
         return INITIALIZED_DEVICES.toArray(CREATE_STRING_ARRAY);
     }
 
+    @Override
+    protected State generateState() {
+        return new State();
+    }
+    
+
+    
+    
     public ScopedObject<IntegerCallback> registerAvgBitsCallback(IntegerCallback callback, boolean initialNotify) {
         getState().AVGBITS_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -106,6 +132,8 @@ public class AISim extends StateDevice<AISim.State> {
             ConnectionProcessor.brodcastMessage(id, "AI", new WSValue("<avg_bits", avgbits));
         }
     }
+    
+    
     public ScopedObject<IntegerCallback> registerOversampleBitsCallback(IntegerCallback callback, boolean initialNotify) {
         getState().OVERSAMPLEBITS_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -137,6 +165,8 @@ public class AISim extends StateDevice<AISim.State> {
             ConnectionProcessor.brodcastMessage(id, "AI", new WSValue("<oversample_bits", oversamplebits));
         }
     }
+    
+    
     public ScopedObject<DoubleCallback> registerVoltageCallback(DoubleCallback callback, boolean initialNotify) {
         getState().VOLTAGE_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -168,6 +198,8 @@ public class AISim extends StateDevice<AISim.State> {
             ConnectionProcessor.brodcastMessage(id, "AI", new WSValue(">voltage", voltage));
         }
     }
+    
+    
     public ScopedObject<BooleanCallback> registerAccumInitCallback(BooleanCallback callback, boolean initialNotify) {
         getState().ACCUMINIT_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -199,6 +231,8 @@ public class AISim extends StateDevice<AISim.State> {
             ConnectionProcessor.brodcastMessage(id, "AI", new WSValue("<accum_init", accuminit));
         }
     }
+    
+    
     public ScopedObject<DoubleCallback> registerAccumValueCallback(DoubleCallback callback, boolean initialNotify) {
         getState().ACCUMVALUE_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -230,6 +264,8 @@ public class AISim extends StateDevice<AISim.State> {
             ConnectionProcessor.brodcastMessage(id, "AI", new WSValue(">accum_value", accumvalue));
         }
     }
+    
+    
     public ScopedObject<DoubleCallback> registerAccumCountCallback(DoubleCallback callback, boolean initialNotify) {
         getState().ACCUMCOUNT_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -261,6 +297,8 @@ public class AISim extends StateDevice<AISim.State> {
             ConnectionProcessor.brodcastMessage(id, "AI", new WSValue(">accum_count", accumcount));
         }
     }
+    
+    
     public ScopedObject<DoubleCallback> registerAccumCenterCallback(DoubleCallback callback, boolean initialNotify) {
         getState().ACCUMCENTER_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -292,6 +330,8 @@ public class AISim extends StateDevice<AISim.State> {
             ConnectionProcessor.brodcastMessage(id, "AI", new WSValue("<accum_center", accumcenter));
         }
     }
+    
+    
     public ScopedObject<DoubleCallback> registerAccumDeadbandCallback(DoubleCallback callback, boolean initialNotify) {
         getState().ACCUMDEADBAND_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -323,90 +363,180 @@ public class AISim extends StateDevice<AISim.State> {
             ConnectionProcessor.brodcastMessage(id, "AI", new WSValue("<accum_deadband", accumdeadband));
         }
     }
+    
 
     public static void processMessage(String device, List<WSValue> data) {
+        
         AISim simDevice = new AISim(device);
         for(WSValue value: data) {
             simDevice.processValue(value);
         }
+        
     }
 
+    
     private final BiConsumer<Boolean, Boolean> SET_INITIALIZED = this::setInitialized;
+    
+    
+    
     private final BiConsumer<Integer, Boolean> SET_AVGBITS = this::setAvgBits;
+    
+    
     private final BiConsumer<Integer, Boolean> SET_OVERSAMPLEBITS = this::setOversampleBits;
+    
+    
     private final BiConsumer<Double, Boolean> SET_VOLTAGE = this::setVoltage;
+    
+    
     private final BiConsumer<Boolean, Boolean> SET_ACCUMINIT = this::setAccumInit;
+    
+    
     private final BiConsumer<Double, Boolean> SET_ACCUMVALUE = this::setAccumValue;
+    
+    
     private final BiConsumer<Double, Boolean> SET_ACCUMCOUNT = this::setAccumCount;
+    
+    
     private final BiConsumer<Double, Boolean> SET_ACCUMCENTER = this::setAccumCenter;
+    
+    
     private final BiConsumer<Double, Boolean> SET_ACCUMDEADBAND = this::setAccumDeadband;
+    
     private void processValue(WSValue value) {
         if(value.getKey() instanceof String && value.getValue() != null) {
             switch((String)value.getKey()) {
+                
                 case "<init": {
                     filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_INITIALIZED);
                     break;
                 }
+                
+                
+                
                 case "<avg_bits": {
+                    
                     filterMessageAndIgnoreRobotState(value.getValue(), Integer.class, SET_AVGBITS);
+                    
                     break;
                 }
+                
+                
                 case "<oversample_bits": {
+                    
                     filterMessageAndIgnoreRobotState(value.getValue(), Integer.class, SET_OVERSAMPLEBITS);
+                    
                     break;
                 }
+                
+                
                 case ">voltage": {
+                    
                     filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_VOLTAGE);
+                    
                     break;
                 }
+                
+                
                 case "<accum_init": {
+                    
                     filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_ACCUMINIT);
+                    
                     break;
                 }
+                
+                
                 case ">accum_value": {
+                    
                     filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_ACCUMVALUE);
+                    
                     break;
                 }
+                
+                
                 case ">accum_count": {
+                    
                     filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_ACCUMCOUNT);
+                    
                     break;
                 }
+                
+                
                 case "<accum_center": {
+                    
                     filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_ACCUMCENTER);
+                    
                     break;
                 }
+                
+                
                 case "<accum_deadband": {
+                    
                     filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_ACCUMDEADBAND);
+                    
                     break;
                 }
+                
             }
         }
     }
 
-    @Override
-    protected State generateState() {
-        return new State();
-    }
-
     public static class State {
+        
         public boolean init = false;
+        
+        
+        
         public int avgbits = 0;
+        
+        
         public int oversamplebits = 0;
+        
+        
         public double voltage = 0;
+        
+        
         public boolean accuminit = false;
+        
+        
         public double accumvalue = 0;
+        
+        
         public double accumcount = 0;
+        
+        
         public double accumcenter = 0;
+        
+        
         public double accumdeadband = 0;
+        
+        
         public final CopyOnWriteArrayList<BooleanCallback> INITIALIZED_CALLBACKS = new CopyOnWriteArrayList<>();
+        
+        
+        
         public final CopyOnWriteArrayList<IntegerCallback> AVGBITS_CALLBACKS = new CopyOnWriteArrayList<>();
+        
+        
         public final CopyOnWriteArrayList<IntegerCallback> OVERSAMPLEBITS_CALLBACKS = new CopyOnWriteArrayList<>();
+        
+        
         public final CopyOnWriteArrayList<DoubleCallback> VOLTAGE_CALLBACKS = new CopyOnWriteArrayList<>();
+        
+        
         public final CopyOnWriteArrayList<BooleanCallback> ACCUMINIT_CALLBACKS = new CopyOnWriteArrayList<>();
+        
+        
         public final CopyOnWriteArrayList<DoubleCallback> ACCUMVALUE_CALLBACKS = new CopyOnWriteArrayList<>();
+        
+        
         public final CopyOnWriteArrayList<DoubleCallback> ACCUMCOUNT_CALLBACKS = new CopyOnWriteArrayList<>();
+        
+        
         public final CopyOnWriteArrayList<DoubleCallback> ACCUMCENTER_CALLBACKS = new CopyOnWriteArrayList<>();
+        
+        
         public final CopyOnWriteArrayList<DoubleCallback> ACCUMDEADBAND_CALLBACKS = new CopyOnWriteArrayList<>();
+        
     }
 
 }

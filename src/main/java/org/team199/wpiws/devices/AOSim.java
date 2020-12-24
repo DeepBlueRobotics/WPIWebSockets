@@ -1,6 +1,17 @@
+
+
+
+
+
+
+
+
+
 package org.team199.wpiws.devices;
 
+
 import java.util.HashMap;
+
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
@@ -12,16 +23,23 @@ import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
 
+
 public class AOSim extends StateDevice<AOSim.State> {
 
+
+    
     private static final HashMap<String, AOSim.State> STATE_MAP = new HashMap<>();
     private static final CopyOnWriteArrayList<String> INITIALIZED_DEVICES = new CopyOnWriteArrayList<>();
     private static final CopyOnWriteArrayList<BooleanCallback> STATIC_INITIALIZED_CALLBACKS = new CopyOnWriteArrayList<>();
+    
 
+    
     public AOSim(String id) {
         super(id, STATE_MAP);
     }
+    
 
+    
     public static ScopedObject<BooleanCallback> registerStaticInitializedCallback(BooleanCallback callback, boolean initialNotify) {
         STATIC_INITIALIZED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -75,6 +93,14 @@ public class AOSim extends StateDevice<AOSim.State> {
         return INITIALIZED_DEVICES.toArray(CREATE_STRING_ARRAY);
     }
 
+    @Override
+    protected State generateState() {
+        return new State();
+    }
+    
+
+    
+    
     public ScopedObject<DoubleCallback> registerVoltageCallback(DoubleCallback callback, boolean initialNotify) {
         getState().VOLTAGE_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -106,41 +132,61 @@ public class AOSim extends StateDevice<AOSim.State> {
             ConnectionProcessor.brodcastMessage(id, "AO", new WSValue("<voltage", voltage));
         }
     }
+    
 
     public static void processMessage(String device, List<WSValue> data) {
+        
         AOSim simDevice = new AOSim(device);
         for(WSValue value: data) {
             simDevice.processValue(value);
         }
+        
     }
 
+    
     private final BiConsumer<Boolean, Boolean> SET_INITIALIZED = this::setInitialized;
+    
+    
+    
     private final BiConsumer<Double, Boolean> SET_VOLTAGE = this::setVoltage;
+    
     private void processValue(WSValue value) {
         if(value.getKey() instanceof String && value.getValue() != null) {
             switch((String)value.getKey()) {
+                
                 case "<init": {
                     filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_INITIALIZED);
                     break;
                 }
+                
+                
+                
                 case "<voltage": {
+                    
                     filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_VOLTAGE);
+                    
                     break;
                 }
+                
             }
         }
     }
 
-    @Override
-    protected State generateState() {
-        return new State();
-    }
-
     public static class State {
+        
         public boolean init = false;
+        
+        
+        
         public double voltage = 0;
+        
+        
         public final CopyOnWriteArrayList<BooleanCallback> INITIALIZED_CALLBACKS = new CopyOnWriteArrayList<>();
+        
+        
+        
         public final CopyOnWriteArrayList<DoubleCallback> VOLTAGE_CALLBACKS = new CopyOnWriteArrayList<>();
+        
     }
 
 }

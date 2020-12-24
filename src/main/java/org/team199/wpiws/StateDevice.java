@@ -58,10 +58,14 @@ public abstract class StateDevice<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T> void filterMessage(Object recievedObject, Class<T> requestedType, Consumer<T> processor) {
-        if(requestedType.isAssignableFrom(recievedObject.getClass())) {
+        if(requestedType.isAssignableFrom(recievedObject.getClass()) || (recievedObject instanceof Long && requestedType == Integer.class)) {
             processor.accept((T)recievedObject);
         } else {
             System.err.println(String.format("Invalid value: %1$s of type: %2$s expected type: %3$s", recievedObject.toString(), recievedObject.getClass().getName(), requestedType.getName()));
+        }
+        //EncoderSim channels are expected integers but sent as longs
+        if(recievedObject instanceof Long && requestedType == Integer.class) {
+            ((Consumer<Integer>)processor).accept(((Long)recievedObject).intValue());
         }
     }
 
@@ -77,6 +81,10 @@ public abstract class StateDevice<T> {
     public static <T> void filterMessageAndIgnoreRobotState(Object recievedObject, Class<T> requestedType, BiConsumer<T, Boolean> robotStateProcessor) {
         if(requestedType.isAssignableFrom(recievedObject.getClass())) {
             robotStateProcessor.accept((T)recievedObject, false);
+        }
+        //EncoderSim channels are expected integers but sent as longs
+        if(recievedObject instanceof Long && requestedType == Integer.class) {
+            ((BiConsumer<Integer, Boolean>)robotStateProcessor).accept(((Long)recievedObject).intValue(), false);
         }
     }
 

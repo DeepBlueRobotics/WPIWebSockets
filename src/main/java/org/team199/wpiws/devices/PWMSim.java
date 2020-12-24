@@ -1,6 +1,17 @@
+
+
+
+
+
+
+
+
+
 package org.team199.wpiws.devices;
 
+
 import java.util.HashMap;
+
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
@@ -12,16 +23,23 @@ import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
 
+
 public class PWMSim extends StateDevice<PWMSim.State> {
 
+
+    
     private static final HashMap<String, PWMSim.State> STATE_MAP = new HashMap<>();
     private static final CopyOnWriteArrayList<String> INITIALIZED_DEVICES = new CopyOnWriteArrayList<>();
     private static final CopyOnWriteArrayList<BooleanCallback> STATIC_INITIALIZED_CALLBACKS = new CopyOnWriteArrayList<>();
+    
 
+    
     public PWMSim(String id) {
         super(id, STATE_MAP);
     }
+    
 
+    
     public static ScopedObject<BooleanCallback> registerStaticInitializedCallback(BooleanCallback callback, boolean initialNotify) {
         STATIC_INITIALIZED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -75,6 +93,14 @@ public class PWMSim extends StateDevice<PWMSim.State> {
         return INITIALIZED_DEVICES.toArray(CREATE_STRING_ARRAY);
     }
 
+    @Override
+    protected State generateState() {
+        return new State();
+    }
+    
+
+    
+    
     public ScopedObject<DoubleCallback> registerSpeedCallback(DoubleCallback callback, boolean initialNotify) {
         getState().SPEED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -106,6 +132,8 @@ public class PWMSim extends StateDevice<PWMSim.State> {
             ConnectionProcessor.brodcastMessage(id, "PWM", new WSValue("<speed", speed));
         }
     }
+    
+    
     public ScopedObject<DoubleCallback> registerPositionCallback(DoubleCallback callback, boolean initialNotify) {
         getState().POSITION_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -137,6 +165,8 @@ public class PWMSim extends StateDevice<PWMSim.State> {
             ConnectionProcessor.brodcastMessage(id, "PWM", new WSValue("<position", position));
         }
     }
+    
+    
     public ScopedObject<IntegerCallback> registerRawCallback(IntegerCallback callback, boolean initialNotify) {
         getState().RAW_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -168,6 +198,8 @@ public class PWMSim extends StateDevice<PWMSim.State> {
             ConnectionProcessor.brodcastMessage(id, "PWM", new WSValue("<raw", raw));
         }
     }
+    
+    
     public ScopedObject<DoubleCallback> registerPeriodScaleCallback(DoubleCallback callback, boolean initialNotify) {
         getState().PERIODSCALE_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -199,6 +231,8 @@ public class PWMSim extends StateDevice<PWMSim.State> {
             ConnectionProcessor.brodcastMessage(id, "PWM", new WSValue("<period_scale", periodscale));
         }
     }
+    
+    
     public ScopedObject<BooleanCallback> registerZeroLatchCallback(BooleanCallback callback, boolean initialNotify) {
         getState().ZEROLATCH_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -230,69 +264,129 @@ public class PWMSim extends StateDevice<PWMSim.State> {
             ConnectionProcessor.brodcastMessage(id, "PWM", new WSValue("<zero_latch", zerolatch));
         }
     }
+    
 
     public static void processMessage(String device, List<WSValue> data) {
+        
         PWMSim simDevice = new PWMSim(device);
         for(WSValue value: data) {
             simDevice.processValue(value);
         }
+        
     }
 
+    
     private final BiConsumer<Boolean, Boolean> SET_INITIALIZED = this::setInitialized;
+    
+    
+    
     private final BiConsumer<Double, Boolean> SET_SPEED = this::setSpeed;
+    
+    
     private final BiConsumer<Double, Boolean> SET_POSITION = this::setPosition;
+    
+    
     private final BiConsumer<Integer, Boolean> SET_RAW = this::setRaw;
+    
+    
     private final BiConsumer<Double, Boolean> SET_PERIODSCALE = this::setPeriodScale;
+    
+    
     private final BiConsumer<Boolean, Boolean> SET_ZEROLATCH = this::setZeroLatch;
+    
     private void processValue(WSValue value) {
         if(value.getKey() instanceof String && value.getValue() != null) {
             switch((String)value.getKey()) {
+                
                 case "<init": {
                     filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_INITIALIZED);
                     break;
                 }
+                
+                
+                
                 case "<speed": {
+                    
                     filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_SPEED);
+                    
                     break;
                 }
+                
+                
                 case "<position": {
+                    
                     filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_POSITION);
+                    
                     break;
                 }
+                
+                
                 case "<raw": {
+                    
                     filterMessageAndIgnoreRobotState(value.getValue(), Integer.class, SET_RAW);
+                    
                     break;
                 }
+                
+                
                 case "<period_scale": {
+                    
                     filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_PERIODSCALE);
+                    
                     break;
                 }
+                
+                
                 case "<zero_latch": {
+                    
                     filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_ZEROLATCH);
+                    
                     break;
                 }
+                
             }
         }
     }
 
-    @Override
-    protected State generateState() {
-        return new State();
-    }
-
     public static class State {
+        
         public boolean init = false;
+        
+        
+        
         public double speed = 0;
+        
+        
         public double position = 0;
+        
+        
         public int raw = 0;
+        
+        
         public double periodscale = 0;
+        
+        
         public boolean zerolatch = false;
+        
+        
         public final CopyOnWriteArrayList<BooleanCallback> INITIALIZED_CALLBACKS = new CopyOnWriteArrayList<>();
+        
+        
+        
         public final CopyOnWriteArrayList<DoubleCallback> SPEED_CALLBACKS = new CopyOnWriteArrayList<>();
+        
+        
         public final CopyOnWriteArrayList<DoubleCallback> POSITION_CALLBACKS = new CopyOnWriteArrayList<>();
+        
+        
         public final CopyOnWriteArrayList<IntegerCallback> RAW_CALLBACKS = new CopyOnWriteArrayList<>();
+        
+        
         public final CopyOnWriteArrayList<DoubleCallback> PERIODSCALE_CALLBACKS = new CopyOnWriteArrayList<>();
+        
+        
         public final CopyOnWriteArrayList<BooleanCallback> ZEROLATCH_CALLBACKS = new CopyOnWriteArrayList<>();
+        
     }
 
 }
