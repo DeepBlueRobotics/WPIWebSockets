@@ -180,7 +180,8 @@ public class DIOSim extends StateDevice<DIOSim.State> {
         }
     }
 
-    public static void processMessage(String device, List<WSValue> data) {DIOSim simDevice = new DIOSim(device);
+    public static void processMessage(String device, List<WSValue> data) {
+        DIOSim simDevice = new DIOSim(device);
         for(WSValue value: data) {
             simDevice.processValue(value);
         }

@@ -26,7 +26,7 @@ public class DriverStationSim {
     public static ScopedObject<BooleanCallback> registerEnabledCallback(BooleanCallback callback, boolean initialNotify) {
         getState().ENABLED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().enabled);
+            callback.callback("", getState().enabled);
         }
         return new ScopedObject<>(callback, CANCEL_ENABLED_CALLBACK);
     }
@@ -44,21 +44,21 @@ public class DriverStationSim {
         setEnabled(enabled, true);
     }
 
-    public static final Consumer<BooleanCallback> CALL_ENABLED_CALLBACK = callback -> callback.callback("0", getState().enabled);
+    public static final Consumer<BooleanCallback> CALL_ENABLED_CALLBACK = callback -> callback.callback("", getState().enabled);
     private static void setEnabled(boolean enabled, boolean notifyRobot) {
         if(enabled != getState().enabled) {
             getState().enabled = enabled;
             getState().ENABLED_CALLBACKS.forEach(CALL_ENABLED_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "DriverStation", new WSValue(">enabled", enabled));
+            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">enabled", enabled));
         }
     }
 
     public static ScopedObject<BooleanCallback> registerAutonomousCallback(BooleanCallback callback, boolean initialNotify) {
         getState().AUTONOMOUS_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().autonomous);
+            callback.callback("", getState().autonomous);
         }
         return new ScopedObject<>(callback, CANCEL_AUTONOMOUS_CALLBACK);
     }
@@ -76,21 +76,21 @@ public class DriverStationSim {
         setAutonomous(autonomous, true);
     }
 
-    public static final Consumer<BooleanCallback> CALL_AUTONOMOUS_CALLBACK = callback -> callback.callback("0", getState().autonomous);
+    public static final Consumer<BooleanCallback> CALL_AUTONOMOUS_CALLBACK = callback -> callback.callback("", getState().autonomous);
     private static void setAutonomous(boolean autonomous, boolean notifyRobot) {
         if(autonomous != getState().autonomous) {
             getState().autonomous = autonomous;
             getState().AUTONOMOUS_CALLBACKS.forEach(CALL_AUTONOMOUS_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "DriverStation", new WSValue(">autonomous", autonomous));
+            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">autonomous", autonomous));
         }
     }
 
     public static ScopedObject<BooleanCallback> registerTestCallback(BooleanCallback callback, boolean initialNotify) {
         getState().TEST_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().test);
+            callback.callback("", getState().test);
         }
         return new ScopedObject<>(callback, CANCEL_TEST_CALLBACK);
     }
@@ -108,21 +108,21 @@ public class DriverStationSim {
         setTest(test, true);
     }
 
-    public static final Consumer<BooleanCallback> CALL_TEST_CALLBACK = callback -> callback.callback("0", getState().test);
+    public static final Consumer<BooleanCallback> CALL_TEST_CALLBACK = callback -> callback.callback("", getState().test);
     private static void setTest(boolean test, boolean notifyRobot) {
         if(test != getState().test) {
             getState().test = test;
             getState().TEST_CALLBACKS.forEach(CALL_TEST_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "DriverStation", new WSValue(">test", test));
+            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">test", test));
         }
     }
 
     public static ScopedObject<BooleanCallback> registerEstopCallback(BooleanCallback callback, boolean initialNotify) {
         getState().ESTOP_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().estop);
+            callback.callback("", getState().estop);
         }
         return new ScopedObject<>(callback, CANCEL_ESTOP_CALLBACK);
     }
@@ -140,21 +140,21 @@ public class DriverStationSim {
         setEstop(estop, true);
     }
 
-    public static final Consumer<BooleanCallback> CALL_ESTOP_CALLBACK = callback -> callback.callback("0", getState().estop);
+    public static final Consumer<BooleanCallback> CALL_ESTOP_CALLBACK = callback -> callback.callback("", getState().estop);
     private static void setEstop(boolean estop, boolean notifyRobot) {
         if(estop != getState().estop) {
             getState().estop = estop;
             getState().ESTOP_CALLBACKS.forEach(CALL_ESTOP_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "DriverStation", new WSValue(">estop", estop));
+            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">estop", estop));
         }
     }
 
     public static ScopedObject<BooleanCallback> registerFmsCallback(BooleanCallback callback, boolean initialNotify) {
         getState().FMS_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().fms);
+            callback.callback("", getState().fms);
         }
         return new ScopedObject<>(callback, CANCEL_FMS_CALLBACK);
     }
@@ -172,21 +172,21 @@ public class DriverStationSim {
         setFms(fms, true);
     }
 
-    public static final Consumer<BooleanCallback> CALL_FMS_CALLBACK = callback -> callback.callback("0", getState().fms);
+    public static final Consumer<BooleanCallback> CALL_FMS_CALLBACK = callback -> callback.callback("", getState().fms);
     private static void setFms(boolean fms, boolean notifyRobot) {
         if(fms != getState().fms) {
             getState().fms = fms;
             getState().FMS_CALLBACKS.forEach(CALL_FMS_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "DriverStation", new WSValue(">fms", fms));
+            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">fms", fms));
         }
     }
 
     public static ScopedObject<BooleanCallback> registerDsCallback(BooleanCallback callback, boolean initialNotify) {
         getState().DS_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().ds);
+            callback.callback("", getState().ds);
         }
         return new ScopedObject<>(callback, CANCEL_DS_CALLBACK);
     }
@@ -204,21 +204,21 @@ public class DriverStationSim {
         setDs(ds, true);
     }
 
-    public static final Consumer<BooleanCallback> CALL_DS_CALLBACK = callback -> callback.callback("0", getState().ds);
+    public static final Consumer<BooleanCallback> CALL_DS_CALLBACK = callback -> callback.callback("", getState().ds);
     private static void setDs(boolean ds, boolean notifyRobot) {
         if(ds != getState().ds) {
             getState().ds = ds;
             getState().DS_CALLBACKS.forEach(CALL_DS_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "DriverStation", new WSValue(">ds", ds));
+            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">ds", ds));
         }
     }
 
     public static ScopedObject<DoubleCallback> registerMatchTimeCallback(DoubleCallback callback, boolean initialNotify) {
         getState().MATCHTIME_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().matchtime);
+            callback.callback("", getState().matchtime);
         }
         return new ScopedObject<>(callback, CANCEL_MATCHTIME_CALLBACK);
     }
@@ -236,21 +236,21 @@ public class DriverStationSim {
         setMatchTime(matchtime, true);
     }
 
-    public static final Consumer<DoubleCallback> CALL_MATCHTIME_CALLBACK = callback -> callback.callback("0", getState().matchtime);
+    public static final Consumer<DoubleCallback> CALL_MATCHTIME_CALLBACK = callback -> callback.callback("", getState().matchtime);
     private static void setMatchTime(double matchtime, boolean notifyRobot) {
         if(matchtime != getState().matchtime) {
             getState().matchtime = matchtime;
             getState().MATCHTIME_CALLBACKS.forEach(CALL_MATCHTIME_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "DriverStation", new WSValue("<match_time", matchtime));
+            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue("<match_time", matchtime));
         }
     }
 
     public static ScopedObject<StringCallback> registerStationCallback(StringCallback callback, boolean initialNotify) {
         getState().STATION_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().station);
+            callback.callback("", getState().station);
         }
         return new ScopedObject<>(callback, CANCEL_STATION_CALLBACK);
     }
@@ -268,21 +268,21 @@ public class DriverStationSim {
         setStation(station, true);
     }
 
-    public static final Consumer<StringCallback> CALL_STATION_CALLBACK = callback -> callback.callback("0", getState().station);
+    public static final Consumer<StringCallback> CALL_STATION_CALLBACK = callback -> callback.callback("", getState().station);
     private static void setStation(String station, boolean notifyRobot) {
         if(station != getState().station) {
             getState().station = station;
             getState().STATION_CALLBACKS.forEach(CALL_STATION_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "DriverStation", new WSValue(">station", station));
+            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">station", station));
         }
     }
 
     public static ScopedObject<BooleanCallback> registerNewDataCallback(BooleanCallback callback, boolean initialNotify) {
         getState().NEWDATA_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().newdata);
+            callback.callback("", getState().newdata);
         }
         return new ScopedObject<>(callback, CANCEL_NEWDATA_CALLBACK);
     }
@@ -300,14 +300,14 @@ public class DriverStationSim {
         setNewData(newdata, true);
     }
 
-    public static final Consumer<BooleanCallback> CALL_NEWDATA_CALLBACK = callback -> callback.callback("0", getState().newdata);
+    public static final Consumer<BooleanCallback> CALL_NEWDATA_CALLBACK = callback -> callback.callback("", getState().newdata);
     private static void setNewData(boolean newdata, boolean notifyRobot) {
         if(newdata != getState().newdata) {
             getState().newdata = newdata;
             getState().NEWDATA_CALLBACKS.forEach(CALL_NEWDATA_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "DriverStation", new WSValue(">new_data", newdata));
+            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">new_data", newdata));
         }
     }
 

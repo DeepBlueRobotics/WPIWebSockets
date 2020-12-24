@@ -340,7 +340,8 @@ public class AISim extends StateDevice<AISim.State> {
         }
     }
 
-    public static void processMessage(String device, List<WSValue> data) {AISim simDevice = new AISim(device);
+    public static void processMessage(String device, List<WSValue> data) {
+        AISim simDevice = new AISim(device);
         for(WSValue value: data) {
             simDevice.processValue(value);
         }

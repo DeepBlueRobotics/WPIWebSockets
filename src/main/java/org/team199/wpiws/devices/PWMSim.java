@@ -244,7 +244,8 @@ public class PWMSim extends StateDevice<PWMSim.State> {
         }
     }
 
-    public static void processMessage(String device, List<WSValue> data) {PWMSim simDevice = new PWMSim(device);
+    public static void processMessage(String device, List<WSValue> data) {
+        PWMSim simDevice = new PWMSim(device);
         for(WSValue value: data) {
             simDevice.processValue(value);
         }

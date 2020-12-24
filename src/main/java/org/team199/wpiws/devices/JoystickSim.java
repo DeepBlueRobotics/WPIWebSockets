@@ -26,7 +26,7 @@ public class JoystickSim {
     public static ScopedObject<BooleanArrayCallback> registerButtonsCallback(BooleanArrayCallback callback, boolean initialNotify) {
         getState().BUTTONS_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().buttons);
+            callback.callback("", getState().buttons);
         }
         return new ScopedObject<>(callback, CANCEL_BUTTONS_CALLBACK);
     }
@@ -44,21 +44,21 @@ public class JoystickSim {
         setButtons(buttons, true);
     }
 
-    public static final Consumer<BooleanArrayCallback> CALL_BUTTONS_CALLBACK = callback -> callback.callback("0", getState().buttons);
+    public static final Consumer<BooleanArrayCallback> CALL_BUTTONS_CALLBACK = callback -> callback.callback("", getState().buttons);
     private static void setButtons(boolean[] buttons, boolean notifyRobot) {
         if(buttons != getState().buttons) {
             getState().buttons = buttons;
             getState().BUTTONS_CALLBACKS.forEach(CALL_BUTTONS_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "Joystick", new WSValue(">buttons", buttons));
+            ConnectionProcessor.brodcastMessage("", "Joystick", new WSValue(">buttons", buttons));
         }
     }
 
     public static ScopedObject<DoubleArrayCallback> registerPovsCallback(DoubleArrayCallback callback, boolean initialNotify) {
         getState().POVS_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().povs);
+            callback.callback("", getState().povs);
         }
         return new ScopedObject<>(callback, CANCEL_POVS_CALLBACK);
     }
@@ -76,21 +76,21 @@ public class JoystickSim {
         setPovs(povs, true);
     }
 
-    public static final Consumer<DoubleArrayCallback> CALL_POVS_CALLBACK = callback -> callback.callback("0", getState().povs);
+    public static final Consumer<DoubleArrayCallback> CALL_POVS_CALLBACK = callback -> callback.callback("", getState().povs);
     private static void setPovs(double[] povs, boolean notifyRobot) {
         if(povs != getState().povs) {
             getState().povs = povs;
             getState().POVS_CALLBACKS.forEach(CALL_POVS_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "Joystick", new WSValue(">povs", povs));
+            ConnectionProcessor.brodcastMessage("", "Joystick", new WSValue(">povs", povs));
         }
     }
 
     public static ScopedObject<DoubleArrayCallback> registerAxesCallback(DoubleArrayCallback callback, boolean initialNotify) {
         getState().AXES_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().axes);
+            callback.callback("", getState().axes);
         }
         return new ScopedObject<>(callback, CANCEL_AXES_CALLBACK);
     }
@@ -108,14 +108,14 @@ public class JoystickSim {
         setAxes(axes, true);
     }
 
-    public static final Consumer<DoubleArrayCallback> CALL_AXES_CALLBACK = callback -> callback.callback("0", getState().axes);
+    public static final Consumer<DoubleArrayCallback> CALL_AXES_CALLBACK = callback -> callback.callback("", getState().axes);
     private static void setAxes(double[] axes, boolean notifyRobot) {
         if(axes != getState().axes) {
             getState().axes = axes;
             getState().AXES_CALLBACKS.forEach(CALL_AXES_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "Joystick", new WSValue(">axes", axes));
+            ConnectionProcessor.brodcastMessage("", "Joystick", new WSValue(">axes", axes));
         }
     }
 

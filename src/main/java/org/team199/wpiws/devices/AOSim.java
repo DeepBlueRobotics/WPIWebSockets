@@ -116,7 +116,8 @@ public class AOSim extends StateDevice<AOSim.State> {
         }
     }
 
-    public static void processMessage(String device, List<WSValue> data) {AOSim simDevice = new AOSim(device);
+    public static void processMessage(String device, List<WSValue> data) {
+        AOSim simDevice = new AOSim(device);
         for(WSValue value: data) {
             simDevice.processValue(value);
         }

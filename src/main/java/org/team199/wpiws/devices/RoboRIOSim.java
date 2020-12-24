@@ -26,7 +26,7 @@ public class RoboRIOSim {
     public static ScopedObject<BooleanCallback> registerFpgaButtonCallback(BooleanCallback callback, boolean initialNotify) {
         getState().FPGABUTTON_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().fpgabutton);
+            callback.callback("", getState().fpgabutton);
         }
         return new ScopedObject<>(callback, CANCEL_FPGABUTTON_CALLBACK);
     }
@@ -44,21 +44,21 @@ public class RoboRIOSim {
         setFpgaButton(fpgabutton, true);
     }
 
-    public static final Consumer<BooleanCallback> CALL_FPGABUTTON_CALLBACK = callback -> callback.callback("0", getState().fpgabutton);
+    public static final Consumer<BooleanCallback> CALL_FPGABUTTON_CALLBACK = callback -> callback.callback("", getState().fpgabutton);
     private static void setFpgaButton(boolean fpgabutton, boolean notifyRobot) {
         if(fpgabutton != getState().fpgabutton) {
             getState().fpgabutton = fpgabutton;
             getState().FPGABUTTON_CALLBACKS.forEach(CALL_FPGABUTTON_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "RoboRIO", new WSValue(">fpga_button", fpgabutton));
+            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">fpga_button", fpgabutton));
         }
     }
 
     public static ScopedObject<DoubleCallback> registerVinVoltageCallback(DoubleCallback callback, boolean initialNotify) {
         getState().VINVOLTAGE_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().vinvoltage);
+            callback.callback("", getState().vinvoltage);
         }
         return new ScopedObject<>(callback, CANCEL_VINVOLTAGE_CALLBACK);
     }
@@ -76,21 +76,21 @@ public class RoboRIOSim {
         setVinVoltage(vinvoltage, true);
     }
 
-    public static final Consumer<DoubleCallback> CALL_VINVOLTAGE_CALLBACK = callback -> callback.callback("0", getState().vinvoltage);
+    public static final Consumer<DoubleCallback> CALL_VINVOLTAGE_CALLBACK = callback -> callback.callback("", getState().vinvoltage);
     private static void setVinVoltage(double vinvoltage, boolean notifyRobot) {
         if(vinvoltage != getState().vinvoltage) {
             getState().vinvoltage = vinvoltage;
             getState().VINVOLTAGE_CALLBACKS.forEach(CALL_VINVOLTAGE_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "RoboRIO", new WSValue(">vin_voltage", vinvoltage));
+            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">vin_voltage", vinvoltage));
         }
     }
 
     public static ScopedObject<DoubleCallback> registerVinCurrentCallback(DoubleCallback callback, boolean initialNotify) {
         getState().VINCURRENT_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().vincurrent);
+            callback.callback("", getState().vincurrent);
         }
         return new ScopedObject<>(callback, CANCEL_VINCURRENT_CALLBACK);
     }
@@ -108,21 +108,21 @@ public class RoboRIOSim {
         setVinCurrent(vincurrent, true);
     }
 
-    public static final Consumer<DoubleCallback> CALL_VINCURRENT_CALLBACK = callback -> callback.callback("0", getState().vincurrent);
+    public static final Consumer<DoubleCallback> CALL_VINCURRENT_CALLBACK = callback -> callback.callback("", getState().vincurrent);
     private static void setVinCurrent(double vincurrent, boolean notifyRobot) {
         if(vincurrent != getState().vincurrent) {
             getState().vincurrent = vincurrent;
             getState().VINCURRENT_CALLBACKS.forEach(CALL_VINCURRENT_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "RoboRIO", new WSValue(">vin_current", vincurrent));
+            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">vin_current", vincurrent));
         }
     }
 
     public static ScopedObject<DoubleCallback> registerVoltage6vCallback(DoubleCallback callback, boolean initialNotify) {
         getState().VOLTAGE6V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().voltage6v);
+            callback.callback("", getState().voltage6v);
         }
         return new ScopedObject<>(callback, CANCEL_VOLTAGE6V_CALLBACK);
     }
@@ -140,21 +140,21 @@ public class RoboRIOSim {
         setVoltage6v(voltage6v, true);
     }
 
-    public static final Consumer<DoubleCallback> CALL_VOLTAGE6V_CALLBACK = callback -> callback.callback("0", getState().voltage6v);
+    public static final Consumer<DoubleCallback> CALL_VOLTAGE6V_CALLBACK = callback -> callback.callback("", getState().voltage6v);
     private static void setVoltage6v(double voltage6v, boolean notifyRobot) {
         if(voltage6v != getState().voltage6v) {
             getState().voltage6v = voltage6v;
             getState().VOLTAGE6V_CALLBACKS.forEach(CALL_VOLTAGE6V_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "RoboRIO", new WSValue(">6v_voltage", voltage6v));
+            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">6v_voltage", voltage6v));
         }
     }
 
     public static ScopedObject<DoubleCallback> registerCurrent6vCallback(DoubleCallback callback, boolean initialNotify) {
         getState().CURRENT6V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().current6v);
+            callback.callback("", getState().current6v);
         }
         return new ScopedObject<>(callback, CANCEL_CURRENT6V_CALLBACK);
     }
@@ -172,21 +172,21 @@ public class RoboRIOSim {
         setCurrent6v(current6v, true);
     }
 
-    public static final Consumer<DoubleCallback> CALL_CURRENT6V_CALLBACK = callback -> callback.callback("0", getState().current6v);
+    public static final Consumer<DoubleCallback> CALL_CURRENT6V_CALLBACK = callback -> callback.callback("", getState().current6v);
     private static void setCurrent6v(double current6v, boolean notifyRobot) {
         if(current6v != getState().current6v) {
             getState().current6v = current6v;
             getState().CURRENT6V_CALLBACKS.forEach(CALL_CURRENT6V_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "RoboRIO", new WSValue(">6v_current", current6v));
+            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">6v_current", current6v));
         }
     }
 
     public static ScopedObject<BooleanCallback> registerActive6vCallback(BooleanCallback callback, boolean initialNotify) {
         getState().ACTIVE6V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().active6v);
+            callback.callback("", getState().active6v);
         }
         return new ScopedObject<>(callback, CANCEL_ACTIVE6V_CALLBACK);
     }
@@ -204,21 +204,21 @@ public class RoboRIOSim {
         setActive6v(active6v, true);
     }
 
-    public static final Consumer<BooleanCallback> CALL_ACTIVE6V_CALLBACK = callback -> callback.callback("0", getState().active6v);
+    public static final Consumer<BooleanCallback> CALL_ACTIVE6V_CALLBACK = callback -> callback.callback("", getState().active6v);
     private static void setActive6v(boolean active6v, boolean notifyRobot) {
         if(active6v != getState().active6v) {
             getState().active6v = active6v;
             getState().ACTIVE6V_CALLBACKS.forEach(CALL_ACTIVE6V_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "RoboRIO", new WSValue(">6v_active", active6v));
+            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">6v_active", active6v));
         }
     }
 
     public static ScopedObject<DoubleCallback> registerFaults6vCallback(DoubleCallback callback, boolean initialNotify) {
         getState().FAULTS6V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().faults6v);
+            callback.callback("", getState().faults6v);
         }
         return new ScopedObject<>(callback, CANCEL_FAULTS6V_CALLBACK);
     }
@@ -236,21 +236,21 @@ public class RoboRIOSim {
         setFaults6v(faults6v, true);
     }
 
-    public static final Consumer<DoubleCallback> CALL_FAULTS6V_CALLBACK = callback -> callback.callback("0", getState().faults6v);
+    public static final Consumer<DoubleCallback> CALL_FAULTS6V_CALLBACK = callback -> callback.callback("", getState().faults6v);
     private static void setFaults6v(double faults6v, boolean notifyRobot) {
         if(faults6v != getState().faults6v) {
             getState().faults6v = faults6v;
             getState().FAULTS6V_CALLBACKS.forEach(CALL_FAULTS6V_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "RoboRIO", new WSValue(">6v_faults", faults6v));
+            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">6v_faults", faults6v));
         }
     }
 
     public static ScopedObject<DoubleCallback> registerVoltage5vCallback(DoubleCallback callback, boolean initialNotify) {
         getState().VOLTAGE5V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().voltage5v);
+            callback.callback("", getState().voltage5v);
         }
         return new ScopedObject<>(callback, CANCEL_VOLTAGE5V_CALLBACK);
     }
@@ -268,21 +268,21 @@ public class RoboRIOSim {
         setVoltage5v(voltage5v, true);
     }
 
-    public static final Consumer<DoubleCallback> CALL_VOLTAGE5V_CALLBACK = callback -> callback.callback("0", getState().voltage5v);
+    public static final Consumer<DoubleCallback> CALL_VOLTAGE5V_CALLBACK = callback -> callback.callback("", getState().voltage5v);
     private static void setVoltage5v(double voltage5v, boolean notifyRobot) {
         if(voltage5v != getState().voltage5v) {
             getState().voltage5v = voltage5v;
             getState().VOLTAGE5V_CALLBACKS.forEach(CALL_VOLTAGE5V_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "RoboRIO", new WSValue(">5v_voltage", voltage5v));
+            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">5v_voltage", voltage5v));
         }
     }
 
     public static ScopedObject<DoubleCallback> registerCurrent5vCallback(DoubleCallback callback, boolean initialNotify) {
         getState().CURRENT5V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().current5v);
+            callback.callback("", getState().current5v);
         }
         return new ScopedObject<>(callback, CANCEL_CURRENT5V_CALLBACK);
     }
@@ -300,21 +300,21 @@ public class RoboRIOSim {
         setCurrent5v(current5v, true);
     }
 
-    public static final Consumer<DoubleCallback> CALL_CURRENT5V_CALLBACK = callback -> callback.callback("0", getState().current5v);
+    public static final Consumer<DoubleCallback> CALL_CURRENT5V_CALLBACK = callback -> callback.callback("", getState().current5v);
     private static void setCurrent5v(double current5v, boolean notifyRobot) {
         if(current5v != getState().current5v) {
             getState().current5v = current5v;
             getState().CURRENT5V_CALLBACKS.forEach(CALL_CURRENT5V_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "RoboRIO", new WSValue(">5v_current", current5v));
+            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">5v_current", current5v));
         }
     }
 
     public static ScopedObject<BooleanCallback> registerActive5vCallback(BooleanCallback callback, boolean initialNotify) {
         getState().ACTIVE5V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().active5v);
+            callback.callback("", getState().active5v);
         }
         return new ScopedObject<>(callback, CANCEL_ACTIVE5V_CALLBACK);
     }
@@ -332,21 +332,21 @@ public class RoboRIOSim {
         setActive5v(active5v, true);
     }
 
-    public static final Consumer<BooleanCallback> CALL_ACTIVE5V_CALLBACK = callback -> callback.callback("0", getState().active5v);
+    public static final Consumer<BooleanCallback> CALL_ACTIVE5V_CALLBACK = callback -> callback.callback("", getState().active5v);
     private static void setActive5v(boolean active5v, boolean notifyRobot) {
         if(active5v != getState().active5v) {
             getState().active5v = active5v;
             getState().ACTIVE5V_CALLBACKS.forEach(CALL_ACTIVE5V_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "RoboRIO", new WSValue(">5v_active", active5v));
+            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">5v_active", active5v));
         }
     }
 
     public static ScopedObject<DoubleCallback> registerFaults5vCallback(DoubleCallback callback, boolean initialNotify) {
         getState().FAULTS5V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().faults5v);
+            callback.callback("", getState().faults5v);
         }
         return new ScopedObject<>(callback, CANCEL_FAULTS5V_CALLBACK);
     }
@@ -364,21 +364,21 @@ public class RoboRIOSim {
         setFaults5v(faults5v, true);
     }
 
-    public static final Consumer<DoubleCallback> CALL_FAULTS5V_CALLBACK = callback -> callback.callback("0", getState().faults5v);
+    public static final Consumer<DoubleCallback> CALL_FAULTS5V_CALLBACK = callback -> callback.callback("", getState().faults5v);
     private static void setFaults5v(double faults5v, boolean notifyRobot) {
         if(faults5v != getState().faults5v) {
             getState().faults5v = faults5v;
             getState().FAULTS5V_CALLBACKS.forEach(CALL_FAULTS5V_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "RoboRIO", new WSValue(">5v_faults", faults5v));
+            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">5v_faults", faults5v));
         }
     }
 
     public static ScopedObject<DoubleCallback> registerVoltage3v3Callback(DoubleCallback callback, boolean initialNotify) {
         getState().VOLTAGE3V3_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().voltage3v3);
+            callback.callback("", getState().voltage3v3);
         }
         return new ScopedObject<>(callback, CANCEL_VOLTAGE3V3_CALLBACK);
     }
@@ -396,21 +396,21 @@ public class RoboRIOSim {
         setVoltage3v3(voltage3v3, true);
     }
 
-    public static final Consumer<DoubleCallback> CALL_VOLTAGE3V3_CALLBACK = callback -> callback.callback("0", getState().voltage3v3);
+    public static final Consumer<DoubleCallback> CALL_VOLTAGE3V3_CALLBACK = callback -> callback.callback("", getState().voltage3v3);
     private static void setVoltage3v3(double voltage3v3, boolean notifyRobot) {
         if(voltage3v3 != getState().voltage3v3) {
             getState().voltage3v3 = voltage3v3;
             getState().VOLTAGE3V3_CALLBACKS.forEach(CALL_VOLTAGE3V3_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "RoboRIO", new WSValue(">3v3_voltage", voltage3v3));
+            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">3v3_voltage", voltage3v3));
         }
     }
 
     public static ScopedObject<DoubleCallback> registerCurrent3v3Callback(DoubleCallback callback, boolean initialNotify) {
         getState().CURRENT3V3_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().current3v3);
+            callback.callback("", getState().current3v3);
         }
         return new ScopedObject<>(callback, CANCEL_CURRENT3V3_CALLBACK);
     }
@@ -428,21 +428,21 @@ public class RoboRIOSim {
         setCurrent3v3(current3v3, true);
     }
 
-    public static final Consumer<DoubleCallback> CALL_CURRENT3V3_CALLBACK = callback -> callback.callback("0", getState().current3v3);
+    public static final Consumer<DoubleCallback> CALL_CURRENT3V3_CALLBACK = callback -> callback.callback("", getState().current3v3);
     private static void setCurrent3v3(double current3v3, boolean notifyRobot) {
         if(current3v3 != getState().current3v3) {
             getState().current3v3 = current3v3;
             getState().CURRENT3V3_CALLBACKS.forEach(CALL_CURRENT3V3_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "RoboRIO", new WSValue(">3v3_current", current3v3));
+            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">3v3_current", current3v3));
         }
     }
 
     public static ScopedObject<BooleanCallback> registerActive3v3Callback(BooleanCallback callback, boolean initialNotify) {
         getState().ACTIVE3V3_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().active3v3);
+            callback.callback("", getState().active3v3);
         }
         return new ScopedObject<>(callback, CANCEL_ACTIVE3V3_CALLBACK);
     }
@@ -460,21 +460,21 @@ public class RoboRIOSim {
         setActive3v3(active3v3, true);
     }
 
-    public static final Consumer<BooleanCallback> CALL_ACTIVE3V3_CALLBACK = callback -> callback.callback("0", getState().active3v3);
+    public static final Consumer<BooleanCallback> CALL_ACTIVE3V3_CALLBACK = callback -> callback.callback("", getState().active3v3);
     private static void setActive3v3(boolean active3v3, boolean notifyRobot) {
         if(active3v3 != getState().active3v3) {
             getState().active3v3 = active3v3;
             getState().ACTIVE3V3_CALLBACKS.forEach(CALL_ACTIVE3V3_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "RoboRIO", new WSValue(">3v3_active", active3v3));
+            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">3v3_active", active3v3));
         }
     }
 
     public static ScopedObject<DoubleCallback> registerFaults3v3Callback(DoubleCallback callback, boolean initialNotify) {
         getState().FAULTS3V3_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().faults3v3);
+            callback.callback("", getState().faults3v3);
         }
         return new ScopedObject<>(callback, CANCEL_FAULTS3V3_CALLBACK);
     }
@@ -492,14 +492,14 @@ public class RoboRIOSim {
         setFaults3v3(faults3v3, true);
     }
 
-    public static final Consumer<DoubleCallback> CALL_FAULTS3V3_CALLBACK = callback -> callback.callback("0", getState().faults3v3);
+    public static final Consumer<DoubleCallback> CALL_FAULTS3V3_CALLBACK = callback -> callback.callback("", getState().faults3v3);
     private static void setFaults3v3(double faults3v3, boolean notifyRobot) {
         if(faults3v3 != getState().faults3v3) {
             getState().faults3v3 = faults3v3;
             getState().FAULTS3V3_CALLBACKS.forEach(CALL_FAULTS3V3_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "RoboRIO", new WSValue(">3v3_faults", faults3v3));
+            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">3v3_faults", faults3v3));
         }
     }
 

@@ -308,7 +308,8 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         }
     }
 
-    public static void processMessage(String device, List<WSValue> data) {EncoderSim simDevice = new EncoderSim(device);
+    public static void processMessage(String device, List<WSValue> data) {
+        EncoderSim simDevice = new EncoderSim(device);
         for(WSValue value: data) {
             simDevice.processValue(value);
         }

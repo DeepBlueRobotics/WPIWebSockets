@@ -26,7 +26,7 @@ public class RelaySim {
     public static ScopedObject<BooleanCallback> registerInitFwdCallback(BooleanCallback callback, boolean initialNotify) {
         getState().INITFWD_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().initfwd);
+            callback.callback("", getState().initfwd);
         }
         return new ScopedObject<>(callback, CANCEL_INITFWD_CALLBACK);
     }
@@ -44,21 +44,21 @@ public class RelaySim {
         setInitFwd(initfwd, true);
     }
 
-    public static final Consumer<BooleanCallback> CALL_INITFWD_CALLBACK = callback -> callback.callback("0", getState().initfwd);
+    public static final Consumer<BooleanCallback> CALL_INITFWD_CALLBACK = callback -> callback.callback("", getState().initfwd);
     private static void setInitFwd(boolean initfwd, boolean notifyRobot) {
         if(initfwd != getState().initfwd) {
             getState().initfwd = initfwd;
             getState().INITFWD_CALLBACKS.forEach(CALL_INITFWD_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "Relay", new WSValue("<init_fwd", initfwd));
+            ConnectionProcessor.brodcastMessage("", "Relay", new WSValue("<init_fwd", initfwd));
         }
     }
 
     public static ScopedObject<BooleanCallback> registerInitRevCallback(BooleanCallback callback, boolean initialNotify) {
         getState().INITREV_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().initrev);
+            callback.callback("", getState().initrev);
         }
         return new ScopedObject<>(callback, CANCEL_INITREV_CALLBACK);
     }
@@ -76,21 +76,21 @@ public class RelaySim {
         setInitRev(initrev, true);
     }
 
-    public static final Consumer<BooleanCallback> CALL_INITREV_CALLBACK = callback -> callback.callback("0", getState().initrev);
+    public static final Consumer<BooleanCallback> CALL_INITREV_CALLBACK = callback -> callback.callback("", getState().initrev);
     private static void setInitRev(boolean initrev, boolean notifyRobot) {
         if(initrev != getState().initrev) {
             getState().initrev = initrev;
             getState().INITREV_CALLBACKS.forEach(CALL_INITREV_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "Relay", new WSValue("<init_rev", initrev));
+            ConnectionProcessor.brodcastMessage("", "Relay", new WSValue("<init_rev", initrev));
         }
     }
 
     public static ScopedObject<BooleanCallback> registerFwdCallback(BooleanCallback callback, boolean initialNotify) {
         getState().FWD_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().fwd);
+            callback.callback("", getState().fwd);
         }
         return new ScopedObject<>(callback, CANCEL_FWD_CALLBACK);
     }
@@ -108,21 +108,21 @@ public class RelaySim {
         setFwd(fwd, true);
     }
 
-    public static final Consumer<BooleanCallback> CALL_FWD_CALLBACK = callback -> callback.callback("0", getState().fwd);
+    public static final Consumer<BooleanCallback> CALL_FWD_CALLBACK = callback -> callback.callback("", getState().fwd);
     private static void setFwd(boolean fwd, boolean notifyRobot) {
         if(fwd != getState().fwd) {
             getState().fwd = fwd;
             getState().FWD_CALLBACKS.forEach(CALL_FWD_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "Relay", new WSValue("<fwd", fwd));
+            ConnectionProcessor.brodcastMessage("", "Relay", new WSValue("<fwd", fwd));
         }
     }
 
     public static ScopedObject<BooleanCallback> registerRevCallback(BooleanCallback callback, boolean initialNotify) {
         getState().REV_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
-            callback.callback("0", getState().rev);
+            callback.callback("", getState().rev);
         }
         return new ScopedObject<>(callback, CANCEL_REV_CALLBACK);
     }
@@ -140,14 +140,14 @@ public class RelaySim {
         setRev(rev, true);
     }
 
-    public static final Consumer<BooleanCallback> CALL_REV_CALLBACK = callback -> callback.callback("0", getState().rev);
+    public static final Consumer<BooleanCallback> CALL_REV_CALLBACK = callback -> callback.callback("", getState().rev);
     private static void setRev(boolean rev, boolean notifyRobot) {
         if(rev != getState().rev) {
             getState().rev = rev;
             getState().REV_CALLBACKS.forEach(CALL_REV_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("0", "Relay", new WSValue("<rev", rev));
+            ConnectionProcessor.brodcastMessage("", "Relay", new WSValue("<rev", rev));
         }
     }
 
