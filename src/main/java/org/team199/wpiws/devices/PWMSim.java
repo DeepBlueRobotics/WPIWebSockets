@@ -16,6 +16,9 @@ import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
 
+/**
+ * Represents a simulated pwm
+ */
 public class PWMSim extends StateDevice<PWMSim.State> {
 
     private static final CopyOnWriteArrayList<String> INITIALIZED_DEVICES = new CopyOnWriteArrayList<>();
@@ -23,10 +26,22 @@ public class PWMSim extends StateDevice<PWMSim.State> {
     
     private static final HashMap<String, PWMSim.State> STATE_MAP = new HashMap<>();
 
+    /**
+     * Creates a new PWMSim
+     * @param id the device identifier of this PWMSim 
+     */
     public PWMSim(String id) {
         super(id, STATE_MAP);
     }
     
+    /**
+     * Registers a BooleanCallback to be called whenever false PWMSim device is initialized or uninitialized
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with the device identifiers of all currently initialized PWMSims
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelStaticInitializedCallback(BooleanCallback)
+     * @see #registerInitializedCallback(BooleanCallback, boolean)
+     */
     public static ScopedObject<BooleanCallback> registerStaticInitializedCallback(BooleanCallback callback, boolean initialNotify) {
         STATIC_INITIALIZED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -35,11 +50,27 @@ public class PWMSim extends StateDevice<PWMSim.State> {
         return new ScopedObject<>(callback, CANCEL_STATIC_INITIALIZED_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelStaticInitializedCallback(BooleanCallback)}
+     */
     public static final Consumer<BooleanCallback> CANCEL_STATIC_INITIALIZED_CALLBACK = PWMSim::cancelStaticInitializedCallback;
+    /**
+     * Deregisters the given static initialized callback
+     * @param callback the callback to deregister
+     * @see #registerStaticInitializedCallback(BooleanCallback, boolean)
+     */
     public static void cancelStaticInitializedCallback(BooleanCallback callback) {
         STATIC_INITIALIZED_CALLBACKS.remove(callback);
     }
     
+    /**
+     * Registers a BooleanCallback to be called whenever this device is initialized or uninitialized
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current initialized state
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelInitializedCallback(BooleanCallback)
+     * @see #registerStaticInitializedCallback(BooleanCallback, boolean)
+     */
     public ScopedObject<BooleanCallback> registerInitializedCallback(BooleanCallback callback, boolean initialNotify) {
         getState().INITIALIZED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -48,19 +79,37 @@ public class PWMSim extends StateDevice<PWMSim.State> {
         return new ScopedObject<>(callback, CANCEL_INITIALIZED_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelInitializedCallback(BooleanCallback)}
+     */
     public final Consumer<BooleanCallback> CANCEL_INITIALIZED_CALLBACK = this::cancelInitializedCallback;
+    /**
+     * Deregisters the given initialized callback
+     * @param callback the callback to deregister
+     * @see #registerInitializedCallback(BooleanCallback, boolean)
+     */
     public void cancelInitializedCallback(BooleanCallback callback) {
         getState().INITIALIZED_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return whether this PWMSim is initialized
+     */
     public boolean getInitialized() {
         return getState().init;
     }
 
+    /**
+     * Sets the initialized state of this PWMSim
+     * @param initialized the new initialized state of this PWMSim
+     */
     public void setInitialized(boolean initialized) {
         setInitialized(initialized, true);
     }
 
+    /**
+     * A Consumer which calls the given BooleanCallback with the current initialized state of this PWMSim
+     */
     public final Consumer<BooleanCallback> CALL_INITIALIZED_CALLBACK = callback -> callback.callback(id, getState().init);
     private void setInitialized(boolean initialized, boolean notifyRobot) {
         getState().init = initialized;
@@ -76,6 +125,9 @@ public class PWMSim extends StateDevice<PWMSim.State> {
         }
     }
 
+    /**
+     * @return an array of the identifiers of all currently initialized PWMSims
+     */
     public static String[] enumerateDevices() {
         return INITIALIZED_DEVICES.toArray(CREATE_STRING_ARRAY);
     }
@@ -85,6 +137,13 @@ public class PWMSim extends StateDevice<PWMSim.State> {
         return new State();
     }
     
+    /**
+     * Registers a DoubleCallback to be called whenever the speed of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current speed value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelSpeedCallback(DoubleCallback)
+     */
     public ScopedObject<DoubleCallback> registerSpeedCallback(DoubleCallback callback, boolean initialNotify) {
         getState().SPEED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -93,19 +152,38 @@ public class PWMSim extends StateDevice<PWMSim.State> {
         return new ScopedObject<>(callback, CANCEL_SPEED_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelSpeedCallback(DoubleCallback)}
+     */
     public final Consumer<DoubleCallback> CANCEL_SPEED_CALLBACK = this::cancelSpeedCallback;
+    /**
+     * Deregisters the given speed callback
+     * @param callback the callback to deregister
+     * @see #registerSpeedCallback(DoubleCallback, boolean)
+     */
     public void cancelSpeedCallback(DoubleCallback callback) {
         getState().SPEED_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return speed
+     * @see #setSpeed(double)
+     */
     public double getSpeed() {
         return getState().speed;
     }
 
+    /**
+     * Set speed
+     * @see #getSpeed()
+     */
     public void setSpeed(double speed) {
         setSpeed(speed, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current speed value of this PWMSim
+     */
     public final Consumer<DoubleCallback> CALL_SPEED_CALLBACK = callback -> callback.callback(id, getState().speed);
     private void setSpeed(double speed, boolean notifyRobot) {
         if(speed != getState().speed) {
@@ -117,6 +195,13 @@ public class PWMSim extends StateDevice<PWMSim.State> {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the position of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current position value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelPositionCallback(DoubleCallback)
+     */
     public ScopedObject<DoubleCallback> registerPositionCallback(DoubleCallback callback, boolean initialNotify) {
         getState().POSITION_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -125,19 +210,38 @@ public class PWMSim extends StateDevice<PWMSim.State> {
         return new ScopedObject<>(callback, CANCEL_POSITION_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelPositionCallback(DoubleCallback)}
+     */
     public final Consumer<DoubleCallback> CANCEL_POSITION_CALLBACK = this::cancelPositionCallback;
+    /**
+     * Deregisters the given position callback
+     * @param callback the callback to deregister
+     * @see #registerPositionCallback(DoubleCallback, boolean)
+     */
     public void cancelPositionCallback(DoubleCallback callback) {
         getState().POSITION_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return servo position
+     * @see #setPosition(double)
+     */
     public double getPosition() {
         return getState().position;
     }
 
+    /**
+     * Set servo position
+     * @see #getPosition()
+     */
     public void setPosition(double position) {
         setPosition(position, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current position value of this PWMSim
+     */
     public final Consumer<DoubleCallback> CALL_POSITION_CALLBACK = callback -> callback.callback(id, getState().position);
     private void setPosition(double position, boolean notifyRobot) {
         if(position != getState().position) {
@@ -149,6 +253,11 @@ public class PWMSim extends StateDevice<PWMSim.State> {
         }
     }
 
+    /**
+     * An implementation of {@link org.team199.wpiws.interfaces.DeviceMessageProcessor} which processes WPI HALSim messages for PWMSims
+     * @param device the device identifier of the device sending the message
+     * @param data the data associated with the message
+     */
     public static void processMessage(String device, List<WSValue> data) {
         PWMSim simDevice = new PWMSim(device);
         for(WSValue value: data) {
@@ -178,6 +287,9 @@ public class PWMSim extends StateDevice<PWMSim.State> {
         }
     }
 
+    /**
+     * Contains all information about the state of a PWMSim
+     */
     public static class State {
         public boolean init = false;
         public double speed = 0;

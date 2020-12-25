@@ -16,6 +16,9 @@ import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
 
+/**
+ * Represents a simulated encoder
+ */
 public class EncoderSim extends StateDevice<EncoderSim.State> {
 
     private static final CopyOnWriteArrayList<String> INITIALIZED_DEVICES = new CopyOnWriteArrayList<>();
@@ -23,10 +26,22 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
     
     private static final HashMap<String, EncoderSim.State> STATE_MAP = new HashMap<>();
 
+    /**
+     * Creates a new EncoderSim
+     * @param id the device identifier of this EncoderSim 
+     */
     public EncoderSim(String id) {
         super(id, STATE_MAP);
     }
     
+    /**
+     * Registers a BooleanCallback to be called whenever true EncoderSim device is initialized or uninitialized
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with the device identifiers of all currently initialized EncoderSims
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelStaticInitializedCallback(BooleanCallback)
+     * @see #registerInitializedCallback(BooleanCallback, boolean)
+     */
     public static ScopedObject<BooleanCallback> registerStaticInitializedCallback(BooleanCallback callback, boolean initialNotify) {
         STATIC_INITIALIZED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -35,11 +50,27 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         return new ScopedObject<>(callback, CANCEL_STATIC_INITIALIZED_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelStaticInitializedCallback(BooleanCallback)}
+     */
     public static final Consumer<BooleanCallback> CANCEL_STATIC_INITIALIZED_CALLBACK = EncoderSim::cancelStaticInitializedCallback;
+    /**
+     * Deregisters the given static initialized callback
+     * @param callback the callback to deregister
+     * @see #registerStaticInitializedCallback(BooleanCallback, boolean)
+     */
     public static void cancelStaticInitializedCallback(BooleanCallback callback) {
         STATIC_INITIALIZED_CALLBACKS.remove(callback);
     }
     
+    /**
+     * Registers a BooleanCallback to be called whenever this device is initialized or uninitialized
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current initialized state
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelInitializedCallback(BooleanCallback)
+     * @see #registerStaticInitializedCallback(BooleanCallback, boolean)
+     */
     public ScopedObject<BooleanCallback> registerInitializedCallback(BooleanCallback callback, boolean initialNotify) {
         getState().INITIALIZED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -48,19 +79,37 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         return new ScopedObject<>(callback, CANCEL_INITIALIZED_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelInitializedCallback(BooleanCallback)}
+     */
     public final Consumer<BooleanCallback> CANCEL_INITIALIZED_CALLBACK = this::cancelInitializedCallback;
+    /**
+     * Deregisters the given initialized callback
+     * @param callback the callback to deregister
+     * @see #registerInitializedCallback(BooleanCallback, boolean)
+     */
     public void cancelInitializedCallback(BooleanCallback callback) {
         getState().INITIALIZED_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return whether this EncoderSim is initialized
+     */
     public boolean getInitialized() {
         return getState().init;
     }
 
+    /**
+     * Sets the initialized state of this EncoderSim
+     * @param initialized the new initialized state of this EncoderSim
+     */
     public void setInitialized(boolean initialized) {
         setInitialized(initialized, true);
     }
 
+    /**
+     * A Consumer which calls the given BooleanCallback with the current initialized state of this EncoderSim
+     */
     public final Consumer<BooleanCallback> CALL_INITIALIZED_CALLBACK = callback -> callback.callback(id, getState().init);
     private void setInitialized(boolean initialized, boolean notifyRobot) {
         getState().init = initialized;
@@ -76,6 +125,9 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         }
     }
 
+    /**
+     * @return an array of the identifiers of all currently initialized EncoderSims
+     */
     public static String[] enumerateDevices() {
         return INITIALIZED_DEVICES.toArray(CREATE_STRING_ARRAY);
     }
@@ -85,6 +137,13 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         return new State();
     }
     
+    /**
+     * Registers a IntegerCallback to be called whenever the channela of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current channela value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelChannelACallback(IntegerCallback)
+     */
     public ScopedObject<IntegerCallback> registerChannelACallback(IntegerCallback callback, boolean initialNotify) {
         getState().CHANNELA_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -93,19 +152,38 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         return new ScopedObject<>(callback, CANCEL_CHANNELA_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelChannelACallback(IntegerCallback)}
+     */
     public final Consumer<IntegerCallback> CANCEL_CHANNELA_CALLBACK = this::cancelChannelACallback;
+    /**
+     * Deregisters the given channela callback
+     * @param callback the callback to deregister
+     * @see #registerChannelACallback(IntegerCallback, boolean)
+     */
     public void cancelChannelACallback(IntegerCallback callback) {
         getState().CHANNELA_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return digital channel number for “a” phase
+     * @see #setChannelA(int)
+     */
     public int getChannelA() {
         return getState().channela;
     }
 
+    /**
+     * Set digital channel number for “a” phase
+     * @see #getChannelA()
+     */
     public void setChannelA(int channela) {
         setChannelA(channela, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current channela value of this PWMSim
+     */
     public final Consumer<IntegerCallback> CALL_CHANNELA_CALLBACK = callback -> callback.callback(id, getState().channela);
     private void setChannelA(int channela, boolean notifyRobot) {
         if(channela != getState().channela) {
@@ -117,6 +195,13 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         }
     }
 
+    /**
+     * Registers a IntegerCallback to be called whenever the channelb of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current channelb value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelChannelBCallback(IntegerCallback)
+     */
     public ScopedObject<IntegerCallback> registerChannelBCallback(IntegerCallback callback, boolean initialNotify) {
         getState().CHANNELB_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -125,19 +210,38 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         return new ScopedObject<>(callback, CANCEL_CHANNELB_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelChannelBCallback(IntegerCallback)}
+     */
     public final Consumer<IntegerCallback> CANCEL_CHANNELB_CALLBACK = this::cancelChannelBCallback;
+    /**
+     * Deregisters the given channelb callback
+     * @param callback the callback to deregister
+     * @see #registerChannelBCallback(IntegerCallback, boolean)
+     */
     public void cancelChannelBCallback(IntegerCallback callback) {
         getState().CHANNELB_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return digital channel number for “b” phase
+     * @see #setChannelB(int)
+     */
     public int getChannelB() {
         return getState().channelb;
     }
 
+    /**
+     * Set digital channel number for “b” phase
+     * @see #getChannelB()
+     */
     public void setChannelB(int channelb) {
         setChannelB(channelb, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current channelb value of this PWMSim
+     */
     public final Consumer<IntegerCallback> CALL_CHANNELB_CALLBACK = callback -> callback.callback(id, getState().channelb);
     private void setChannelB(int channelb, boolean notifyRobot) {
         if(channelb != getState().channelb) {
@@ -149,6 +253,13 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         }
     }
 
+    /**
+     * Registers a IntegerCallback to be called whenever the samplestoavg of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current samplestoavg value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelSamplesToAvgCallback(IntegerCallback)
+     */
     public ScopedObject<IntegerCallback> registerSamplesToAvgCallback(IntegerCallback callback, boolean initialNotify) {
         getState().SAMPLESTOAVG_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -157,19 +268,38 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         return new ScopedObject<>(callback, CANCEL_SAMPLESTOAVG_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelSamplesToAvgCallback(IntegerCallback)}
+     */
     public final Consumer<IntegerCallback> CANCEL_SAMPLESTOAVG_CALLBACK = this::cancelSamplesToAvgCallback;
+    /**
+     * Deregisters the given samplestoavg callback
+     * @param callback the callback to deregister
+     * @see #registerSamplesToAvgCallback(IntegerCallback, boolean)
+     */
     public void cancelSamplesToAvgCallback(IntegerCallback callback) {
         getState().SAMPLESTOAVG_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return number of samples to average for period measurement
+     * @see #setSamplesToAvg(int)
+     */
     public int getSamplesToAvg() {
         return getState().samplestoavg;
     }
 
+    /**
+     * Set number of samples to average for period measurement
+     * @see #getSamplesToAvg()
+     */
     public void setSamplesToAvg(int samplestoavg) {
         setSamplesToAvg(samplestoavg, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current samplestoavg value of this PWMSim
+     */
     public final Consumer<IntegerCallback> CALL_SAMPLESTOAVG_CALLBACK = callback -> callback.callback(id, getState().samplestoavg);
     private void setSamplesToAvg(int samplestoavg, boolean notifyRobot) {
         if(samplestoavg != getState().samplestoavg) {
@@ -181,6 +311,13 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         }
     }
 
+    /**
+     * Registers a IntegerCallback to be called whenever the count of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current count value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelCountCallback(IntegerCallback)
+     */
     public ScopedObject<IntegerCallback> registerCountCallback(IntegerCallback callback, boolean initialNotify) {
         getState().COUNT_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -189,19 +326,38 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         return new ScopedObject<>(callback, CANCEL_COUNT_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelCountCallback(IntegerCallback)}
+     */
     public final Consumer<IntegerCallback> CANCEL_COUNT_CALLBACK = this::cancelCountCallback;
+    /**
+     * Deregisters the given count callback
+     * @param callback the callback to deregister
+     * @see #registerCountCallback(IntegerCallback, boolean)
+     */
     public void cancelCountCallback(IntegerCallback callback) {
         getState().COUNT_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return accumulated count (pulses)
+     * @see #setCount(int)
+     */
     public int getCount() {
         return getState().count;
     }
 
+    /**
+     * Set accumulated count (pulses)
+     * @see #getCount()
+     */
     public void setCount(int count) {
         setCount(count, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current count value of this PWMSim
+     */
     public final Consumer<IntegerCallback> CALL_COUNT_CALLBACK = callback -> callback.callback(id, getState().count);
     private void setCount(int count, boolean notifyRobot) {
         if(count != getState().count) {
@@ -213,6 +369,13 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the period of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current period value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelPeriodCallback(DoubleCallback)
+     */
     public ScopedObject<DoubleCallback> registerPeriodCallback(DoubleCallback callback, boolean initialNotify) {
         getState().PERIOD_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -221,19 +384,38 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         return new ScopedObject<>(callback, CANCEL_PERIOD_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelPeriodCallback(DoubleCallback)}
+     */
     public final Consumer<DoubleCallback> CANCEL_PERIOD_CALLBACK = this::cancelPeriodCallback;
+    /**
+     * Deregisters the given period callback
+     * @param callback the callback to deregister
+     * @see #registerPeriodCallback(DoubleCallback, boolean)
+     */
     public void cancelPeriodCallback(DoubleCallback callback) {
         getState().PERIOD_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return period between pulses in seconds
+     * @see #setPeriod(double)
+     */
     public double getPeriod() {
         return getState().period;
     }
 
+    /**
+     * Set period between pulses in seconds
+     * @see #getPeriod()
+     */
     public void setPeriod(double period) {
         setPeriod(period, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current period value of this PWMSim
+     */
     public final Consumer<DoubleCallback> CALL_PERIOD_CALLBACK = callback -> callback.callback(id, getState().period);
     private void setPeriod(double period, boolean notifyRobot) {
         if(period != getState().period) {
@@ -245,6 +427,11 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         }
     }
 
+    /**
+     * An implementation of {@link org.team199.wpiws.interfaces.DeviceMessageProcessor} which processes WPI HALSim messages for EncoderSims
+     * @param device the device identifier of the device sending the message
+     * @param data the data associated with the message
+     */
     public static void processMessage(String device, List<WSValue> data) {
         EncoderSim simDevice = new EncoderSim(device);
         for(WSValue value: data) {
@@ -289,6 +476,9 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
         }
     }
 
+    /**
+     * Contains all information about the state of a EncoderSim
+     */
     public static class State {
         public boolean init = false;
         public int channela = 0;

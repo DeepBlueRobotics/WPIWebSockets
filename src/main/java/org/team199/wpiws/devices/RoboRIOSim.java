@@ -15,6 +15,9 @@ import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
 
+/**
+ * Represents a simulated roborio
+ */
 public class RoboRIOSim {
 
     private static final RoboRIOSim.State STATE = new State();
@@ -23,6 +26,13 @@ public class RoboRIOSim {
         return STATE;
     }
     
+    /**
+     * Registers a BooleanCallback to be called whenever the fpgabutton of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current fpgabutton value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelFpgaButtonCallback(BooleanCallback)
+     */
     public static ScopedObject<BooleanCallback> registerFpgaButtonCallback(BooleanCallback callback, boolean initialNotify) {
         getState().FPGABUTTON_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -31,19 +41,38 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_FPGABUTTON_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelFpgaButtonCallback(BooleanCallback)}
+     */
     public static final Consumer<BooleanCallback> CANCEL_FPGABUTTON_CALLBACK = RoboRIOSim::cancelFpgaButtonCallback;
+    /**
+     * Deregisters the given fpgabutton callback
+     * @param callback the callback to deregister
+     * @see #registerFpgaButtonCallback(BooleanCallback, boolean)
+     */
     public static void cancelFpgaButtonCallback(BooleanCallback callback) {
         getState().FPGABUTTON_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return fpga button state
+     * @see #setFpgaButton(boolean)
+     */
     public static boolean getFpgaButton() {
         return getState().fpgabutton;
     }
 
+    /**
+     * Set fpga button state
+     * @see #getFpgaButton()
+     */
     public static void setFpgaButton(boolean fpgabutton) {
         setFpgaButton(fpgabutton, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current fpgabutton value of this PWMSim
+     */
     public static final Consumer<BooleanCallback> CALL_FPGABUTTON_CALLBACK = callback -> callback.callback("", getState().fpgabutton);
     private static void setFpgaButton(boolean fpgabutton, boolean notifyRobot) {
         if(fpgabutton != getState().fpgabutton) {
@@ -55,6 +84,13 @@ public class RoboRIOSim {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the vinvoltage of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current vinvoltage value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelVinVoltageCallback(DoubleCallback)
+     */
     public static ScopedObject<DoubleCallback> registerVinVoltageCallback(DoubleCallback callback, boolean initialNotify) {
         getState().VINVOLTAGE_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -63,19 +99,38 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_VINVOLTAGE_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelVinVoltageCallback(DoubleCallback)}
+     */
     public static final Consumer<DoubleCallback> CANCEL_VINVOLTAGE_CALLBACK = RoboRIOSim::cancelVinVoltageCallback;
+    /**
+     * Deregisters the given vinvoltage callback
+     * @param callback the callback to deregister
+     * @see #registerVinVoltageCallback(DoubleCallback, boolean)
+     */
     public static void cancelVinVoltageCallback(DoubleCallback callback) {
         getState().VINVOLTAGE_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return vin rail voltage
+     * @see #setVinVoltage(double)
+     */
     public static double getVinVoltage() {
         return getState().vinvoltage;
     }
 
+    /**
+     * Set vin rail voltage
+     * @see #getVinVoltage()
+     */
     public static void setVinVoltage(double vinvoltage) {
         setVinVoltage(vinvoltage, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current vinvoltage value of this PWMSim
+     */
     public static final Consumer<DoubleCallback> CALL_VINVOLTAGE_CALLBACK = callback -> callback.callback("", getState().vinvoltage);
     private static void setVinVoltage(double vinvoltage, boolean notifyRobot) {
         if(vinvoltage != getState().vinvoltage) {
@@ -87,6 +142,13 @@ public class RoboRIOSim {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the vincurrent of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current vincurrent value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelVinCurrentCallback(DoubleCallback)
+     */
     public static ScopedObject<DoubleCallback> registerVinCurrentCallback(DoubleCallback callback, boolean initialNotify) {
         getState().VINCURRENT_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -95,19 +157,38 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_VINCURRENT_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelVinCurrentCallback(DoubleCallback)}
+     */
     public static final Consumer<DoubleCallback> CANCEL_VINCURRENT_CALLBACK = RoboRIOSim::cancelVinCurrentCallback;
+    /**
+     * Deregisters the given vincurrent callback
+     * @param callback the callback to deregister
+     * @see #registerVinCurrentCallback(DoubleCallback, boolean)
+     */
     public static void cancelVinCurrentCallback(DoubleCallback callback) {
         getState().VINCURRENT_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return vin rail current
+     * @see #setVinCurrent(double)
+     */
     public static double getVinCurrent() {
         return getState().vincurrent;
     }
 
+    /**
+     * Set vin rail current
+     * @see #getVinCurrent()
+     */
     public static void setVinCurrent(double vincurrent) {
         setVinCurrent(vincurrent, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current vincurrent value of this PWMSim
+     */
     public static final Consumer<DoubleCallback> CALL_VINCURRENT_CALLBACK = callback -> callback.callback("", getState().vincurrent);
     private static void setVinCurrent(double vincurrent, boolean notifyRobot) {
         if(vincurrent != getState().vincurrent) {
@@ -119,6 +200,13 @@ public class RoboRIOSim {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the voltage6v of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current voltage6v value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelVoltage6vCallback(DoubleCallback)
+     */
     public static ScopedObject<DoubleCallback> registerVoltage6vCallback(DoubleCallback callback, boolean initialNotify) {
         getState().VOLTAGE6V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -127,19 +215,38 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_VOLTAGE6V_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelVoltage6vCallback(DoubleCallback)}
+     */
     public static final Consumer<DoubleCallback> CANCEL_VOLTAGE6V_CALLBACK = RoboRIOSim::cancelVoltage6vCallback;
+    /**
+     * Deregisters the given voltage6v callback
+     * @param callback the callback to deregister
+     * @see #registerVoltage6vCallback(DoubleCallback, boolean)
+     */
     public static void cancelVoltage6vCallback(DoubleCallback callback) {
         getState().VOLTAGE6V_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return 6v rail voltage
+     * @see #setVoltage6v(double)
+     */
     public static double getVoltage6v() {
         return getState().voltage6v;
     }
 
+    /**
+     * Set 6v rail voltage
+     * @see #getVoltage6v()
+     */
     public static void setVoltage6v(double voltage6v) {
         setVoltage6v(voltage6v, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current voltage6v value of this PWMSim
+     */
     public static final Consumer<DoubleCallback> CALL_VOLTAGE6V_CALLBACK = callback -> callback.callback("", getState().voltage6v);
     private static void setVoltage6v(double voltage6v, boolean notifyRobot) {
         if(voltage6v != getState().voltage6v) {
@@ -151,6 +258,13 @@ public class RoboRIOSim {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the current6v of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current current6v value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelCurrent6vCallback(DoubleCallback)
+     */
     public static ScopedObject<DoubleCallback> registerCurrent6vCallback(DoubleCallback callback, boolean initialNotify) {
         getState().CURRENT6V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -159,19 +273,38 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_CURRENT6V_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelCurrent6vCallback(DoubleCallback)}
+     */
     public static final Consumer<DoubleCallback> CANCEL_CURRENT6V_CALLBACK = RoboRIOSim::cancelCurrent6vCallback;
+    /**
+     * Deregisters the given current6v callback
+     * @param callback the callback to deregister
+     * @see #registerCurrent6vCallback(DoubleCallback, boolean)
+     */
     public static void cancelCurrent6vCallback(DoubleCallback callback) {
         getState().CURRENT6V_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return 6v rail current
+     * @see #setCurrent6v(double)
+     */
     public static double getCurrent6v() {
         return getState().current6v;
     }
 
+    /**
+     * Set 6v rail current
+     * @see #getCurrent6v()
+     */
     public static void setCurrent6v(double current6v) {
         setCurrent6v(current6v, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current current6v value of this PWMSim
+     */
     public static final Consumer<DoubleCallback> CALL_CURRENT6V_CALLBACK = callback -> callback.callback("", getState().current6v);
     private static void setCurrent6v(double current6v, boolean notifyRobot) {
         if(current6v != getState().current6v) {
@@ -183,6 +316,13 @@ public class RoboRIOSim {
         }
     }
 
+    /**
+     * Registers a BooleanCallback to be called whenever the active6v of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current active6v value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelActive6vCallback(BooleanCallback)
+     */
     public static ScopedObject<BooleanCallback> registerActive6vCallback(BooleanCallback callback, boolean initialNotify) {
         getState().ACTIVE6V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -191,19 +331,38 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_ACTIVE6V_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelActive6vCallback(BooleanCallback)}
+     */
     public static final Consumer<BooleanCallback> CANCEL_ACTIVE6V_CALLBACK = RoboRIOSim::cancelActive6vCallback;
+    /**
+     * Deregisters the given active6v callback
+     * @param callback the callback to deregister
+     * @see #registerActive6vCallback(BooleanCallback, boolean)
+     */
     public static void cancelActive6vCallback(BooleanCallback callback) {
         getState().ACTIVE6V_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return true if 6v rail active, false if inactive
+     * @see #setActive6v(boolean)
+     */
     public static boolean getActive6v() {
         return getState().active6v;
     }
 
+    /**
+     * Set true if 6v rail active, false if inactive
+     * @see #getActive6v()
+     */
     public static void setActive6v(boolean active6v) {
         setActive6v(active6v, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current active6v value of this PWMSim
+     */
     public static final Consumer<BooleanCallback> CALL_ACTIVE6V_CALLBACK = callback -> callback.callback("", getState().active6v);
     private static void setActive6v(boolean active6v, boolean notifyRobot) {
         if(active6v != getState().active6v) {
@@ -215,6 +374,13 @@ public class RoboRIOSim {
         }
     }
 
+    /**
+     * Registers a IntegerCallback to be called whenever the faults6v of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current faults6v value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelFaults6vCallback(IntegerCallback)
+     */
     public static ScopedObject<IntegerCallback> registerFaults6vCallback(IntegerCallback callback, boolean initialNotify) {
         getState().FAULTS6V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -223,19 +389,38 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_FAULTS6V_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelFaults6vCallback(IntegerCallback)}
+     */
     public static final Consumer<IntegerCallback> CANCEL_FAULTS6V_CALLBACK = RoboRIOSim::cancelFaults6vCallback;
+    /**
+     * Deregisters the given faults6v callback
+     * @param callback the callback to deregister
+     * @see #registerFaults6vCallback(IntegerCallback, boolean)
+     */
     public static void cancelFaults6vCallback(IntegerCallback callback) {
         getState().FAULTS6V_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return number of faults on 6v rail
+     * @see #setFaults6v(int)
+     */
     public static int getFaults6v() {
         return getState().faults6v;
     }
 
+    /**
+     * Set number of faults on 6v rail
+     * @see #getFaults6v()
+     */
     public static void setFaults6v(int faults6v) {
         setFaults6v(faults6v, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current faults6v value of this PWMSim
+     */
     public static final Consumer<IntegerCallback> CALL_FAULTS6V_CALLBACK = callback -> callback.callback("", getState().faults6v);
     private static void setFaults6v(int faults6v, boolean notifyRobot) {
         if(faults6v != getState().faults6v) {
@@ -247,6 +432,13 @@ public class RoboRIOSim {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the voltage5v of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current voltage5v value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelVoltage5vCallback(DoubleCallback)
+     */
     public static ScopedObject<DoubleCallback> registerVoltage5vCallback(DoubleCallback callback, boolean initialNotify) {
         getState().VOLTAGE5V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -255,19 +447,38 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_VOLTAGE5V_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelVoltage5vCallback(DoubleCallback)}
+     */
     public static final Consumer<DoubleCallback> CANCEL_VOLTAGE5V_CALLBACK = RoboRIOSim::cancelVoltage5vCallback;
+    /**
+     * Deregisters the given voltage5v callback
+     * @param callback the callback to deregister
+     * @see #registerVoltage5vCallback(DoubleCallback, boolean)
+     */
     public static void cancelVoltage5vCallback(DoubleCallback callback) {
         getState().VOLTAGE5V_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return 5v rail voltage
+     * @see #setVoltage5v(double)
+     */
     public static double getVoltage5v() {
         return getState().voltage5v;
     }
 
+    /**
+     * Set 5v rail voltage
+     * @see #getVoltage5v()
+     */
     public static void setVoltage5v(double voltage5v) {
         setVoltage5v(voltage5v, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current voltage5v value of this PWMSim
+     */
     public static final Consumer<DoubleCallback> CALL_VOLTAGE5V_CALLBACK = callback -> callback.callback("", getState().voltage5v);
     private static void setVoltage5v(double voltage5v, boolean notifyRobot) {
         if(voltage5v != getState().voltage5v) {
@@ -279,6 +490,13 @@ public class RoboRIOSim {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the current5v of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current current5v value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelCurrent5vCallback(DoubleCallback)
+     */
     public static ScopedObject<DoubleCallback> registerCurrent5vCallback(DoubleCallback callback, boolean initialNotify) {
         getState().CURRENT5V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -287,19 +505,38 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_CURRENT5V_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelCurrent5vCallback(DoubleCallback)}
+     */
     public static final Consumer<DoubleCallback> CANCEL_CURRENT5V_CALLBACK = RoboRIOSim::cancelCurrent5vCallback;
+    /**
+     * Deregisters the given current5v callback
+     * @param callback the callback to deregister
+     * @see #registerCurrent5vCallback(DoubleCallback, boolean)
+     */
     public static void cancelCurrent5vCallback(DoubleCallback callback) {
         getState().CURRENT5V_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return 5v rail current
+     * @see #setCurrent5v(double)
+     */
     public static double getCurrent5v() {
         return getState().current5v;
     }
 
+    /**
+     * Set 5v rail current
+     * @see #getCurrent5v()
+     */
     public static void setCurrent5v(double current5v) {
         setCurrent5v(current5v, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current current5v value of this PWMSim
+     */
     public static final Consumer<DoubleCallback> CALL_CURRENT5V_CALLBACK = callback -> callback.callback("", getState().current5v);
     private static void setCurrent5v(double current5v, boolean notifyRobot) {
         if(current5v != getState().current5v) {
@@ -311,6 +548,13 @@ public class RoboRIOSim {
         }
     }
 
+    /**
+     * Registers a BooleanCallback to be called whenever the active5v of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current active5v value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelActive5vCallback(BooleanCallback)
+     */
     public static ScopedObject<BooleanCallback> registerActive5vCallback(BooleanCallback callback, boolean initialNotify) {
         getState().ACTIVE5V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -319,19 +563,38 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_ACTIVE5V_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelActive5vCallback(BooleanCallback)}
+     */
     public static final Consumer<BooleanCallback> CANCEL_ACTIVE5V_CALLBACK = RoboRIOSim::cancelActive5vCallback;
+    /**
+     * Deregisters the given active5v callback
+     * @param callback the callback to deregister
+     * @see #registerActive5vCallback(BooleanCallback, boolean)
+     */
     public static void cancelActive5vCallback(BooleanCallback callback) {
         getState().ACTIVE5V_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return true if 5v rail active, false if inactive
+     * @see #setActive5v(boolean)
+     */
     public static boolean getActive5v() {
         return getState().active5v;
     }
 
+    /**
+     * Set true if 5v rail active, false if inactive
+     * @see #getActive5v()
+     */
     public static void setActive5v(boolean active5v) {
         setActive5v(active5v, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current active5v value of this PWMSim
+     */
     public static final Consumer<BooleanCallback> CALL_ACTIVE5V_CALLBACK = callback -> callback.callback("", getState().active5v);
     private static void setActive5v(boolean active5v, boolean notifyRobot) {
         if(active5v != getState().active5v) {
@@ -343,6 +606,13 @@ public class RoboRIOSim {
         }
     }
 
+    /**
+     * Registers a IntegerCallback to be called whenever the faults5v of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current faults5v value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelFaults5vCallback(IntegerCallback)
+     */
     public static ScopedObject<IntegerCallback> registerFaults5vCallback(IntegerCallback callback, boolean initialNotify) {
         getState().FAULTS5V_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -351,19 +621,38 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_FAULTS5V_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelFaults5vCallback(IntegerCallback)}
+     */
     public static final Consumer<IntegerCallback> CANCEL_FAULTS5V_CALLBACK = RoboRIOSim::cancelFaults5vCallback;
+    /**
+     * Deregisters the given faults5v callback
+     * @param callback the callback to deregister
+     * @see #registerFaults5vCallback(IntegerCallback, boolean)
+     */
     public static void cancelFaults5vCallback(IntegerCallback callback) {
         getState().FAULTS5V_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return number of faults on 5v rail
+     * @see #setFaults5v(int)
+     */
     public static int getFaults5v() {
         return getState().faults5v;
     }
 
+    /**
+     * Set number of faults on 5v rail
+     * @see #getFaults5v()
+     */
     public static void setFaults5v(int faults5v) {
         setFaults5v(faults5v, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current faults5v value of this PWMSim
+     */
     public static final Consumer<IntegerCallback> CALL_FAULTS5V_CALLBACK = callback -> callback.callback("", getState().faults5v);
     private static void setFaults5v(int faults5v, boolean notifyRobot) {
         if(faults5v != getState().faults5v) {
@@ -375,6 +664,13 @@ public class RoboRIOSim {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the voltage3v3 of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current voltage3v3 value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelVoltage3v3Callback(DoubleCallback)
+     */
     public static ScopedObject<DoubleCallback> registerVoltage3v3Callback(DoubleCallback callback, boolean initialNotify) {
         getState().VOLTAGE3V3_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -383,19 +679,38 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_VOLTAGE3V3_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelVoltage3v3Callback(DoubleCallback)}
+     */
     public static final Consumer<DoubleCallback> CANCEL_VOLTAGE3V3_CALLBACK = RoboRIOSim::cancelVoltage3v3Callback;
+    /**
+     * Deregisters the given voltage3v3 callback
+     * @param callback the callback to deregister
+     * @see #registerVoltage3v3Callback(DoubleCallback, boolean)
+     */
     public static void cancelVoltage3v3Callback(DoubleCallback callback) {
         getState().VOLTAGE3V3_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return 3.3v rail voltage
+     * @see #setVoltage3v3(double)
+     */
     public static double getVoltage3v3() {
         return getState().voltage3v3;
     }
 
+    /**
+     * Set 3.3v rail voltage
+     * @see #getVoltage3v3()
+     */
     public static void setVoltage3v3(double voltage3v3) {
         setVoltage3v3(voltage3v3, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current voltage3v3 value of this PWMSim
+     */
     public static final Consumer<DoubleCallback> CALL_VOLTAGE3V3_CALLBACK = callback -> callback.callback("", getState().voltage3v3);
     private static void setVoltage3v3(double voltage3v3, boolean notifyRobot) {
         if(voltage3v3 != getState().voltage3v3) {
@@ -407,6 +722,13 @@ public class RoboRIOSim {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the current3v3 of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current current3v3 value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelCurrent3v3Callback(DoubleCallback)
+     */
     public static ScopedObject<DoubleCallback> registerCurrent3v3Callback(DoubleCallback callback, boolean initialNotify) {
         getState().CURRENT3V3_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -415,19 +737,38 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_CURRENT3V3_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelCurrent3v3Callback(DoubleCallback)}
+     */
     public static final Consumer<DoubleCallback> CANCEL_CURRENT3V3_CALLBACK = RoboRIOSim::cancelCurrent3v3Callback;
+    /**
+     * Deregisters the given current3v3 callback
+     * @param callback the callback to deregister
+     * @see #registerCurrent3v3Callback(DoubleCallback, boolean)
+     */
     public static void cancelCurrent3v3Callback(DoubleCallback callback) {
         getState().CURRENT3V3_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return 3.3v rail current
+     * @see #setCurrent3v3(double)
+     */
     public static double getCurrent3v3() {
         return getState().current3v3;
     }
 
+    /**
+     * Set 3.3v rail current
+     * @see #getCurrent3v3()
+     */
     public static void setCurrent3v3(double current3v3) {
         setCurrent3v3(current3v3, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current current3v3 value of this PWMSim
+     */
     public static final Consumer<DoubleCallback> CALL_CURRENT3V3_CALLBACK = callback -> callback.callback("", getState().current3v3);
     private static void setCurrent3v3(double current3v3, boolean notifyRobot) {
         if(current3v3 != getState().current3v3) {
@@ -439,6 +780,13 @@ public class RoboRIOSim {
         }
     }
 
+    /**
+     * Registers a BooleanCallback to be called whenever the active3v3 of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current active3v3 value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelActive3v3Callback(BooleanCallback)
+     */
     public static ScopedObject<BooleanCallback> registerActive3v3Callback(BooleanCallback callback, boolean initialNotify) {
         getState().ACTIVE3V3_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -447,19 +795,38 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_ACTIVE3V3_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelActive3v3Callback(BooleanCallback)}
+     */
     public static final Consumer<BooleanCallback> CANCEL_ACTIVE3V3_CALLBACK = RoboRIOSim::cancelActive3v3Callback;
+    /**
+     * Deregisters the given active3v3 callback
+     * @param callback the callback to deregister
+     * @see #registerActive3v3Callback(BooleanCallback, boolean)
+     */
     public static void cancelActive3v3Callback(BooleanCallback callback) {
         getState().ACTIVE3V3_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return true if 3.3v rail active, false if inactive
+     * @see #setActive3v3(boolean)
+     */
     public static boolean getActive3v3() {
         return getState().active3v3;
     }
 
+    /**
+     * Set true if 3.3v rail active, false if inactive
+     * @see #getActive3v3()
+     */
     public static void setActive3v3(boolean active3v3) {
         setActive3v3(active3v3, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current active3v3 value of this PWMSim
+     */
     public static final Consumer<BooleanCallback> CALL_ACTIVE3V3_CALLBACK = callback -> callback.callback("", getState().active3v3);
     private static void setActive3v3(boolean active3v3, boolean notifyRobot) {
         if(active3v3 != getState().active3v3) {
@@ -471,6 +838,13 @@ public class RoboRIOSim {
         }
     }
 
+    /**
+     * Registers a IntegerCallback to be called whenever the faults3v3 of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current faults3v3 value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelFaults3v3Callback(IntegerCallback)
+     */
     public static ScopedObject<IntegerCallback> registerFaults3v3Callback(IntegerCallback callback, boolean initialNotify) {
         getState().FAULTS3V3_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -479,19 +853,38 @@ public class RoboRIOSim {
         return new ScopedObject<>(callback, CANCEL_FAULTS3V3_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelFaults3v3Callback(IntegerCallback)}
+     */
     public static final Consumer<IntegerCallback> CANCEL_FAULTS3V3_CALLBACK = RoboRIOSim::cancelFaults3v3Callback;
+    /**
+     * Deregisters the given faults3v3 callback
+     * @param callback the callback to deregister
+     * @see #registerFaults3v3Callback(IntegerCallback, boolean)
+     */
     public static void cancelFaults3v3Callback(IntegerCallback callback) {
         getState().FAULTS3V3_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return number of faults on 3.3v rail
+     * @see #setFaults3v3(int)
+     */
     public static int getFaults3v3() {
         return getState().faults3v3;
     }
 
+    /**
+     * Set number of faults on 3.3v rail
+     * @see #getFaults3v3()
+     */
     public static void setFaults3v3(int faults3v3) {
         setFaults3v3(faults3v3, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current faults3v3 value of this PWMSim
+     */
     public static final Consumer<IntegerCallback> CALL_FAULTS3V3_CALLBACK = callback -> callback.callback("", getState().faults3v3);
     private static void setFaults3v3(int faults3v3, boolean notifyRobot) {
         if(faults3v3 != getState().faults3v3) {
@@ -503,6 +896,11 @@ public class RoboRIOSim {
         }
     }
 
+    /**
+     * An implementation of {@link org.team199.wpiws.interfaces.DeviceMessageProcessor} which processes WPI HALSim messages for RoboRIOSims
+     * @param device the device identifier of the device sending the message
+     * @param data the data associated with the message
+     */
     public static void processMessage(String device, List<WSValue> data) {
         for(WSValue value: data) {
             processValue(value);
@@ -592,6 +990,9 @@ public class RoboRIOSim {
         }
     }
 
+    /**
+     * Contains all information about the state of a RoboRIOSim
+     */
     public static class State {
         public boolean fpgabutton = false;
         public double vinvoltage = 0;

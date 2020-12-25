@@ -16,6 +16,9 @@ import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
 
+/**
+ * Represents a simulated dpwm
+ */
 public class dPWMSim extends StateDevice<dPWMSim.State> {
 
     private static final CopyOnWriteArrayList<String> INITIALIZED_DEVICES = new CopyOnWriteArrayList<>();
@@ -23,10 +26,22 @@ public class dPWMSim extends StateDevice<dPWMSim.State> {
     
     private static final HashMap<String, dPWMSim.State> STATE_MAP = new HashMap<>();
 
+    /**
+     * Creates a new dPWMSim
+     * @param id the device identifier of this dPWMSim 
+     */
     public dPWMSim(String id) {
         super(id, STATE_MAP);
     }
     
+    /**
+     * Registers a BooleanCallback to be called whenever false dPWMSim device is initialized or uninitialized
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with the device identifiers of all currently initialized dPWMSims
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelStaticInitializedCallback(BooleanCallback)
+     * @see #registerInitializedCallback(BooleanCallback, boolean)
+     */
     public static ScopedObject<BooleanCallback> registerStaticInitializedCallback(BooleanCallback callback, boolean initialNotify) {
         STATIC_INITIALIZED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -35,11 +50,27 @@ public class dPWMSim extends StateDevice<dPWMSim.State> {
         return new ScopedObject<>(callback, CANCEL_STATIC_INITIALIZED_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelStaticInitializedCallback(BooleanCallback)}
+     */
     public static final Consumer<BooleanCallback> CANCEL_STATIC_INITIALIZED_CALLBACK = dPWMSim::cancelStaticInitializedCallback;
+    /**
+     * Deregisters the given static initialized callback
+     * @param callback the callback to deregister
+     * @see #registerStaticInitializedCallback(BooleanCallback, boolean)
+     */
     public static void cancelStaticInitializedCallback(BooleanCallback callback) {
         STATIC_INITIALIZED_CALLBACKS.remove(callback);
     }
     
+    /**
+     * Registers a BooleanCallback to be called whenever this device is initialized or uninitialized
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current initialized state
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelInitializedCallback(BooleanCallback)
+     * @see #registerStaticInitializedCallback(BooleanCallback, boolean)
+     */
     public ScopedObject<BooleanCallback> registerInitializedCallback(BooleanCallback callback, boolean initialNotify) {
         getState().INITIALIZED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -48,19 +79,37 @@ public class dPWMSim extends StateDevice<dPWMSim.State> {
         return new ScopedObject<>(callback, CANCEL_INITIALIZED_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelInitializedCallback(BooleanCallback)}
+     */
     public final Consumer<BooleanCallback> CANCEL_INITIALIZED_CALLBACK = this::cancelInitializedCallback;
+    /**
+     * Deregisters the given initialized callback
+     * @param callback the callback to deregister
+     * @see #registerInitializedCallback(BooleanCallback, boolean)
+     */
     public void cancelInitializedCallback(BooleanCallback callback) {
         getState().INITIALIZED_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return whether this dPWMSim is initialized
+     */
     public boolean getInitialized() {
         return getState().init;
     }
 
+    /**
+     * Sets the initialized state of this dPWMSim
+     * @param initialized the new initialized state of this dPWMSim
+     */
     public void setInitialized(boolean initialized) {
         setInitialized(initialized, true);
     }
 
+    /**
+     * A Consumer which calls the given BooleanCallback with the current initialized state of this dPWMSim
+     */
     public final Consumer<BooleanCallback> CALL_INITIALIZED_CALLBACK = callback -> callback.callback(id, getState().init);
     private void setInitialized(boolean initialized, boolean notifyRobot) {
         getState().init = initialized;
@@ -76,6 +125,9 @@ public class dPWMSim extends StateDevice<dPWMSim.State> {
         }
     }
 
+    /**
+     * @return an array of the identifiers of all currently initialized dPWMSims
+     */
     public static String[] enumerateDevices() {
         return INITIALIZED_DEVICES.toArray(CREATE_STRING_ARRAY);
     }
@@ -85,6 +137,13 @@ public class dPWMSim extends StateDevice<dPWMSim.State> {
         return new State();
     }
     
+    /**
+     * Registers a DoubleCallback to be called whenever the dutycycle of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current dutycycle value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelDutyCycleCallback(DoubleCallback)
+     */
     public ScopedObject<DoubleCallback> registerDutyCycleCallback(DoubleCallback callback, boolean initialNotify) {
         getState().DUTYCYCLE_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -93,19 +152,38 @@ public class dPWMSim extends StateDevice<dPWMSim.State> {
         return new ScopedObject<>(callback, CANCEL_DUTYCYCLE_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelDutyCycleCallback(DoubleCallback)}
+     */
     public final Consumer<DoubleCallback> CANCEL_DUTYCYCLE_CALLBACK = this::cancelDutyCycleCallback;
+    /**
+     * Deregisters the given dutycycle callback
+     * @param callback the callback to deregister
+     * @see #registerDutyCycleCallback(DoubleCallback, boolean)
+     */
     public void cancelDutyCycleCallback(DoubleCallback callback) {
         getState().DUTYCYCLE_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return duty cycle %
+     * @see #setDutyCycle(double)
+     */
     public double getDutyCycle() {
         return getState().dutycycle;
     }
 
+    /**
+     * Set duty cycle %
+     * @see #getDutyCycle()
+     */
     public void setDutyCycle(double dutycycle) {
         setDutyCycle(dutycycle, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current dutycycle value of this PWMSim
+     */
     public final Consumer<DoubleCallback> CALL_DUTYCYCLE_CALLBACK = callback -> callback.callback(id, getState().dutycycle);
     private void setDutyCycle(double dutycycle, boolean notifyRobot) {
         if(dutycycle != getState().dutycycle) {
@@ -117,6 +195,13 @@ public class dPWMSim extends StateDevice<dPWMSim.State> {
         }
     }
 
+    /**
+     * Registers a IntegerCallback to be called whenever the diopin of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current diopin value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelDioPinCallback(IntegerCallback)
+     */
     public ScopedObject<IntegerCallback> registerDioPinCallback(IntegerCallback callback, boolean initialNotify) {
         getState().DIOPIN_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -125,19 +210,38 @@ public class dPWMSim extends StateDevice<dPWMSim.State> {
         return new ScopedObject<>(callback, CANCEL_DIOPIN_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelDioPinCallback(IntegerCallback)}
+     */
     public final Consumer<IntegerCallback> CANCEL_DIOPIN_CALLBACK = this::cancelDioPinCallback;
+    /**
+     * Deregisters the given diopin callback
+     * @param callback the callback to deregister
+     * @see #registerDioPinCallback(IntegerCallback, boolean)
+     */
     public void cancelDioPinCallback(IntegerCallback callback) {
         getState().DIOPIN_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return dio pin number
+     * @see #setDioPin(int)
+     */
     public int getDioPin() {
         return getState().diopin;
     }
 
+    /**
+     * Set dio pin number
+     * @see #getDioPin()
+     */
     public void setDioPin(int diopin) {
         setDioPin(diopin, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current diopin value of this PWMSim
+     */
     public final Consumer<IntegerCallback> CALL_DIOPIN_CALLBACK = callback -> callback.callback(id, getState().diopin);
     private void setDioPin(int diopin, boolean notifyRobot) {
         if(diopin != getState().diopin) {
@@ -149,6 +253,11 @@ public class dPWMSim extends StateDevice<dPWMSim.State> {
         }
     }
 
+    /**
+     * An implementation of {@link org.team199.wpiws.interfaces.DeviceMessageProcessor} which processes WPI HALSim messages for dPWMSims
+     * @param device the device identifier of the device sending the message
+     * @param data the data associated with the message
+     */
     public static void processMessage(String device, List<WSValue> data) {
         dPWMSim simDevice = new dPWMSim(device);
         for(WSValue value: data) {
@@ -178,6 +287,9 @@ public class dPWMSim extends StateDevice<dPWMSim.State> {
         }
     }
 
+    /**
+     * Contains all information about the state of a dPWMSim
+     */
     public static class State {
         public boolean init = false;
         public double dutycycle = 0;

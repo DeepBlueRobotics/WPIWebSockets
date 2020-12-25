@@ -16,6 +16,9 @@ import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
 
+/**
+ * Represents a simulated gyro
+ */
 public class GyroSim extends StateDevice<GyroSim.State> {
 
     private static final CopyOnWriteArrayList<String> INITIALIZED_DEVICES = new CopyOnWriteArrayList<>();
@@ -23,10 +26,22 @@ public class GyroSim extends StateDevice<GyroSim.State> {
     
     private static final HashMap<String, GyroSim.State> STATE_MAP = new HashMap<>();
 
+    /**
+     * Creates a new GyroSim
+     * @param id the device identifier of this GyroSim 
+     */
     public GyroSim(String id) {
         super(id, STATE_MAP);
     }
     
+    /**
+     * Registers a BooleanCallback to be called whenever true GyroSim device is initialized or uninitialized
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with the device identifiers of all currently initialized GyroSims
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelStaticInitializedCallback(BooleanCallback)
+     * @see #registerInitializedCallback(BooleanCallback, boolean)
+     */
     public static ScopedObject<BooleanCallback> registerStaticInitializedCallback(BooleanCallback callback, boolean initialNotify) {
         STATIC_INITIALIZED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -35,11 +50,27 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         return new ScopedObject<>(callback, CANCEL_STATIC_INITIALIZED_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelStaticInitializedCallback(BooleanCallback)}
+     */
     public static final Consumer<BooleanCallback> CANCEL_STATIC_INITIALIZED_CALLBACK = GyroSim::cancelStaticInitializedCallback;
+    /**
+     * Deregisters the given static initialized callback
+     * @param callback the callback to deregister
+     * @see #registerStaticInitializedCallback(BooleanCallback, boolean)
+     */
     public static void cancelStaticInitializedCallback(BooleanCallback callback) {
         STATIC_INITIALIZED_CALLBACKS.remove(callback);
     }
     
+    /**
+     * Registers a BooleanCallback to be called whenever this device is initialized or uninitialized
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current initialized state
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelInitializedCallback(BooleanCallback)
+     * @see #registerStaticInitializedCallback(BooleanCallback, boolean)
+     */
     public ScopedObject<BooleanCallback> registerInitializedCallback(BooleanCallback callback, boolean initialNotify) {
         getState().INITIALIZED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -48,19 +79,37 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         return new ScopedObject<>(callback, CANCEL_INITIALIZED_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelInitializedCallback(BooleanCallback)}
+     */
     public final Consumer<BooleanCallback> CANCEL_INITIALIZED_CALLBACK = this::cancelInitializedCallback;
+    /**
+     * Deregisters the given initialized callback
+     * @param callback the callback to deregister
+     * @see #registerInitializedCallback(BooleanCallback, boolean)
+     */
     public void cancelInitializedCallback(BooleanCallback callback) {
         getState().INITIALIZED_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return whether this GyroSim is initialized
+     */
     public boolean getInitialized() {
         return getState().init;
     }
 
+    /**
+     * Sets the initialized state of this GyroSim
+     * @param initialized the new initialized state of this GyroSim
+     */
     public void setInitialized(boolean initialized) {
         setInitialized(initialized, true);
     }
 
+    /**
+     * A Consumer which calls the given BooleanCallback with the current initialized state of this GyroSim
+     */
     public final Consumer<BooleanCallback> CALL_INITIALIZED_CALLBACK = callback -> callback.callback(id, getState().init);
     private void setInitialized(boolean initialized, boolean notifyRobot) {
         getState().init = initialized;
@@ -76,6 +125,9 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         }
     }
 
+    /**
+     * @return an array of the identifiers of all currently initialized GyroSims
+     */
     public static String[] enumerateDevices() {
         return INITIALIZED_DEVICES.toArray(CREATE_STRING_ARRAY);
     }
@@ -85,6 +137,13 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         return new State();
     }
     
+    /**
+     * Registers a DoubleCallback to be called whenever the range of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current range value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelRangeCallback(DoubleCallback)
+     */
     public ScopedObject<DoubleCallback> registerRangeCallback(DoubleCallback callback, boolean initialNotify) {
         getState().RANGE_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -93,19 +152,38 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         return new ScopedObject<>(callback, CANCEL_RANGE_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelRangeCallback(DoubleCallback)}
+     */
     public final Consumer<DoubleCallback> CANCEL_RANGE_CALLBACK = this::cancelRangeCallback;
+    /**
+     * Deregisters the given range callback
+     * @param callback the callback to deregister
+     * @see #registerRangeCallback(DoubleCallback, boolean)
+     */
     public void cancelRangeCallback(DoubleCallback callback) {
         getState().RANGE_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return gyro range in degrees/second (optional)
+     * @see #setRange(double)
+     */
     public double getRange() {
         return getState().range;
     }
 
+    /**
+     * Set gyro range in degrees/second (optional)
+     * @see #getRange()
+     */
     public void setRange(double range) {
         setRange(range, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current range value of this PWMSim
+     */
     public final Consumer<DoubleCallback> CALL_RANGE_CALLBACK = callback -> callback.callback(id, getState().range);
     private void setRange(double range, boolean notifyRobot) {
         if(range != getState().range) {
@@ -117,6 +195,13 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         }
     }
 
+    /**
+     * Registers a BooleanCallback to be called whenever the connected of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current connected value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelConnectedCallback(BooleanCallback)
+     */
     public ScopedObject<BooleanCallback> registerConnectedCallback(BooleanCallback callback, boolean initialNotify) {
         getState().CONNECTED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -125,19 +210,38 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         return new ScopedObject<>(callback, CANCEL_CONNECTED_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelConnectedCallback(BooleanCallback)}
+     */
     public final Consumer<BooleanCallback> CANCEL_CONNECTED_CALLBACK = this::cancelConnectedCallback;
+    /**
+     * Deregisters the given connected callback
+     * @param callback the callback to deregister
+     * @see #registerConnectedCallback(BooleanCallback, boolean)
+     */
     public void cancelConnectedCallback(BooleanCallback callback) {
         getState().CONNECTED_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return true if the gyro is connected
+     * @see #setConnected(boolean)
+     */
     public boolean getConnected() {
         return getState().connected;
     }
 
+    /**
+     * Set true if the gyro is connected
+     * @see #getConnected()
+     */
     public void setConnected(boolean connected) {
         setConnected(connected, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current connected value of this PWMSim
+     */
     public final Consumer<BooleanCallback> CALL_CONNECTED_CALLBACK = callback -> callback.callback(id, getState().connected);
     private void setConnected(boolean connected, boolean notifyRobot) {
         if(connected != getState().connected) {
@@ -149,6 +253,13 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the anglex of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current anglex value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelAngleXCallback(DoubleCallback)
+     */
     public ScopedObject<DoubleCallback> registerAngleXCallback(DoubleCallback callback, boolean initialNotify) {
         getState().ANGLEX_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -157,19 +268,38 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         return new ScopedObject<>(callback, CANCEL_ANGLEX_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelAngleXCallback(DoubleCallback)}
+     */
     public final Consumer<DoubleCallback> CANCEL_ANGLEX_CALLBACK = this::cancelAngleXCallback;
+    /**
+     * Deregisters the given anglex callback
+     * @param callback the callback to deregister
+     * @see #registerAngleXCallback(DoubleCallback, boolean)
+     */
     public void cancelAngleXCallback(DoubleCallback callback) {
         getState().ANGLEX_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return the gyro angle in degrees
+     * @see #setAngleX(double)
+     */
     public double getAngleX() {
         return getState().anglex;
     }
 
+    /**
+     * Set the gyro angle in degrees
+     * @see #getAngleX()
+     */
     public void setAngleX(double anglex) {
         setAngleX(anglex, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current anglex value of this PWMSim
+     */
     public final Consumer<DoubleCallback> CALL_ANGLEX_CALLBACK = callback -> callback.callback(id, getState().anglex);
     private void setAngleX(double anglex, boolean notifyRobot) {
         if(anglex != getState().anglex) {
@@ -181,6 +311,13 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the angley of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current angley value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelAngleYCallback(DoubleCallback)
+     */
     public ScopedObject<DoubleCallback> registerAngleYCallback(DoubleCallback callback, boolean initialNotify) {
         getState().ANGLEY_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -189,19 +326,38 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         return new ScopedObject<>(callback, CANCEL_ANGLEY_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelAngleYCallback(DoubleCallback)}
+     */
     public final Consumer<DoubleCallback> CANCEL_ANGLEY_CALLBACK = this::cancelAngleYCallback;
+    /**
+     * Deregisters the given angley callback
+     * @param callback the callback to deregister
+     * @see #registerAngleYCallback(DoubleCallback, boolean)
+     */
     public void cancelAngleYCallback(DoubleCallback callback) {
         getState().ANGLEY_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return the gyro angle in degrees
+     * @see #setAngleY(double)
+     */
     public double getAngleY() {
         return getState().angley;
     }
 
+    /**
+     * Set the gyro angle in degrees
+     * @see #getAngleY()
+     */
     public void setAngleY(double angley) {
         setAngleY(angley, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current angley value of this PWMSim
+     */
     public final Consumer<DoubleCallback> CALL_ANGLEY_CALLBACK = callback -> callback.callback(id, getState().angley);
     private void setAngleY(double angley, boolean notifyRobot) {
         if(angley != getState().angley) {
@@ -213,6 +369,13 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the anglez of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current anglez value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelAngleZCallback(DoubleCallback)
+     */
     public ScopedObject<DoubleCallback> registerAngleZCallback(DoubleCallback callback, boolean initialNotify) {
         getState().ANGLEZ_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -221,19 +384,38 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         return new ScopedObject<>(callback, CANCEL_ANGLEZ_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelAngleZCallback(DoubleCallback)}
+     */
     public final Consumer<DoubleCallback> CANCEL_ANGLEZ_CALLBACK = this::cancelAngleZCallback;
+    /**
+     * Deregisters the given anglez callback
+     * @param callback the callback to deregister
+     * @see #registerAngleZCallback(DoubleCallback, boolean)
+     */
     public void cancelAngleZCallback(DoubleCallback callback) {
         getState().ANGLEZ_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return the gyro angle in degrees
+     * @see #setAngleZ(double)
+     */
     public double getAngleZ() {
         return getState().anglez;
     }
 
+    /**
+     * Set the gyro angle in degrees
+     * @see #getAngleZ()
+     */
     public void setAngleZ(double anglez) {
         setAngleZ(anglez, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current anglez value of this PWMSim
+     */
     public final Consumer<DoubleCallback> CALL_ANGLEZ_CALLBACK = callback -> callback.callback(id, getState().anglez);
     private void setAngleZ(double anglez, boolean notifyRobot) {
         if(anglez != getState().anglez) {
@@ -245,6 +427,13 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the ratex of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current ratex value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelRateXCallback(DoubleCallback)
+     */
     public ScopedObject<DoubleCallback> registerRateXCallback(DoubleCallback callback, boolean initialNotify) {
         getState().RATEX_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -253,19 +442,38 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         return new ScopedObject<>(callback, CANCEL_RATEX_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelRateXCallback(DoubleCallback)}
+     */
     public final Consumer<DoubleCallback> CANCEL_RATEX_CALLBACK = this::cancelRateXCallback;
+    /**
+     * Deregisters the given ratex callback
+     * @param callback the callback to deregister
+     * @see #registerRateXCallback(DoubleCallback, boolean)
+     */
     public void cancelRateXCallback(DoubleCallback callback) {
         getState().RATEX_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return the current gyro angular rate of change in degrees/second
+     * @see #setRateX(double)
+     */
     public double getRateX() {
         return getState().ratex;
     }
 
+    /**
+     * Set the current gyro angular rate of change in degrees/second
+     * @see #getRateX()
+     */
     public void setRateX(double ratex) {
         setRateX(ratex, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current ratex value of this PWMSim
+     */
     public final Consumer<DoubleCallback> CALL_RATEX_CALLBACK = callback -> callback.callback(id, getState().ratex);
     private void setRateX(double ratex, boolean notifyRobot) {
         if(ratex != getState().ratex) {
@@ -277,6 +485,13 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the ratey of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current ratey value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelRateYCallback(DoubleCallback)
+     */
     public ScopedObject<DoubleCallback> registerRateYCallback(DoubleCallback callback, boolean initialNotify) {
         getState().RATEY_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -285,19 +500,38 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         return new ScopedObject<>(callback, CANCEL_RATEY_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelRateYCallback(DoubleCallback)}
+     */
     public final Consumer<DoubleCallback> CANCEL_RATEY_CALLBACK = this::cancelRateYCallback;
+    /**
+     * Deregisters the given ratey callback
+     * @param callback the callback to deregister
+     * @see #registerRateYCallback(DoubleCallback, boolean)
+     */
     public void cancelRateYCallback(DoubleCallback callback) {
         getState().RATEY_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return the current gyro angular rate of change in degrees/second
+     * @see #setRateY(double)
+     */
     public double getRateY() {
         return getState().ratey;
     }
 
+    /**
+     * Set the current gyro angular rate of change in degrees/second
+     * @see #getRateY()
+     */
     public void setRateY(double ratey) {
         setRateY(ratey, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current ratey value of this PWMSim
+     */
     public final Consumer<DoubleCallback> CALL_RATEY_CALLBACK = callback -> callback.callback(id, getState().ratey);
     private void setRateY(double ratey, boolean notifyRobot) {
         if(ratey != getState().ratey) {
@@ -309,6 +543,13 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the ratez of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current ratez value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelRateZCallback(DoubleCallback)
+     */
     public ScopedObject<DoubleCallback> registerRateZCallback(DoubleCallback callback, boolean initialNotify) {
         getState().RATEZ_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -317,19 +558,38 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         return new ScopedObject<>(callback, CANCEL_RATEZ_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelRateZCallback(DoubleCallback)}
+     */
     public final Consumer<DoubleCallback> CANCEL_RATEZ_CALLBACK = this::cancelRateZCallback;
+    /**
+     * Deregisters the given ratez callback
+     * @param callback the callback to deregister
+     * @see #registerRateZCallback(DoubleCallback, boolean)
+     */
     public void cancelRateZCallback(DoubleCallback callback) {
         getState().RATEZ_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return the current gyro angular rate of change in degrees/second
+     * @see #setRateZ(double)
+     */
     public double getRateZ() {
         return getState().ratez;
     }
 
+    /**
+     * Set the current gyro angular rate of change in degrees/second
+     * @see #getRateZ()
+     */
     public void setRateZ(double ratez) {
         setRateZ(ratez, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current ratez value of this PWMSim
+     */
     public final Consumer<DoubleCallback> CALL_RATEZ_CALLBACK = callback -> callback.callback(id, getState().ratez);
     private void setRateZ(double ratez, boolean notifyRobot) {
         if(ratez != getState().ratez) {
@@ -341,6 +601,11 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         }
     }
 
+    /**
+     * An implementation of {@link org.team199.wpiws.interfaces.DeviceMessageProcessor} which processes WPI HALSim messages for GyroSims
+     * @param device the device identifier of the device sending the message
+     * @param data the data associated with the message
+     */
     public static void processMessage(String device, List<WSValue> data) {
         GyroSim simDevice = new GyroSim(device);
         for(WSValue value: data) {
@@ -400,6 +665,9 @@ public class GyroSim extends StateDevice<GyroSim.State> {
         }
     }
 
+    /**
+     * Contains all information about the state of a GyroSim
+     */
     public static class State {
         public boolean init = false;
         public double range = 0;

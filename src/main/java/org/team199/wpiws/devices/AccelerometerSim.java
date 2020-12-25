@@ -16,6 +16,9 @@ import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
 
+/**
+ * Represents a simulated accelerometer
+ */
 public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
 
     private static final CopyOnWriteArrayList<String> INITIALIZED_DEVICES = new CopyOnWriteArrayList<>();
@@ -23,10 +26,22 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
     
     private static final HashMap<String, AccelerometerSim.State> STATE_MAP = new HashMap<>();
 
+    /**
+     * Creates a new AccelerometerSim
+     * @param id the device identifier of this AccelerometerSim 
+     */
     public AccelerometerSim(String id) {
         super(id, STATE_MAP);
     }
     
+    /**
+     * Registers a BooleanCallback to be called whenever true AccelerometerSim device is initialized or uninitialized
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with the device identifiers of all currently initialized AccelerometerSims
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelStaticInitializedCallback(BooleanCallback)
+     * @see #registerInitializedCallback(BooleanCallback, boolean)
+     */
     public static ScopedObject<BooleanCallback> registerStaticInitializedCallback(BooleanCallback callback, boolean initialNotify) {
         STATIC_INITIALIZED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -35,11 +50,27 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
         return new ScopedObject<>(callback, CANCEL_STATIC_INITIALIZED_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelStaticInitializedCallback(BooleanCallback)}
+     */
     public static final Consumer<BooleanCallback> CANCEL_STATIC_INITIALIZED_CALLBACK = AccelerometerSim::cancelStaticInitializedCallback;
+    /**
+     * Deregisters the given static initialized callback
+     * @param callback the callback to deregister
+     * @see #registerStaticInitializedCallback(BooleanCallback, boolean)
+     */
     public static void cancelStaticInitializedCallback(BooleanCallback callback) {
         STATIC_INITIALIZED_CALLBACKS.remove(callback);
     }
     
+    /**
+     * Registers a BooleanCallback to be called whenever this device is initialized or uninitialized
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current initialized state
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelInitializedCallback(BooleanCallback)
+     * @see #registerStaticInitializedCallback(BooleanCallback, boolean)
+     */
     public ScopedObject<BooleanCallback> registerInitializedCallback(BooleanCallback callback, boolean initialNotify) {
         getState().INITIALIZED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -48,19 +79,37 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
         return new ScopedObject<>(callback, CANCEL_INITIALIZED_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelInitializedCallback(BooleanCallback)}
+     */
     public final Consumer<BooleanCallback> CANCEL_INITIALIZED_CALLBACK = this::cancelInitializedCallback;
+    /**
+     * Deregisters the given initialized callback
+     * @param callback the callback to deregister
+     * @see #registerInitializedCallback(BooleanCallback, boolean)
+     */
     public void cancelInitializedCallback(BooleanCallback callback) {
         getState().INITIALIZED_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return whether this AccelerometerSim is initialized
+     */
     public boolean getInitialized() {
         return getState().init;
     }
 
+    /**
+     * Sets the initialized state of this AccelerometerSim
+     * @param initialized the new initialized state of this AccelerometerSim
+     */
     public void setInitialized(boolean initialized) {
         setInitialized(initialized, true);
     }
 
+    /**
+     * A Consumer which calls the given BooleanCallback with the current initialized state of this AccelerometerSim
+     */
     public final Consumer<BooleanCallback> CALL_INITIALIZED_CALLBACK = callback -> callback.callback(id, getState().init);
     private void setInitialized(boolean initialized, boolean notifyRobot) {
         getState().init = initialized;
@@ -76,6 +125,9 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
         }
     }
 
+    /**
+     * @return an array of the identifiers of all currently initialized AccelerometerSims
+     */
     public static String[] enumerateDevices() {
         return INITIALIZED_DEVICES.toArray(CREATE_STRING_ARRAY);
     }
@@ -85,6 +137,13 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
         return new State();
     }
     
+    /**
+     * Registers a DoubleCallback to be called whenever the range of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current range value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelRangeCallback(DoubleCallback)
+     */
     public ScopedObject<DoubleCallback> registerRangeCallback(DoubleCallback callback, boolean initialNotify) {
         getState().RANGE_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -93,19 +152,38 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
         return new ScopedObject<>(callback, CANCEL_RANGE_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelRangeCallback(DoubleCallback)}
+     */
     public final Consumer<DoubleCallback> CANCEL_RANGE_CALLBACK = this::cancelRangeCallback;
+    /**
+     * Deregisters the given range callback
+     * @param callback the callback to deregister
+     * @see #registerRangeCallback(DoubleCallback, boolean)
+     */
     public void cancelRangeCallback(DoubleCallback callback) {
         getState().RANGE_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return desired range in g’s
+     * @see #setRange(double)
+     */
     public double getRange() {
         return getState().range;
     }
 
+    /**
+     * Set desired range in g’s
+     * @see #getRange()
+     */
     public void setRange(double range) {
         setRange(range, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current range value of this PWMSim
+     */
     public final Consumer<DoubleCallback> CALL_RANGE_CALLBACK = callback -> callback.callback(id, getState().range);
     private void setRange(double range, boolean notifyRobot) {
         if(range != getState().range) {
@@ -117,6 +195,13 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the x of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current x value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelXCallback(DoubleCallback)
+     */
     public ScopedObject<DoubleCallback> registerXCallback(DoubleCallback callback, boolean initialNotify) {
         getState().X_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -125,19 +210,38 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
         return new ScopedObject<>(callback, CANCEL_X_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelXCallback(DoubleCallback)}
+     */
     public final Consumer<DoubleCallback> CANCEL_X_CALLBACK = this::cancelXCallback;
+    /**
+     * Deregisters the given x callback
+     * @param callback the callback to deregister
+     * @see #registerXCallback(DoubleCallback, boolean)
+     */
     public void cancelXCallback(DoubleCallback callback) {
         getState().X_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return acceleration in g’s 
+     * @see #setX(double)
+     */
     public double getX() {
         return getState().x;
     }
 
+    /**
+     * Set acceleration in g’s 
+     * @see #getX()
+     */
     public void setX(double x) {
         setX(x, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current x value of this PWMSim
+     */
     public final Consumer<DoubleCallback> CALL_X_CALLBACK = callback -> callback.callback(id, getState().x);
     private void setX(double x, boolean notifyRobot) {
         if(x != getState().x) {
@@ -149,6 +253,13 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the y of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current y value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelYCallback(DoubleCallback)
+     */
     public ScopedObject<DoubleCallback> registerYCallback(DoubleCallback callback, boolean initialNotify) {
         getState().Y_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -157,19 +268,38 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
         return new ScopedObject<>(callback, CANCEL_Y_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelYCallback(DoubleCallback)}
+     */
     public final Consumer<DoubleCallback> CANCEL_Y_CALLBACK = this::cancelYCallback;
+    /**
+     * Deregisters the given y callback
+     * @param callback the callback to deregister
+     * @see #registerYCallback(DoubleCallback, boolean)
+     */
     public void cancelYCallback(DoubleCallback callback) {
         getState().Y_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return acceleration in g’s 
+     * @see #setY(double)
+     */
     public double getY() {
         return getState().y;
     }
 
+    /**
+     * Set acceleration in g’s 
+     * @see #getY()
+     */
     public void setY(double y) {
         setY(y, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current y value of this PWMSim
+     */
     public final Consumer<DoubleCallback> CALL_Y_CALLBACK = callback -> callback.callback(id, getState().y);
     private void setY(double y, boolean notifyRobot) {
         if(y != getState().y) {
@@ -181,6 +311,13 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the z of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current z value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelZCallback(DoubleCallback)
+     */
     public ScopedObject<DoubleCallback> registerZCallback(DoubleCallback callback, boolean initialNotify) {
         getState().Z_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -189,19 +326,38 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
         return new ScopedObject<>(callback, CANCEL_Z_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelZCallback(DoubleCallback)}
+     */
     public final Consumer<DoubleCallback> CANCEL_Z_CALLBACK = this::cancelZCallback;
+    /**
+     * Deregisters the given z callback
+     * @param callback the callback to deregister
+     * @see #registerZCallback(DoubleCallback, boolean)
+     */
     public void cancelZCallback(DoubleCallback callback) {
         getState().Z_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return acceleration in g’s 
+     * @see #setZ(double)
+     */
     public double getZ() {
         return getState().z;
     }
 
+    /**
+     * Set acceleration in g’s 
+     * @see #getZ()
+     */
     public void setZ(double z) {
         setZ(z, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current z value of this PWMSim
+     */
     public final Consumer<DoubleCallback> CALL_Z_CALLBACK = callback -> callback.callback(id, getState().z);
     private void setZ(double z, boolean notifyRobot) {
         if(z != getState().z) {
@@ -213,6 +369,11 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
         }
     }
 
+    /**
+     * An implementation of {@link org.team199.wpiws.interfaces.DeviceMessageProcessor} which processes WPI HALSim messages for AccelerometerSims
+     * @param device the device identifier of the device sending the message
+     * @param data the data associated with the message
+     */
     public static void processMessage(String device, List<WSValue> data) {
         AccelerometerSim simDevice = new AccelerometerSim(device);
         for(WSValue value: data) {
@@ -252,6 +413,9 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
         }
     }
 
+    /**
+     * Contains all information about the state of a AccelerometerSim
+     */
     public static class State {
         public boolean init = false;
         public double range = 0;

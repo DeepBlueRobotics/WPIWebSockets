@@ -16,10 +16,17 @@ import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
 
+/**
+ * Represents a simulated dutycycle
+ */
 public class DutyCycleSim extends StateDevice<DutyCycleSim.State> {
 
     private static final HashMap<String, DutyCycleSim.State> STATE_MAP = new HashMap<>();
 
+    /**
+     * Creates a new DutyCycleSim
+     * @param id the device identifier of this DutyCycleSim 
+     */
     public DutyCycleSim(String id) {
         super(id, STATE_MAP);
     }
@@ -29,6 +36,13 @@ public class DutyCycleSim extends StateDevice<DutyCycleSim.State> {
         return new State();
     }
     
+    /**
+     * Registers a BooleanCallback to be called whenever the connected of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current connected value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelConnectedCallback(BooleanCallback)
+     */
     public ScopedObject<BooleanCallback> registerConnectedCallback(BooleanCallback callback, boolean initialNotify) {
         getState().CONNECTED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -37,19 +51,38 @@ public class DutyCycleSim extends StateDevice<DutyCycleSim.State> {
         return new ScopedObject<>(callback, CANCEL_CONNECTED_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelConnectedCallback(BooleanCallback)}
+     */
     public final Consumer<BooleanCallback> CANCEL_CONNECTED_CALLBACK = this::cancelConnectedCallback;
+    /**
+     * Deregisters the given connected callback
+     * @param callback the callback to deregister
+     * @see #registerConnectedCallback(BooleanCallback, boolean)
+     */
     public void cancelConnectedCallback(BooleanCallback callback) {
         getState().CONNECTED_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return true if the encoder is connected
+     * @see #setConnected(boolean)
+     */
     public boolean getConnected() {
         return getState().connected;
     }
 
+    /**
+     * Set true if the encoder is connected
+     * @see #getConnected()
+     */
     public void setConnected(boolean connected) {
         setConnected(connected, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current connected value of this PWMSim
+     */
     public final Consumer<BooleanCallback> CALL_CONNECTED_CALLBACK = callback -> callback.callback(id, getState().connected);
     private void setConnected(boolean connected, boolean notifyRobot) {
         if(connected != getState().connected) {
@@ -61,6 +94,13 @@ public class DutyCycleSim extends StateDevice<DutyCycleSim.State> {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the position of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current position value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelPositionCallback(DoubleCallback)
+     */
     public ScopedObject<DoubleCallback> registerPositionCallback(DoubleCallback callback, boolean initialNotify) {
         getState().POSITION_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -69,19 +109,38 @@ public class DutyCycleSim extends StateDevice<DutyCycleSim.State> {
         return new ScopedObject<>(callback, CANCEL_POSITION_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelPositionCallback(DoubleCallback)}
+     */
     public final Consumer<DoubleCallback> CANCEL_POSITION_CALLBACK = this::cancelPositionCallback;
+    /**
+     * Deregisters the given position callback
+     * @param callback the callback to deregister
+     * @see #registerPositionCallback(DoubleCallback, boolean)
+     */
     public void cancelPositionCallback(DoubleCallback callback) {
         getState().POSITION_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return the position in rotations
+     * @see #setPosition(double)
+     */
     public double getPosition() {
         return getState().position;
     }
 
+    /**
+     * Set the position in rotations
+     * @see #getPosition()
+     */
     public void setPosition(double position) {
         setPosition(position, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current position value of this PWMSim
+     */
     public final Consumer<DoubleCallback> CALL_POSITION_CALLBACK = callback -> callback.callback(id, getState().position);
     private void setPosition(double position, boolean notifyRobot) {
         if(position != getState().position) {
@@ -93,6 +152,11 @@ public class DutyCycleSim extends StateDevice<DutyCycleSim.State> {
         }
     }
 
+    /**
+     * An implementation of {@link org.team199.wpiws.interfaces.DeviceMessageProcessor} which processes WPI HALSim messages for DutyCycleSims
+     * @param device the device identifier of the device sending the message
+     * @param data the data associated with the message
+     */
     public static void processMessage(String device, List<WSValue> data) {
         DutyCycleSim simDevice = new DutyCycleSim(device);
         for(WSValue value: data) {
@@ -118,6 +182,9 @@ public class DutyCycleSim extends StateDevice<DutyCycleSim.State> {
         }
     }
 
+    /**
+     * Contains all information about the state of a DutyCycleSim
+     */
     public static class State {
         public boolean connected = false;
         public double position = 0;

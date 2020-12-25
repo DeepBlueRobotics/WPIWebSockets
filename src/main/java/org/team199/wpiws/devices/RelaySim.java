@@ -16,10 +16,17 @@ import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
 
+/**
+ * Represents a simulated relay
+ */
 public class RelaySim extends StateDevice<RelaySim.State> {
 
     private static final HashMap<String, RelaySim.State> STATE_MAP = new HashMap<>();
 
+    /**
+     * Creates a new RelaySim
+     * @param id the device identifier of this RelaySim 
+     */
     public RelaySim(String id) {
         super(id, STATE_MAP);
     }
@@ -29,6 +36,13 @@ public class RelaySim extends StateDevice<RelaySim.State> {
         return new State();
     }
     
+    /**
+     * Registers a BooleanCallback to be called whenever the initfwd of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current initfwd value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelInitFwdCallback(BooleanCallback)
+     */
     public ScopedObject<BooleanCallback> registerInitFwdCallback(BooleanCallback callback, boolean initialNotify) {
         getState().INITFWD_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -37,19 +51,38 @@ public class RelaySim extends StateDevice<RelaySim.State> {
         return new ScopedObject<>(callback, CANCEL_INITFWD_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelInitFwdCallback(BooleanCallback)}
+     */
     public final Consumer<BooleanCallback> CANCEL_INITFWD_CALLBACK = this::cancelInitFwdCallback;
+    /**
+     * Deregisters the given initfwd callback
+     * @param callback the callback to deregister
+     * @see #registerInitFwdCallback(BooleanCallback, boolean)
+     */
     public void cancelInitFwdCallback(BooleanCallback callback) {
         getState().INITFWD_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return if relay forward direction is initialized in the robot program
+     * @see #setInitFwd(boolean)
+     */
     public boolean getInitFwd() {
         return getState().initfwd;
     }
 
+    /**
+     * Set if relay forward direction is initialized in the robot program
+     * @see #getInitFwd()
+     */
     public void setInitFwd(boolean initfwd) {
         setInitFwd(initfwd, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current initfwd value of this PWMSim
+     */
     public final Consumer<BooleanCallback> CALL_INITFWD_CALLBACK = callback -> callback.callback(id, getState().initfwd);
     private void setInitFwd(boolean initfwd, boolean notifyRobot) {
         if(initfwd != getState().initfwd) {
@@ -61,6 +94,13 @@ public class RelaySim extends StateDevice<RelaySim.State> {
         }
     }
 
+    /**
+     * Registers a BooleanCallback to be called whenever the initrev of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current initrev value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelInitRevCallback(BooleanCallback)
+     */
     public ScopedObject<BooleanCallback> registerInitRevCallback(BooleanCallback callback, boolean initialNotify) {
         getState().INITREV_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -69,19 +109,38 @@ public class RelaySim extends StateDevice<RelaySim.State> {
         return new ScopedObject<>(callback, CANCEL_INITREV_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelInitRevCallback(BooleanCallback)}
+     */
     public final Consumer<BooleanCallback> CANCEL_INITREV_CALLBACK = this::cancelInitRevCallback;
+    /**
+     * Deregisters the given initrev callback
+     * @param callback the callback to deregister
+     * @see #registerInitRevCallback(BooleanCallback, boolean)
+     */
     public void cancelInitRevCallback(BooleanCallback callback) {
         getState().INITREV_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return if relay reverse direction is initialized in the robot program
+     * @see #setInitRev(boolean)
+     */
     public boolean getInitRev() {
         return getState().initrev;
     }
 
+    /**
+     * Set if relay reverse direction is initialized in the robot program
+     * @see #getInitRev()
+     */
     public void setInitRev(boolean initrev) {
         setInitRev(initrev, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current initrev value of this PWMSim
+     */
     public final Consumer<BooleanCallback> CALL_INITREV_CALLBACK = callback -> callback.callback(id, getState().initrev);
     private void setInitRev(boolean initrev, boolean notifyRobot) {
         if(initrev != getState().initrev) {
@@ -93,6 +152,13 @@ public class RelaySim extends StateDevice<RelaySim.State> {
         }
     }
 
+    /**
+     * Registers a BooleanCallback to be called whenever the fwd of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current fwd value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelFwdCallback(BooleanCallback)
+     */
     public ScopedObject<BooleanCallback> registerFwdCallback(BooleanCallback callback, boolean initialNotify) {
         getState().FWD_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -101,19 +167,38 @@ public class RelaySim extends StateDevice<RelaySim.State> {
         return new ScopedObject<>(callback, CANCEL_FWD_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelFwdCallback(BooleanCallback)}
+     */
     public final Consumer<BooleanCallback> CANCEL_FWD_CALLBACK = this::cancelFwdCallback;
+    /**
+     * Deregisters the given fwd callback
+     * @param callback the callback to deregister
+     * @see #registerFwdCallback(BooleanCallback, boolean)
+     */
     public void cancelFwdCallback(BooleanCallback callback) {
         getState().FWD_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return true if forward direction is enabled
+     * @see #setFwd(boolean)
+     */
     public boolean getFwd() {
         return getState().fwd;
     }
 
+    /**
+     * Set true if forward direction is enabled
+     * @see #getFwd()
+     */
     public void setFwd(boolean fwd) {
         setFwd(fwd, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current fwd value of this PWMSim
+     */
     public final Consumer<BooleanCallback> CALL_FWD_CALLBACK = callback -> callback.callback(id, getState().fwd);
     private void setFwd(boolean fwd, boolean notifyRobot) {
         if(fwd != getState().fwd) {
@@ -125,6 +210,13 @@ public class RelaySim extends StateDevice<RelaySim.State> {
         }
     }
 
+    /**
+     * Registers a BooleanCallback to be called whenever the rev of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current rev value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelRevCallback(BooleanCallback)
+     */
     public ScopedObject<BooleanCallback> registerRevCallback(BooleanCallback callback, boolean initialNotify) {
         getState().REV_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -133,19 +225,38 @@ public class RelaySim extends StateDevice<RelaySim.State> {
         return new ScopedObject<>(callback, CANCEL_REV_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelRevCallback(BooleanCallback)}
+     */
     public final Consumer<BooleanCallback> CANCEL_REV_CALLBACK = this::cancelRevCallback;
+    /**
+     * Deregisters the given rev callback
+     * @param callback the callback to deregister
+     * @see #registerRevCallback(BooleanCallback, boolean)
+     */
     public void cancelRevCallback(BooleanCallback callback) {
         getState().REV_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return true if reverse direction is enabled
+     * @see #setRev(boolean)
+     */
     public boolean getRev() {
         return getState().rev;
     }
 
+    /**
+     * Set true if reverse direction is enabled
+     * @see #getRev()
+     */
     public void setRev(boolean rev) {
         setRev(rev, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current rev value of this PWMSim
+     */
     public final Consumer<BooleanCallback> CALL_REV_CALLBACK = callback -> callback.callback(id, getState().rev);
     private void setRev(boolean rev, boolean notifyRobot) {
         if(rev != getState().rev) {
@@ -157,6 +268,11 @@ public class RelaySim extends StateDevice<RelaySim.State> {
         }
     }
 
+    /**
+     * An implementation of {@link org.team199.wpiws.interfaces.DeviceMessageProcessor} which processes WPI HALSim messages for RelaySims
+     * @param device the device identifier of the device sending the message
+     * @param data the data associated with the message
+     */
     public static void processMessage(String device, List<WSValue> data) {
         RelaySim simDevice = new RelaySim(device);
         for(WSValue value: data) {
@@ -192,6 +308,9 @@ public class RelaySim extends StateDevice<RelaySim.State> {
         }
     }
 
+    /**
+     * Contains all information about the state of a RelaySim
+     */
     public static class State {
         public boolean initfwd = false;
         public boolean initrev = false;

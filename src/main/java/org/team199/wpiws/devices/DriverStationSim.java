@@ -15,6 +15,9 @@ import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
 
+/**
+ * Represents a simulated driverstation
+ */
 public class DriverStationSim {
 
     private static final DriverStationSim.State STATE = new State();
@@ -23,6 +26,13 @@ public class DriverStationSim {
         return STATE;
     }
     
+    /**
+     * Registers a BooleanCallback to be called whenever the newdata of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current newdata value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelNewDataCallback(BooleanCallback)
+     */
     public static ScopedObject<BooleanCallback> registerNewDataCallback(BooleanCallback callback, boolean initialNotify) {
         getState().NEWDATA_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -31,19 +41,38 @@ public class DriverStationSim {
         return new ScopedObject<>(callback, CANCEL_NEWDATA_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelNewDataCallback(BooleanCallback)}
+     */
     public static final Consumer<BooleanCallback> CANCEL_NEWDATA_CALLBACK = DriverStationSim::cancelNewDataCallback;
+    /**
+     * Deregisters the given newdata callback
+     * @param callback the callback to deregister
+     * @see #registerNewDataCallback(BooleanCallback, boolean)
+     */
     public static void cancelNewDataCallback(BooleanCallback callback) {
         getState().NEWDATA_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return one shot.  if set to true in a message, notifies the robot program that new ds and joystick data is available.
+     * @see #setNewData(boolean)
+     */
     public static boolean getNewData() {
         return getState().newdata;
     }
 
+    /**
+     * Set one shot.  if set to true in a message, notifies the robot program that new ds and joystick data is available.
+     * @see #getNewData()
+     */
     public static void setNewData(boolean newdata) {
         setNewData(newdata, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current newdata value of this PWMSim
+     */
     public static final Consumer<BooleanCallback> CALL_NEWDATA_CALLBACK = callback -> callback.callback("", getState().newdata);
     private static void setNewData(boolean newdata, boolean notifyRobot) {
         if(newdata != getState().newdata) {
@@ -55,6 +84,13 @@ public class DriverStationSim {
         }
     }
 
+    /**
+     * Registers a BooleanCallback to be called whenever the enabled of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current enabled value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelEnabledCallback(BooleanCallback)
+     */
     public static ScopedObject<BooleanCallback> registerEnabledCallback(BooleanCallback callback, boolean initialNotify) {
         getState().ENABLED_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -63,19 +99,38 @@ public class DriverStationSim {
         return new ScopedObject<>(callback, CANCEL_ENABLED_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelEnabledCallback(BooleanCallback)}
+     */
     public static final Consumer<BooleanCallback> CANCEL_ENABLED_CALLBACK = DriverStationSim::cancelEnabledCallback;
+    /**
+     * Deregisters the given enabled callback
+     * @param callback the callback to deregister
+     * @see #registerEnabledCallback(BooleanCallback, boolean)
+     */
     public static void cancelEnabledCallback(BooleanCallback callback) {
         getState().ENABLED_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return true to enable the robot program
+     * @see #setEnabled(boolean)
+     */
     public static boolean getEnabled() {
         return getState().enabled;
     }
 
+    /**
+     * Set true to enable the robot program
+     * @see #getEnabled()
+     */
     public static void setEnabled(boolean enabled) {
         setEnabled(enabled, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current enabled value of this PWMSim
+     */
     public static final Consumer<BooleanCallback> CALL_ENABLED_CALLBACK = callback -> callback.callback("", getState().enabled);
     private static void setEnabled(boolean enabled, boolean notifyRobot) {
         if(enabled != getState().enabled) {
@@ -87,6 +142,13 @@ public class DriverStationSim {
         }
     }
 
+    /**
+     * Registers a BooleanCallback to be called whenever the autonomous of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current autonomous value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelAutonomousCallback(BooleanCallback)
+     */
     public static ScopedObject<BooleanCallback> registerAutonomousCallback(BooleanCallback callback, boolean initialNotify) {
         getState().AUTONOMOUS_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -95,19 +157,38 @@ public class DriverStationSim {
         return new ScopedObject<>(callback, CANCEL_AUTONOMOUS_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelAutonomousCallback(BooleanCallback)}
+     */
     public static final Consumer<BooleanCallback> CANCEL_AUTONOMOUS_CALLBACK = DriverStationSim::cancelAutonomousCallback;
+    /**
+     * Deregisters the given autonomous callback
+     * @param callback the callback to deregister
+     * @see #registerAutonomousCallback(BooleanCallback, boolean)
+     */
     public static void cancelAutonomousCallback(BooleanCallback callback) {
         getState().AUTONOMOUS_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return true for autonomous mode; false for teleoperated mode
+     * @see #setAutonomous(boolean)
+     */
     public static boolean getAutonomous() {
         return getState().autonomous;
     }
 
+    /**
+     * Set true for autonomous mode; false for teleoperated mode
+     * @see #getAutonomous()
+     */
     public static void setAutonomous(boolean autonomous) {
         setAutonomous(autonomous, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current autonomous value of this PWMSim
+     */
     public static final Consumer<BooleanCallback> CALL_AUTONOMOUS_CALLBACK = callback -> callback.callback("", getState().autonomous);
     private static void setAutonomous(boolean autonomous, boolean notifyRobot) {
         if(autonomous != getState().autonomous) {
@@ -119,6 +200,13 @@ public class DriverStationSim {
         }
     }
 
+    /**
+     * Registers a BooleanCallback to be called whenever the test of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current test value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelTestCallback(BooleanCallback)
+     */
     public static ScopedObject<BooleanCallback> registerTestCallback(BooleanCallback callback, boolean initialNotify) {
         getState().TEST_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -127,19 +215,38 @@ public class DriverStationSim {
         return new ScopedObject<>(callback, CANCEL_TEST_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelTestCallback(BooleanCallback)}
+     */
     public static final Consumer<BooleanCallback> CANCEL_TEST_CALLBACK = DriverStationSim::cancelTestCallback;
+    /**
+     * Deregisters the given test callback
+     * @param callback the callback to deregister
+     * @see #registerTestCallback(BooleanCallback, boolean)
+     */
     public static void cancelTestCallback(BooleanCallback callback) {
         getState().TEST_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return true for test mode; false for other modes
+     * @see #setTest(boolean)
+     */
     public static boolean getTest() {
         return getState().test;
     }
 
+    /**
+     * Set true for test mode; false for other modes
+     * @see #getTest()
+     */
     public static void setTest(boolean test) {
         setTest(test, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current test value of this PWMSim
+     */
     public static final Consumer<BooleanCallback> CALL_TEST_CALLBACK = callback -> callback.callback("", getState().test);
     private static void setTest(boolean test, boolean notifyRobot) {
         if(test != getState().test) {
@@ -151,6 +258,13 @@ public class DriverStationSim {
         }
     }
 
+    /**
+     * Registers a BooleanCallback to be called whenever the estop of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current estop value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelEstopCallback(BooleanCallback)
+     */
     public static ScopedObject<BooleanCallback> registerEstopCallback(BooleanCallback callback, boolean initialNotify) {
         getState().ESTOP_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -159,19 +273,38 @@ public class DriverStationSim {
         return new ScopedObject<>(callback, CANCEL_ESTOP_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelEstopCallback(BooleanCallback)}
+     */
     public static final Consumer<BooleanCallback> CANCEL_ESTOP_CALLBACK = DriverStationSim::cancelEstopCallback;
+    /**
+     * Deregisters the given estop callback
+     * @param callback the callback to deregister
+     * @see #registerEstopCallback(BooleanCallback, boolean)
+     */
     public static void cancelEstopCallback(BooleanCallback callback) {
         getState().ESTOP_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return true to emergency stop (no motor outputs)
+     * @see #setEstop(boolean)
+     */
     public static boolean getEstop() {
         return getState().estop;
     }
 
+    /**
+     * Set true to emergency stop (no motor outputs)
+     * @see #getEstop()
+     */
     public static void setEstop(boolean estop) {
         setEstop(estop, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current estop value of this PWMSim
+     */
     public static final Consumer<BooleanCallback> CALL_ESTOP_CALLBACK = callback -> callback.callback("", getState().estop);
     private static void setEstop(boolean estop, boolean notifyRobot) {
         if(estop != getState().estop) {
@@ -183,6 +316,13 @@ public class DriverStationSim {
         }
     }
 
+    /**
+     * Registers a BooleanCallback to be called whenever the fms of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current fms value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelFmsCallback(BooleanCallback)
+     */
     public static ScopedObject<BooleanCallback> registerFmsCallback(BooleanCallback callback, boolean initialNotify) {
         getState().FMS_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -191,19 +331,38 @@ public class DriverStationSim {
         return new ScopedObject<>(callback, CANCEL_FMS_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelFmsCallback(BooleanCallback)}
+     */
     public static final Consumer<BooleanCallback> CANCEL_FMS_CALLBACK = DriverStationSim::cancelFmsCallback;
+    /**
+     * Deregisters the given fms callback
+     * @param callback the callback to deregister
+     * @see #registerFmsCallback(BooleanCallback, boolean)
+     */
     public static void cancelFmsCallback(BooleanCallback callback) {
         getState().FMS_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return true if the ds is connected to a field management system (fms)
+     * @see #setFms(boolean)
+     */
     public static boolean getFms() {
         return getState().fms;
     }
 
+    /**
+     * Set true if the ds is connected to a field management system (fms)
+     * @see #getFms()
+     */
     public static void setFms(boolean fms) {
         setFms(fms, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current fms value of this PWMSim
+     */
     public static final Consumer<BooleanCallback> CALL_FMS_CALLBACK = callback -> callback.callback("", getState().fms);
     private static void setFms(boolean fms, boolean notifyRobot) {
         if(fms != getState().fms) {
@@ -215,6 +374,13 @@ public class DriverStationSim {
         }
     }
 
+    /**
+     * Registers a BooleanCallback to be called whenever the ds of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current ds value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelDsCallback(BooleanCallback)
+     */
     public static ScopedObject<BooleanCallback> registerDsCallback(BooleanCallback callback, boolean initialNotify) {
         getState().DS_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -223,19 +389,38 @@ public class DriverStationSim {
         return new ScopedObject<>(callback, CANCEL_DS_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelDsCallback(BooleanCallback)}
+     */
     public static final Consumer<BooleanCallback> CANCEL_DS_CALLBACK = DriverStationSim::cancelDsCallback;
+    /**
+     * Deregisters the given ds callback
+     * @param callback the callback to deregister
+     * @see #registerDsCallback(BooleanCallback, boolean)
+     */
     public static void cancelDsCallback(BooleanCallback callback) {
         getState().DS_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return true if a ds application is connected
+     * @see #setDs(boolean)
+     */
     public static boolean getDs() {
         return getState().ds;
     }
 
+    /**
+     * Set true if a ds application is connected
+     * @see #getDs()
+     */
     public static void setDs(boolean ds) {
         setDs(ds, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current ds value of this PWMSim
+     */
     public static final Consumer<BooleanCallback> CALL_DS_CALLBACK = callback -> callback.callback("", getState().ds);
     private static void setDs(boolean ds, boolean notifyRobot) {
         if(ds != getState().ds) {
@@ -247,6 +432,13 @@ public class DriverStationSim {
         }
     }
 
+    /**
+     * Registers a StringCallback to be called whenever the station of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current station value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelStationCallback(StringCallback)
+     */
     public static ScopedObject<StringCallback> registerStationCallback(StringCallback callback, boolean initialNotify) {
         getState().STATION_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -255,19 +447,38 @@ public class DriverStationSim {
         return new ScopedObject<>(callback, CANCEL_STATION_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelStationCallback(StringCallback)}
+     */
     public static final Consumer<StringCallback> CANCEL_STATION_CALLBACK = DriverStationSim::cancelStationCallback;
+    /**
+     * Deregisters the given station callback
+     * @param callback the callback to deregister
+     * @see #registerStationCallback(StringCallback, boolean)
+     */
     public static void cancelStationCallback(StringCallback callback) {
         getState().STATION_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return station color and number; supported values are “red1”, “red2”, “red3”, “blue1”, “blue2”, “blue3”.
+     * @see #setStation(String)
+     */
     public static String getStation() {
         return getState().station;
     }
 
+    /**
+     * Set station color and number; supported values are “red1”, “red2”, “red3”, “blue1”, “blue2”, “blue3”.
+     * @see #getStation()
+     */
     public static void setStation(String station) {
         setStation(station, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current station value of this PWMSim
+     */
     public static final Consumer<StringCallback> CALL_STATION_CALLBACK = callback -> callback.callback("", getState().station);
     private static void setStation(String station, boolean notifyRobot) {
         if(station != getState().station) {
@@ -279,6 +490,13 @@ public class DriverStationSim {
         }
     }
 
+    /**
+     * Registers a DoubleCallback to be called whenever the matchtime of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current matchtime value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelMatchTimeCallback(DoubleCallback)
+     */
     public static ScopedObject<DoubleCallback> registerMatchTimeCallback(DoubleCallback callback, boolean initialNotify) {
         getState().MATCHTIME_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -287,19 +505,38 @@ public class DriverStationSim {
         return new ScopedObject<>(callback, CANCEL_MATCHTIME_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelMatchTimeCallback(DoubleCallback)}
+     */
     public static final Consumer<DoubleCallback> CANCEL_MATCHTIME_CALLBACK = DriverStationSim::cancelMatchTimeCallback;
+    /**
+     * Deregisters the given matchtime callback
+     * @param callback the callback to deregister
+     * @see #registerMatchTimeCallback(DoubleCallback, boolean)
+     */
     public static void cancelMatchTimeCallback(DoubleCallback callback) {
         getState().MATCHTIME_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return match time countdown, in seconds, for each match period (e.g. for 15 second period, starts at 15 and counts down to 0).  if not in a match, -1.
+     * @see #setMatchTime(double)
+     */
     public static double getMatchTime() {
         return getState().matchtime;
     }
 
+    /**
+     * Set match time countdown, in seconds, for each match period (e.g. for 15 second period, starts at 15 and counts down to 0).  if not in a match, -1.
+     * @see #getMatchTime()
+     */
     public static void setMatchTime(double matchtime) {
         setMatchTime(matchtime, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current matchtime value of this PWMSim
+     */
     public static final Consumer<DoubleCallback> CALL_MATCHTIME_CALLBACK = callback -> callback.callback("", getState().matchtime);
     private static void setMatchTime(double matchtime, boolean notifyRobot) {
         if(matchtime != getState().matchtime) {
@@ -311,6 +548,13 @@ public class DriverStationSim {
         }
     }
 
+    /**
+     * Registers a StringCallback to be called whenever the gamedata of this device is changed
+     * @param callback the callback function to call
+     * @param initialNotify if <code>true</code>, calls the callback function with this device's current gamedata value
+     * @return a ScopedObject which can be used to close the callback
+     * @see #cancelGameDataCallback(StringCallback)
+     */
     public static ScopedObject<StringCallback> registerGameDataCallback(StringCallback callback, boolean initialNotify) {
         getState().GAMEDATA_CALLBACKS.addIfAbsent(callback);
         if(initialNotify) {
@@ -319,19 +563,38 @@ public class DriverStationSim {
         return new ScopedObject<>(callback, CANCEL_GAMEDATA_CALLBACK);
     }
 
+    /**
+     * A Consumer which calls {@link #cancelGameDataCallback(StringCallback)}
+     */
     public static final Consumer<StringCallback> CANCEL_GAMEDATA_CALLBACK = DriverStationSim::cancelGameDataCallback;
+    /**
+     * Deregisters the given gamedata callback
+     * @param callback the callback to deregister
+     * @see #registerGameDataCallback(StringCallback, boolean)
+     */
     public static void cancelGameDataCallback(StringCallback callback) {
         getState().GAMEDATA_CALLBACKS.remove(callback);
     }
 
+    /**
+     * @return game-specific data; arbitrary string contents
+     * @see #setGameData(String)
+     */
     public static String getGameData() {
         return getState().gamedata;
     }
 
+    /**
+     * Set game-specific data; arbitrary string contents
+     * @see #getGameData()
+     */
     public static void setGameData(String gamedata) {
         setGameData(gamedata, true);
     }
 
+    /**
+     * A Consumer which calls the given callback with the current gamedata value of this PWMSim
+     */
     public static final Consumer<StringCallback> CALL_GAMEDATA_CALLBACK = callback -> callback.callback("", getState().gamedata);
     private static void setGameData(String gamedata, boolean notifyRobot) {
         if(gamedata != getState().gamedata) {
@@ -343,6 +606,11 @@ public class DriverStationSim {
         }
     }
 
+    /**
+     * An implementation of {@link org.team199.wpiws.interfaces.DeviceMessageProcessor} which processes WPI HALSim messages for DriverStationSims
+     * @param device the device identifier of the device sending the message
+     * @param data the data associated with the message
+     */
     public static void processMessage(String device, List<WSValue> data) {
         for(WSValue value: data) {
             processValue(value);
@@ -407,6 +675,9 @@ public class DriverStationSim {
         }
     }
 
+    /**
+     * Contains all information about the state of a DriverStationSim
+     */
     public static class State {
         public boolean newdata = false;
         public boolean enabled = false;
