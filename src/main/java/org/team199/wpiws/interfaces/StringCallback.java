@@ -4,7 +4,7 @@ package org.team199.wpiws.interfaces;
  * Represents a device callback which accepts a String value as data
  */
 @FunctionalInterface
-public interface SimValueCallback {
+public interface StringCallback {
 
     /**
      * Calls the callback function

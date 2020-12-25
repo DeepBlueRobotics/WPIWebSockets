@@ -4,9 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.team199.wpiws.EncoderSim;
-import org.team199.wpiws.PWMSim;
-import org.team199.wpiws.SimDeviceSim;
+import org.team199.wpiws.devices.AccelerometerSim;
+import org.team199.wpiws.devices.AnalogInputSim;
+import org.team199.wpiws.devices.DIOSim;
+import org.team199.wpiws.devices.DriverStationSim;
+import org.team199.wpiws.devices.DutyCycleSim;
+import org.team199.wpiws.devices.EncoderSim;
+import org.team199.wpiws.devices.GyroSim;
+import org.team199.wpiws.devices.JoystickSim;
+import org.team199.wpiws.devices.PWMSim;
+import org.team199.wpiws.devices.RelaySim;
+import org.team199.wpiws.devices.RoboRIOSim;
+import org.team199.wpiws.devices.SimDeviceSim;
+import org.team199.wpiws.devices.dPWMSim;
 import org.team199.wpiws.interfaces.DeviceMessageProcessor;
 
 /**
@@ -18,8 +28,18 @@ public final class MessageProcessor {
     private static final ArrayList<String> unknownTypes = new ArrayList<>();
     
     static {
+        registerProcessor("Accel", AccelerometerSim::processMessage);
+        registerProcessor("AI", AnalogInputSim::processMessage);
+        registerProcessor("dPWM", dPWMSim::processMessage);
+        registerProcessor("DIO", DIOSim::processMessage);
+        registerProcessor("DriverStation", DriverStationSim::processMessage);
+        registerProcessor("DutyCycle", DutyCycleSim::processMessage);
         registerProcessor("Encoder", EncoderSim::processMessage);
+        registerProcessor("Gyro", GyroSim::processMessage);
+        registerProcessor("Joystick", JoystickSim::processMessage);
         registerProcessor("PWM", PWMSim::processMessage);
+        registerProcessor("Relay", RelaySim::processMessage);
+        registerProcessor("RoboRIO", RoboRIOSim::processMessage);
         registerProcessor("SimDevices", SimDeviceSim::processMessage);
     }
 
