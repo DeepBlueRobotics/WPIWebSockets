@@ -1,9 +1,11 @@
 package org.team199.wpiws.connection;
 
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ClientHandshake;
@@ -20,21 +22,21 @@ public final class WSConnection {
      * @param uri the URI to which to connect
      * @return a running WebSocketClient connected to the given server
      */
-    public static RunningObject<WebSocketClient> connect(URI uri) {
-        return new RunningObject<>(new WSClientImpl(uri));
+    public static RunningObject<WebSocketClient> connect(URI uri, boolean autoReconnect) {
+        return new RunningObject<>(new WSClientImpl(uri, autoReconnect));
     }
     
     /**
      * Connects to a the WPI HALSim server using either its default location or the environment variables: HALSIMWS_HOST, HALSIMWS_PORT, and HALSIMWS_URI 
      * @return a running WebSocketClient connected to the WPI HALSim server
      */
-    public static RunningObject<WebSocketClient> connectHALSim() throws URISyntaxException {
+    public static RunningObject<WebSocketClient> connectHALSim(boolean autoReconnect) throws URISyntaxException {
         Map<String, String> env = System.getenv();
         String host = env.containsKey("HALSIMWS_HOST") ? env.get("HALSIMWS_HOST") : "localhost";
         String port = env.containsKey("HALSIMWS_PORT") ? env.get("HALSIMWS_PORT") : "3300";
         String resource = env.containsKey("HALSIMWS_URI") ? env.get("HALSIMWS_URI") : "/wpilibws";
         URI uri = new URI("ws://" + host + ":" + port + resource);
-        RunningObject<WebSocketClient> client = connect(uri);
+        RunningObject<WebSocketClient> client = connect(uri, autoReconnect);
         client.object.setConnectionLostTimeout(0);
         return client;
     }
@@ -77,12 +79,18 @@ public final class WSConnection {
      */
     private static class WSClientImpl extends WebSocketClient {
 
-        public WSClientImpl(URI serverURI) {
+        public boolean autoReconnect;
+        public int retryTimeout;
+
+        public WSClientImpl(URI serverURI, boolean autoReconnect) {
             super(serverURI);
+            this.autoReconnect = autoReconnect;
+            retryTimeout = 1;
         }
         
         @Override
         public void onOpen(ServerHandshake handshake) {
+            retryTimeout = 0;
             ConnectionProcessor.onOpen(this);
         }
 
@@ -94,11 +102,38 @@ public final class WSConnection {
         @Override
         public void onClose(int code, String reason, boolean remote) {
             ConnectionProcessor.onClose(this, code, reason, remote);
+            if(autoReconnect && remote) {
+                System.out.println("Reconnnecting...");
+                RunningObject.start(this::tryReconnect);
+            }
         }
 
         @Override
         public void onError(Exception e) {
-            ConnectionProcessor.onError(this, e);
+            if(e instanceof ConnectException) {
+                //Connection Refused
+                System.err.println("Error: Connection Refused! Trying again in " + retryTimeout + " second(s)");
+                int waitSecs = retryTimeout++;
+                if(retryTimeout > 5) {
+                    retryTimeout = 5;
+                }
+                RunningObject.start(() -> tryReconnect(waitSecs*1000));
+            } else {
+                ConnectionProcessor.onError(this, e);
+            }
+        }
+
+        public void tryReconnect() {
+            tryReconnect(0);
+        }
+
+        public void tryReconnect(long delay) {
+            try {
+                Thread.sleep(delay);
+                reconnectBlocking();
+            } catch(InterruptedException e) {
+                System.err.println("Interrupted while reconnecting!");
+            }
         }
         
     }
