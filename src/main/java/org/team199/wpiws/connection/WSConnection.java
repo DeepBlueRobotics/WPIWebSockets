@@ -114,6 +114,9 @@ public final class WSConnection {
                 //Connection Refused
                 System.err.println("Error: Connection Refused! Trying again in " + retryTimeout + " second(s)");
                 int waitSecs = retryTimeout++;
+                if(retryTimeout > 5) {
+                    retryTimeout = 5;
+                }
                 RunningObject.start(() -> tryReconnect(waitSecs*1000));
             } else {
                 ConnectionProcessor.onError(this, e);
