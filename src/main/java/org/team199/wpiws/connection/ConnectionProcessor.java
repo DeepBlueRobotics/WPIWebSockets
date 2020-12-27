@@ -8,8 +8,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.java_websocket.WebSocket;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsoner;
 
 /**
  * Manages Websocket Connections
@@ -54,13 +54,12 @@ public final class ConnectionProcessor {
      * @param socket the WebSocket which recieve the message
      * @param message the message
      */
-    @SuppressWarnings({"unchecked", "UseSpecificCatch"})
     public static void onMessage(WebSocket socket, String message) {
         try {
-            JSONObject jsonMessage = (JSONObject)new JSONParser().parse(message.replaceAll("[\n\r]", ""));
+            JsonObject jsonMessage = (JsonObject)Jsoner.deserialize(message);
             String device = (String)jsonMessage.get("device");
             String type = (String)jsonMessage.get("type");
-            JSONObject dataObject = (JSONObject)jsonMessage.get("data");
+            JsonObject dataObject = (JsonObject)jsonMessage.get("data");
             List<WSValue> data = ((Stream<String>)dataObject.keySet().stream().map(STRING_CAST))
                 .map(key -> new WSValue(key, dataObject.get(key))
                 ).collect(Collectors.toList());
@@ -99,13 +98,13 @@ public final class ConnectionProcessor {
      */
     @SuppressWarnings("all")
     public static void brodcastMessage(Object device, String type, List<WSValue> data) {
-        JSONObject message = new JSONObject();
+        JsonObject message = new JsonObject();
         message.put("device", device);
         message.put("type", type);
-        JSONObject messageData = new JSONObject();
+        JsonObject messageData = new JsonObject();
         data.forEach(value -> messageData.put(value.getKey(), value.getValue()));
         message.put("data", messageData);
-        brodcastMessage(message.toJSONString());
+        brodcastMessage(message.toJson());
     }
     
     /**
