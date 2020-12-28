@@ -5,7 +5,6 @@
 package org.team199.wpiws.devices;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -229,9 +228,11 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
             value.setKey(key.substring(key.startsWith("<>") ? 2 : 1));
             if(Boolean.class.isAssignableFrom(value.getValue().getClass())) {
                 simDevice.getState().valueTypes.put(value.getKey(), "b");
-            } else if(BigInteger.class.isAssignableFrom(value.getValue().getClass())) {
-                simDevice.getState().valueTypes.put(value.getKey(), "i");
             } else if(BigDecimal.class.isAssignableFrom(value.getValue().getClass())) {
+                // NOTE: json-simple represents all numbers using BigDecimal.
+                // Since there is no way to ensure that a numeric JSON numeric
+                // value that is an integer in one message will continue to be an integer
+                // in future messages, we interpret all numbers as doubles.
                 simDevice.getState().valueTypes.put(value.getKey(), "d");
             } else {
                 simDevice.getState().valueTypes.put(value.getKey(), "s");
