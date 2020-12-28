@@ -2,14 +2,15 @@ package org.team199.wpiws.connection;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.java_websocket.WebSocket;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
+import com.github.cliftonlabs.json_simple.JsonKey;
 
 /**
  * Manages Websocket Connections
@@ -49,6 +50,23 @@ public final class ConnectionProcessor {
     }
 
     public static final Function<Object, String> STRING_CAST = obj -> (String)obj;
+
+    enum MessageKeys implements JsonKey {
+        DEVICE,
+        TYPE,
+        DATA;
+
+        @Override
+        public String getKey() {
+            return this.name().toLowerCase();
+        }
+
+        @Override
+        public Object getValue() {
+            return new Exception("Message is missing required key: " + getKey());
+        }
+    }
+
     /**
      * Called when a WebSocket recieves a message
      * @param socket the WebSocket which recieve the message
@@ -57,12 +75,12 @@ public final class ConnectionProcessor {
     public static void onMessage(WebSocket socket, String message) {
         try {
             JsonObject jsonMessage = (JsonObject)Jsoner.deserialize(message);
-            String device = (String)jsonMessage.get("device");
-            String type = (String)jsonMessage.get("type");
-            JsonObject dataObject = (JsonObject)jsonMessage.get("data");
-            List<WSValue> data = ((Stream<String>)dataObject.keySet().stream().map(STRING_CAST))
-                .map(key -> new WSValue(key, dataObject.get(key))
-                ).collect(Collectors.toList());
+            String device = jsonMessage.getString(MessageKeys.DEVICE);
+            String type = jsonMessage.getString(MessageKeys.TYPE);
+            Map<String, String> dataObject = jsonMessage.getMap(MessageKeys.DATA);
+            List<WSValue> data = dataObject.entrySet().stream()
+                .map(entry -> new WSValue(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
             threadExecutor.accept(() -> MessageProcessor.process(device, type, data));
         } catch(Exception e) {
             System.err.println("Invalid Message from: " + getSocketInfo(socket));
@@ -99,12 +117,13 @@ public final class ConnectionProcessor {
     @SuppressWarnings("all")
     public static void brodcastMessage(Object device, String type, List<WSValue> data) {
         JsonObject message = new JsonObject();
-        message.put("device", device);
-        message.put("type", type);
+        message.put(MessageKeys.DEVICE, device);
+        message.put(MessageKeys.TYPE, type);
         JsonObject messageData = new JsonObject();
         data.forEach(value -> messageData.put(value.getKey(), value.getValue()));
-        message.put("data", messageData);
-        brodcastMessage(message.toJson());
+        message.put(MessageKeys.DATA, messageData);
+        String messageJson = message.toJson();
+        brodcastMessage(messageJson);
     }
     
     /**

@@ -4,6 +4,8 @@
 // 'ag -o "WebotsWebSocketsImpl/src/main/org/team199/wpiws/devices" "<path/to/wpilib-ws.yaml>" "https://github.com/DeepBlueRobotics/WPIWebSocketsTemplate.git"'
 package org.team199.wpiws.devices;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -227,9 +229,9 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
             value.setKey(key.substring(key.startsWith("<>") ? 2 : 1));
             if(Boolean.class.isAssignableFrom(value.getValue().getClass())) {
                 simDevice.getState().valueTypes.put(value.getKey(), "b");
-            } else if(Integer.class.isAssignableFrom(value.getValue().getClass())) {
+            } else if(BigInteger.class.isAssignableFrom(value.getValue().getClass())) {
                 simDevice.getState().valueTypes.put(value.getKey(), "i");
-            } else if(Double.class.isAssignableFrom(value.getValue().getClass())) {
+            } else if(BigDecimal.class.isAssignableFrom(value.getValue().getClass())) {
                 simDevice.getState().valueTypes.put(value.getKey(), "d");
             } else {
                 simDevice.getState().valueTypes.put(value.getKey(), "s");
