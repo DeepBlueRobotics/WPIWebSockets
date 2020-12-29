@@ -433,12 +433,12 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
      * @param data the data associated with the message
      */
     public static void processMessage(String device, List<WSValue> data) {
-        EncoderSim simDevice = new EncoderSim(device);
-
         // Process all of the values, but save the "<init" value for last
         // so that the rest of the state has been set when the initialize
         // callback is called.
         WSValue init = null;
+        EncoderSim simDevice = new EncoderSim(device);
+
         for(WSValue value: data) {
             if (value.getKey().equals("<init"))
                 init = value;
@@ -483,7 +483,7 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
                     break;
                 }
                 default: {
-                    System.err.println("EncoderSim encountered unrecognized WSValue: " + value.getKey() + ":" + value.getValue());
+                    System.err.println("EncoderSim ignored unrecognized WSValue: " + value.getKey() + ":" + value.getValue());
                 }
             }
         }

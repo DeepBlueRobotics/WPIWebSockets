@@ -612,9 +612,18 @@ public class DriverStationSim {
      * @param data the data associated with the message
      */
     public static void processMessage(String device, List<WSValue> data) {
+        // Process all of the values, but save the "<init" value for last
+        // so that the rest of the state has been set when the initialize
+        // callback is called.
+        WSValue init = null;
         for(WSValue value: data) {
-            processValue(value);
+            if (value.getKey().equals("<init"))
+                init = value;
+            else
+                processValue(value);
         }
+        if (init != null)
+            processValue(init);
     }
 
     private static final BiConsumer<Boolean, Boolean> SET_NEWDATA = DriverStationSim::setNewData;
@@ -670,6 +679,9 @@ public class DriverStationSim {
                 case ">game_data": {
                     StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), String.class, SET_GAMEDATA);
                     break;
+                }
+                default: {
+                    System.err.println("DriverStationSim ignored unrecognized WSValue: " + value.getKey() + ":" + value.getValue());
                 }
             }
         }
