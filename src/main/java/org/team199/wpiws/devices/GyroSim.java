@@ -607,10 +607,20 @@ public class GyroSim extends StateDevice<GyroSim.State> {
      * @param data the data associated with the message
      */
     public static void processMessage(String device, List<WSValue> data) {
+        // Process all of the values, but save the "<init" value for last
+        // so that the rest of the state has been set when the initialize
+        // callback is called.
+        WSValue init = null;
         GyroSim simDevice = new GyroSim(device);
+
         for(WSValue value: data) {
-            simDevice.processValue(value);
+            if (value.getKey().equals("<init"))
+                init = value;
+            else
+                simDevice.processValue(value);
         }
+        if (init != null)
+            simDevice.processValue(init);
     }
 
     private final BiConsumer<Boolean, Boolean> SET_INITIALIZED = this::setInitialized;
@@ -660,6 +670,9 @@ public class GyroSim extends StateDevice<GyroSim.State> {
                 case ">rate_z": {
                     filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_RATEZ);
                     break;
+                }
+                default: {
+                    System.err.println("GyroSim ignored unrecognized WSValue: " + value.getKey() + ":" + value.getValue());
                 }
             }
         }

@@ -433,10 +433,20 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
      * @param data the data associated with the message
      */
     public static void processMessage(String device, List<WSValue> data) {
+        // Process all of the values, but save the "<init" value for last
+        // so that the rest of the state has been set when the initialize
+        // callback is called.
+        WSValue init = null;
         EncoderSim simDevice = new EncoderSim(device);
+
         for(WSValue value: data) {
-            simDevice.processValue(value);
+            if (value.getKey().equals("<init"))
+                init = value;
+            else
+                simDevice.processValue(value);
         }
+        if (init != null)
+            simDevice.processValue(init);
     }
 
     private final BiConsumer<Boolean, Boolean> SET_INITIALIZED = this::setInitialized;
@@ -471,6 +481,9 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
                 case ">period": {
                     filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_PERIOD);
                     break;
+                }
+                default: {
+                    System.err.println("EncoderSim ignored unrecognized WSValue: " + value.getKey() + ":" + value.getValue());
                 }
             }
         }

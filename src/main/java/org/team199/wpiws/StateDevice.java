@@ -1,9 +1,12 @@
 package org.team199.wpiws;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
+
+import com.github.cliftonlabs.json_simple.JsonArray;
 
 /**
  * Represents a device which has a number of internal states based on a given id
@@ -49,27 +52,6 @@ public abstract class StateDevice<T> {
     protected abstract T generateState();
 
     /**
-     * Casts and forwards the given object to the given process type iff it is assignable from the requested type
-     * @param <T> the requested type
-     * @param recievedObject the object recieved from the WPI HALSim
-     * @param requestedType the type to which to try to cast the object
-     * @param processor the processor which should recieve the forwarded method call
-     * @see Class#isAssignableFrom(Class)
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> void filterMessage(Object recievedObject, Class<T> requestedType, Consumer<T> processor) {
-        if(requestedType.isAssignableFrom(recievedObject.getClass()) || (recievedObject instanceof Long && requestedType == Integer.class)) {
-            processor.accept((T)recievedObject);
-        } else {
-            System.err.println(String.format("Invalid value: %1$s of type: %2$s expected type: %3$s", recievedObject.toString(), recievedObject.getClass().getName(), requestedType.getName()));
-        }
-        //EncoderSim channels are expected integers but sent as longs
-        if(recievedObject instanceof Long && requestedType == Integer.class) {
-            ((Consumer<Integer>)processor).accept(((Long)recievedObject).intValue());
-        }
-    }
-
-    /**
      * Casts and forwards the given object to the given process type iff it is assignable from the requested type and sets the second argument of the BiConsumer to <code>false</code>
      * @param <T> the requested type
      * @param recievedObject the object recieved from the WPI HALSim
@@ -79,12 +61,52 @@ public abstract class StateDevice<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T> void filterMessageAndIgnoreRobotState(Object recievedObject, Class<T> requestedType, BiConsumer<T, Boolean> robotStateProcessor) {
+        boolean isInvalidValue = false;
         if(requestedType.isAssignableFrom(recievedObject.getClass())) {
             robotStateProcessor.accept((T)recievedObject, false);
+        } else if(recievedObject instanceof BigDecimal) {
+            BigDecimal bd = (BigDecimal)recievedObject;
+            if (requestedType == Integer.class) {
+                ((BiConsumer<Integer, Boolean>)robotStateProcessor).accept(bd.intValue(), false);
+            } else if (requestedType == Double.class) {
+                ((BiConsumer<Double, Boolean>)robotStateProcessor).accept(bd.doubleValue(), false);
+            } else {
+                isInvalidValue = true;
+            }
+        } else if (recievedObject instanceof JsonArray) {
+            JsonArray jsonArray = (JsonArray)recievedObject;
+            if (requestedType == int[].class) {
+                int[] intArray = new int[jsonArray.size()];
+                for (int i = 0; i < intArray.length; i++) {
+                    intArray[i] = jsonArray.getInteger(i);
+                }
+                ((BiConsumer<int[], Boolean>)robotStateProcessor).accept(intArray, false);
+            } else if (requestedType == double[].class) {
+                double[] doubleArray = new double[jsonArray.size()];
+                for (int i = 0; i < doubleArray.length; i++) {
+                    doubleArray[i] = jsonArray.getDouble(i);
+                }
+                ((BiConsumer<double[], Boolean>)robotStateProcessor).accept(doubleArray, false);
+            } else if (requestedType == boolean[].class) {
+                boolean[] booleanArray = new boolean[jsonArray.size()];
+                for (int i = 0; i < booleanArray.length; i++) {
+                    booleanArray[i] = jsonArray.getBoolean(i);
+                }
+                ((BiConsumer<boolean[], Boolean>)robotStateProcessor).accept(booleanArray, false);
+            } else if (requestedType == String[].class) {
+                String[] stringArray = new String[jsonArray.size()];
+                for (int i = 0; i < stringArray.length; i++) {
+                    stringArray[i] = jsonArray.getString(i);
+                }
+                ((BiConsumer<String[], Boolean>)robotStateProcessor).accept(stringArray, false);
+            } else {
+                isInvalidValue = true;
+            }
+        } else {
+            isInvalidValue = true;
         }
-        //EncoderSim channels are expected integers but sent as longs
-        if(recievedObject instanceof Long && requestedType == Integer.class) {
-            ((BiConsumer<Integer, Boolean>)robotStateProcessor).accept(((Long)recievedObject).intValue(), false);
+        if (isInvalidValue) {
+            System.err.println(String.format("Invalid value: %1$s of type: %2$s expected type: %3$s", recievedObject.toString(), recievedObject.getClass().getName(), requestedType.getName()));
         }
     }
 

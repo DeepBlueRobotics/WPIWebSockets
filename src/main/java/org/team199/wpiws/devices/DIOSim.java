@@ -259,10 +259,20 @@ public class DIOSim extends StateDevice<DIOSim.State> {
      * @param data the data associated with the message
      */
     public static void processMessage(String device, List<WSValue> data) {
+        // Process all of the values, but save the "<init" value for last
+        // so that the rest of the state has been set when the initialize
+        // callback is called.
+        WSValue init = null;
         DIOSim simDevice = new DIOSim(device);
+
         for(WSValue value: data) {
-            simDevice.processValue(value);
+            if (value.getKey().equals("<init"))
+                init = value;
+            else
+                simDevice.processValue(value);
         }
+        if (init != null)
+            simDevice.processValue(init);
     }
 
     private final BiConsumer<Boolean, Boolean> SET_INITIALIZED = this::setInitialized;
@@ -282,6 +292,9 @@ public class DIOSim extends StateDevice<DIOSim.State> {
                 case "<>value": {
                     filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_VALUE);
                     break;
+                }
+                default: {
+                    System.err.println("DIOSim ignored unrecognized WSValue: " + value.getKey() + ":" + value.getValue());
                 }
             }
         }

@@ -332,10 +332,20 @@ public class JoystickSim extends StateDevice<JoystickSim.State> {
      * @param data the data associated with the message
      */
     public static void processMessage(String device, List<WSValue> data) {
+        // Process all of the values, but save the "<init" value for last
+        // so that the rest of the state has been set when the initialize
+        // callback is called.
+        WSValue init = null;
         JoystickSim simDevice = new JoystickSim(device);
+
         for(WSValue value: data) {
-            simDevice.processValue(value);
+            if (value.getKey().equals("<init"))
+                init = value;
+            else
+                simDevice.processValue(value);
         }
+        if (init != null)
+            simDevice.processValue(init);
     }
 
     private final BiConsumer<double[], Boolean> SET_AXES = this::setAxes;
@@ -366,6 +376,9 @@ public class JoystickSim extends StateDevice<JoystickSim.State> {
                 case "<rumble_right": {
                     filterMessageAndIgnoreRobotState(value.getValue(), Double.class, SET_RUMBLERIGHT);
                     break;
+                }
+                default: {
+                    System.err.println("JoystickSim ignored unrecognized WSValue: " + value.getKey() + ":" + value.getValue());
                 }
             }
         }
