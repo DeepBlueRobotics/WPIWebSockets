@@ -1,3 +1,7 @@
+plugins {
+  id "com.github.node-gradle.node" version "2.2.4"
+}
+
 apply plugin: 'java-library'
 apply plugin: 'jacoco'
 apply plugin: 'maven-publish'
@@ -14,4 +18,9 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.30'
     compile group: 'com.github.cliftonlabs', name: 'json-simple', version: '3.1.1'
     testImplementation 'junit:junit:4.13'
+}
+
+task generateDeviceFiles(type: NpxTask) {
+  command = '@asyncapi/generator'
+  args = ['--force-write', '-o', './src/main/java/org/team199/wpiws/devices', 'asyncapi-template/wpilib-ws.yaml', 'asyncapi-template/']
 }
