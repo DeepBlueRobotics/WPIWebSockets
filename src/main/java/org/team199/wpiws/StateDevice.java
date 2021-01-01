@@ -53,18 +53,18 @@ public abstract class StateDevice<T> {
     /**
      * Casts and forwards the given object to the given process type iff it is assignable from the requested type and sets the second argument of the BiConsumer to <code>false</code>
      * @param <T> the requested type
-     * @param recvivedObject the object recvived from the WPI HALSim
+     * @param receivedObject the object received from the WPI HALSim
      * @param requestedType the type to which to try to cast the object
-     * @param processor the processor which should recvive the forwarded method call
+     * @param processor the processor which should receive the forwarded method call
      * @see Class#isAssignableFrom(Class)
      */
     @SuppressWarnings("unchecked")
-    public static <T> void filterMessageAndIgnoreRobotState(Object recvivedObject, Class<T> requestedType, BiConsumer<T, Boolean> robotStateProcessor) {
+    public static <T> void filterMessageAndIgnoreRobotState(Object receivedObject, Class<T> requestedType, BiConsumer<T, Boolean> robotStateProcessor) {
         boolean isInvalidValue = false;
-        if(requestedType.isAssignableFrom(recvivedObject.getClass())) {
-            robotStateProcessor.accept((T)recvivedObject, false);
-        } else if(recvivedObject instanceof BigDecimal) {
-            BigDecimal bd = (BigDecimal)recvivedObject;
+        if(requestedType.isAssignableFrom(receivedObject.getClass())) {
+            robotStateProcessor.accept((T)receivedObject, false);
+        } else if(receivedObject instanceof BigDecimal) {
+            BigDecimal bd = (BigDecimal)receivedObject;
             if (requestedType == Integer.class) {
                 ((BiConsumer<Integer, Boolean>)robotStateProcessor).accept(bd.intValue(), false);
             } else if (requestedType == Double.class) {
@@ -72,8 +72,8 @@ public abstract class StateDevice<T> {
             } else {
                 isInvalidValue = true;
             }
-        } else if (recvivedObject instanceof JsonArray) {
-            JsonArray jsonArray = (JsonArray)recvivedObject;
+        } else if (receivedObject instanceof JsonArray) {
+            JsonArray jsonArray = (JsonArray)receivedObject;
             if (requestedType == int[].class) {
                 int[] intArray = new int[jsonArray.size()];
                 for (int i = 0; i < intArray.length; i++) {
@@ -105,7 +105,7 @@ public abstract class StateDevice<T> {
             isInvalidValue = true;
         }
         if (isInvalidValue) {
-            System.err.println(String.format("Invalid value: %1$s of type: %2$s expected type: %3$s", recvivedObject.toString(), recvivedObject.getClass().getName(), requestedType.getName()));
+            System.err.println(String.format("Invalid value: %1$s of type: %2$s expected type: %3$s", receivedObject.toString(), receivedObject.getClass().getName(), requestedType.getName()));
         }
     }
 

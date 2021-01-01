@@ -68,8 +68,8 @@ public final class ConnectionProcessor {
     }
 
     /**
-     * Called when a WebSocket recvives a message
-     * @param socket the WebSocket which recvive the message
+     * Called when a WebSocket receives a message
+     * @param socket the WebSocket which receive the message
      * @param message the message
      */
     public static void onMessage(WebSocket socket, String message) {
