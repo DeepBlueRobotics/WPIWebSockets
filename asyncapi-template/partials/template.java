@@ -143,7 +143,7 @@ public class {{ name }}Sim {
             INITIALIZED_DEVICES.remove(id);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "{{ type }}", new WSValue("<init", initialized));
+            ConnectionProcessor.broadcastMessage(id, "{{ type }}", new WSValue("<init", initialized));
         }
     }
 
@@ -224,7 +224,7 @@ public class {{ name }}Sim {
             getState().{{ varInfo.pnameu }}_CALLBACKS.forEach(CALL_{{ varInfo.pnameu }}_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage({{ cid }}, "{{ type }}", new WSValue("{{ varInfo.pfname }}", {{ varInfo.pnamel }}));
+            ConnectionProcessor.broadcastMessage({{ cid }}, "{{ type }}", new WSValue("{{ varInfo.pfname }}", {{ varInfo.pnamel }}));
         }
     }
 

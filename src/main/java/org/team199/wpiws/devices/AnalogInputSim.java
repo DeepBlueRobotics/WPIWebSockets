@@ -121,7 +121,7 @@ public class AnalogInputSim extends StateDevice<AnalogInputSim.State> {
             INITIALIZED_DEVICES.remove(id);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "AI", new WSValue("<init", initialized));
+            ConnectionProcessor.broadcastMessage(id, "AI", new WSValue("<init", initialized));
         }
     }
 
@@ -191,7 +191,7 @@ public class AnalogInputSim extends StateDevice<AnalogInputSim.State> {
             getState().VOLTAGE_CALLBACKS.forEach(CALL_VOLTAGE_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "AI", new WSValue(">voltage", voltage));
+            ConnectionProcessor.broadcastMessage(id, "AI", new WSValue(">voltage", voltage));
         }
     }
 

@@ -121,7 +121,7 @@ public class PWMSim extends StateDevice<PWMSim.State> {
             INITIALIZED_DEVICES.remove(id);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "PWM", new WSValue("<init", initialized));
+            ConnectionProcessor.broadcastMessage(id, "PWM", new WSValue("<init", initialized));
         }
     }
 
@@ -191,7 +191,7 @@ public class PWMSim extends StateDevice<PWMSim.State> {
             getState().SPEED_CALLBACKS.forEach(CALL_SPEED_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "PWM", new WSValue("<speed", speed));
+            ConnectionProcessor.broadcastMessage(id, "PWM", new WSValue("<speed", speed));
         }
     }
 
@@ -249,7 +249,7 @@ public class PWMSim extends StateDevice<PWMSim.State> {
             getState().POSITION_CALLBACKS.forEach(CALL_POSITION_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "PWM", new WSValue("<position", position));
+            ConnectionProcessor.broadcastMessage(id, "PWM", new WSValue("<position", position));
         }
     }
 

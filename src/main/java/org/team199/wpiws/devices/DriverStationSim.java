@@ -80,7 +80,7 @@ public class DriverStationSim {
             getState().NEWDATA_CALLBACKS.forEach(CALL_NEWDATA_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">new_data", newdata));
+            ConnectionProcessor.broadcastMessage("", "DriverStation", new WSValue(">new_data", newdata));
         }
     }
 
@@ -138,7 +138,7 @@ public class DriverStationSim {
             getState().ENABLED_CALLBACKS.forEach(CALL_ENABLED_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">enabled", enabled));
+            ConnectionProcessor.broadcastMessage("", "DriverStation", new WSValue(">enabled", enabled));
         }
     }
 
@@ -196,7 +196,7 @@ public class DriverStationSim {
             getState().AUTONOMOUS_CALLBACKS.forEach(CALL_AUTONOMOUS_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">autonomous", autonomous));
+            ConnectionProcessor.broadcastMessage("", "DriverStation", new WSValue(">autonomous", autonomous));
         }
     }
 
@@ -254,7 +254,7 @@ public class DriverStationSim {
             getState().TEST_CALLBACKS.forEach(CALL_TEST_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">test", test));
+            ConnectionProcessor.broadcastMessage("", "DriverStation", new WSValue(">test", test));
         }
     }
 
@@ -312,7 +312,7 @@ public class DriverStationSim {
             getState().ESTOP_CALLBACKS.forEach(CALL_ESTOP_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">estop", estop));
+            ConnectionProcessor.broadcastMessage("", "DriverStation", new WSValue(">estop", estop));
         }
     }
 
@@ -370,7 +370,7 @@ public class DriverStationSim {
             getState().FMS_CALLBACKS.forEach(CALL_FMS_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">fms", fms));
+            ConnectionProcessor.broadcastMessage("", "DriverStation", new WSValue(">fms", fms));
         }
     }
 
@@ -428,7 +428,7 @@ public class DriverStationSim {
             getState().DS_CALLBACKS.forEach(CALL_DS_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">ds", ds));
+            ConnectionProcessor.broadcastMessage("", "DriverStation", new WSValue(">ds", ds));
         }
     }
 
@@ -486,7 +486,7 @@ public class DriverStationSim {
             getState().STATION_CALLBACKS.forEach(CALL_STATION_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">station", station));
+            ConnectionProcessor.broadcastMessage("", "DriverStation", new WSValue(">station", station));
         }
     }
 
@@ -544,7 +544,7 @@ public class DriverStationSim {
             getState().MATCHTIME_CALLBACKS.forEach(CALL_MATCHTIME_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">match_time", matchtime));
+            ConnectionProcessor.broadcastMessage("", "DriverStation", new WSValue(">match_time", matchtime));
         }
     }
 
@@ -602,7 +602,7 @@ public class DriverStationSim {
             getState().GAMEDATA_CALLBACKS.forEach(CALL_GAMEDATA_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "DriverStation", new WSValue(">game_data", gamedata));
+            ConnectionProcessor.broadcastMessage("", "DriverStation", new WSValue(">game_data", gamedata));
         }
     }
 

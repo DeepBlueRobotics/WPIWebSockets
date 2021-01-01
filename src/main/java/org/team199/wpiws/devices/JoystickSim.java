@@ -90,7 +90,7 @@ public class JoystickSim extends StateDevice<JoystickSim.State> {
             getState().AXES_CALLBACKS.forEach(CALL_AXES_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Joystick", new WSValue(">axes", axes));
+            ConnectionProcessor.broadcastMessage(id, "Joystick", new WSValue(">axes", axes));
         }
     }
 
@@ -148,7 +148,7 @@ public class JoystickSim extends StateDevice<JoystickSim.State> {
             getState().POVS_CALLBACKS.forEach(CALL_POVS_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Joystick", new WSValue(">povs", povs));
+            ConnectionProcessor.broadcastMessage(id, "Joystick", new WSValue(">povs", povs));
         }
     }
 
@@ -206,7 +206,7 @@ public class JoystickSim extends StateDevice<JoystickSim.State> {
             getState().BUTTONS_CALLBACKS.forEach(CALL_BUTTONS_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Joystick", new WSValue(">buttons", buttons));
+            ConnectionProcessor.broadcastMessage(id, "Joystick", new WSValue(">buttons", buttons));
         }
     }
 
@@ -264,7 +264,7 @@ public class JoystickSim extends StateDevice<JoystickSim.State> {
             getState().RUMBLELEFT_CALLBACKS.forEach(CALL_RUMBLELEFT_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Joystick", new WSValue("<rumble_left", rumbleleft));
+            ConnectionProcessor.broadcastMessage(id, "Joystick", new WSValue("<rumble_left", rumbleleft));
         }
     }
 
@@ -322,7 +322,7 @@ public class JoystickSim extends StateDevice<JoystickSim.State> {
             getState().RUMBLERIGHT_CALLBACKS.forEach(CALL_RUMBLERIGHT_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Joystick", new WSValue("<rumble_right", rumbleright));
+            ConnectionProcessor.broadcastMessage(id, "Joystick", new WSValue("<rumble_right", rumbleright));
         }
     }
 

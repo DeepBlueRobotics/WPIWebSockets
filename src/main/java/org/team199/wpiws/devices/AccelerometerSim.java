@@ -121,7 +121,7 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
             INITIALIZED_DEVICES.remove(id);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Accel", new WSValue("<init", initialized));
+            ConnectionProcessor.broadcastMessage(id, "Accel", new WSValue("<init", initialized));
         }
     }
 
@@ -191,7 +191,7 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
             getState().RANGE_CALLBACKS.forEach(CALL_RANGE_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Accel", new WSValue("<range", range));
+            ConnectionProcessor.broadcastMessage(id, "Accel", new WSValue("<range", range));
         }
     }
 
@@ -249,7 +249,7 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
             getState().X_CALLBACKS.forEach(CALL_X_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Accel", new WSValue(">x", x));
+            ConnectionProcessor.broadcastMessage(id, "Accel", new WSValue(">x", x));
         }
     }
 
@@ -307,7 +307,7 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
             getState().Y_CALLBACKS.forEach(CALL_Y_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Accel", new WSValue(">y", y));
+            ConnectionProcessor.broadcastMessage(id, "Accel", new WSValue(">y", y));
         }
     }
 
@@ -365,7 +365,7 @@ public class AccelerometerSim extends StateDevice<AccelerometerSim.State> {
             getState().Z_CALLBACKS.forEach(CALL_Z_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Accel", new WSValue(">z", z));
+            ConnectionProcessor.broadcastMessage(id, "Accel", new WSValue(">z", z));
         }
     }
 
