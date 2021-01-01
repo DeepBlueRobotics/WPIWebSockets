@@ -90,7 +90,7 @@ public class RelaySim extends StateDevice<RelaySim.State> {
             getState().INITFWD_CALLBACKS.forEach(CALL_INITFWD_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Relay", new WSValue("<init_fwd", initfwd));
+            ConnectionProcessor.broadcastMessage(id, "Relay", new WSValue("<init_fwd", initfwd));
         }
     }
 
@@ -148,7 +148,7 @@ public class RelaySim extends StateDevice<RelaySim.State> {
             getState().INITREV_CALLBACKS.forEach(CALL_INITREV_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Relay", new WSValue("<init_rev", initrev));
+            ConnectionProcessor.broadcastMessage(id, "Relay", new WSValue("<init_rev", initrev));
         }
     }
 
@@ -206,7 +206,7 @@ public class RelaySim extends StateDevice<RelaySim.State> {
             getState().FWD_CALLBACKS.forEach(CALL_FWD_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Relay", new WSValue("<fwd", fwd));
+            ConnectionProcessor.broadcastMessage(id, "Relay", new WSValue("<fwd", fwd));
         }
     }
 
@@ -264,7 +264,7 @@ public class RelaySim extends StateDevice<RelaySim.State> {
             getState().REV_CALLBACKS.forEach(CALL_REV_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Relay", new WSValue("<rev", rev));
+            ConnectionProcessor.broadcastMessage(id, "Relay", new WSValue("<rev", rev));
         }
     }
 

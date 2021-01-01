@@ -68,8 +68,8 @@ public final class ConnectionProcessor {
     }
 
     /**
-     * Called when a WebSocket recieves a message
-     * @param socket the WebSocket which recieve the message
+     * Called when a WebSocket receives a message
+     * @param socket the WebSocket which receive the message
      * @param message the message
      */
     public static void onMessage(WebSocket socket, String message) {
@@ -99,23 +99,23 @@ public final class ConnectionProcessor {
     }
     
     /**
-     * Brodcasts a message to all connected WebSockets
+     * Broadcasts a message to all connected WebSockets
      * @param device the device name of the device which sent the message
      * @param type the device type of the device which sent the message
      * @param data the value of that device which have been modified
      */
-    public static void brodcastMessage(Object device, String type, WSValue data) {
-        brodcastMessage(device, type, Arrays.asList(new WSValue[] {data}));
+    public static void broadcastMessage(Object device, String type, WSValue data) {
+        broadcastMessage(device, type, Arrays.asList(new WSValue[] {data}));
     }
     
     /**
-     * Brodcasts a message to all connected WebSockets
+     * Broadcasts a message to all connected WebSockets
      * @param device the device name of the device which sent the message
      * @param type the device type of the device which sent the message
      * @param data the values of that device which have been modified
      */
     @SuppressWarnings("all")
-    public static void brodcastMessage(Object device, String type, List<WSValue> data) {
+    public static void broadcastMessage(Object device, String type, List<WSValue> data) {
         JsonObject message = new JsonObject();
         message.put(MessageKeys.DEVICE, device);
         message.put(MessageKeys.TYPE, type);
@@ -123,14 +123,14 @@ public final class ConnectionProcessor {
         data.forEach(value -> messageData.put(value.getKey(), value.getValue()));
         message.put(MessageKeys.DATA, messageData);
         String messageJson = message.toJson();
-        brodcastMessage(messageJson);
+        broadcastMessage(messageJson);
     }
     
     /**
-     * Brodcasts a message to all connected WebSockets
+     * Broadcasts a message to all connected WebSockets
      * @param message the message to send
      */
-    public static void brodcastMessage(String message) {
+    public static void broadcastMessage(String message) {
         sockets.stream().filter(WebSocket::isOpen).forEach(socket -> socket.send(message));
     }
     

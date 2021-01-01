@@ -90,7 +90,7 @@ public class DutyCycleSim extends StateDevice<DutyCycleSim.State> {
             getState().CONNECTED_CALLBACKS.forEach(CALL_CONNECTED_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "DutyCycle", new WSValue(">connected", connected));
+            ConnectionProcessor.broadcastMessage(id, "DutyCycle", new WSValue(">connected", connected));
         }
     }
 
@@ -148,7 +148,7 @@ public class DutyCycleSim extends StateDevice<DutyCycleSim.State> {
             getState().POSITION_CALLBACKS.forEach(CALL_POSITION_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "DutyCycle", new WSValue(">position", position));
+            ConnectionProcessor.broadcastMessage(id, "DutyCycle", new WSValue(">position", position));
         }
     }
 

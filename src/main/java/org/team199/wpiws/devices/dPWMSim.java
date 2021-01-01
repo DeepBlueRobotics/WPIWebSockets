@@ -121,7 +121,7 @@ public class dPWMSim extends StateDevice<dPWMSim.State> {
             INITIALIZED_DEVICES.remove(id);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "dPWM", new WSValue("<init", initialized));
+            ConnectionProcessor.broadcastMessage(id, "dPWM", new WSValue("<init", initialized));
         }
     }
 
@@ -191,7 +191,7 @@ public class dPWMSim extends StateDevice<dPWMSim.State> {
             getState().DUTYCYCLE_CALLBACKS.forEach(CALL_DUTYCYCLE_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "dPWM", new WSValue("<duty_cycle", dutycycle));
+            ConnectionProcessor.broadcastMessage(id, "dPWM", new WSValue("<duty_cycle", dutycycle));
         }
     }
 
@@ -249,7 +249,7 @@ public class dPWMSim extends StateDevice<dPWMSim.State> {
             getState().DIOPIN_CALLBACKS.forEach(CALL_DIOPIN_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "dPWM", new WSValue("<dio_pin", diopin));
+            ConnectionProcessor.broadcastMessage(id, "dPWM", new WSValue("<dio_pin", diopin));
         }
     }
 

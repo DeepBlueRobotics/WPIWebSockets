@@ -121,7 +121,7 @@ public class GyroSim extends StateDevice<GyroSim.State> {
             INITIALIZED_DEVICES.remove(id);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Gyro", new WSValue("<init", initialized));
+            ConnectionProcessor.broadcastMessage(id, "Gyro", new WSValue("<init", initialized));
         }
     }
 
@@ -191,7 +191,7 @@ public class GyroSim extends StateDevice<GyroSim.State> {
             getState().RANGE_CALLBACKS.forEach(CALL_RANGE_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Gyro", new WSValue("<range", range));
+            ConnectionProcessor.broadcastMessage(id, "Gyro", new WSValue("<range", range));
         }
     }
 
@@ -249,7 +249,7 @@ public class GyroSim extends StateDevice<GyroSim.State> {
             getState().CONNECTED_CALLBACKS.forEach(CALL_CONNECTED_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Gyro", new WSValue(">connected", connected));
+            ConnectionProcessor.broadcastMessage(id, "Gyro", new WSValue(">connected", connected));
         }
     }
 
@@ -307,7 +307,7 @@ public class GyroSim extends StateDevice<GyroSim.State> {
             getState().ANGLEX_CALLBACKS.forEach(CALL_ANGLEX_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Gyro", new WSValue(">angle_x", anglex));
+            ConnectionProcessor.broadcastMessage(id, "Gyro", new WSValue(">angle_x", anglex));
         }
     }
 
@@ -365,7 +365,7 @@ public class GyroSim extends StateDevice<GyroSim.State> {
             getState().ANGLEY_CALLBACKS.forEach(CALL_ANGLEY_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Gyro", new WSValue(">angle_y", angley));
+            ConnectionProcessor.broadcastMessage(id, "Gyro", new WSValue(">angle_y", angley));
         }
     }
 
@@ -423,7 +423,7 @@ public class GyroSim extends StateDevice<GyroSim.State> {
             getState().ANGLEZ_CALLBACKS.forEach(CALL_ANGLEZ_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Gyro", new WSValue(">angle_z", anglez));
+            ConnectionProcessor.broadcastMessage(id, "Gyro", new WSValue(">angle_z", anglez));
         }
     }
 
@@ -481,7 +481,7 @@ public class GyroSim extends StateDevice<GyroSim.State> {
             getState().RATEX_CALLBACKS.forEach(CALL_RATEX_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Gyro", new WSValue(">rate_x", ratex));
+            ConnectionProcessor.broadcastMessage(id, "Gyro", new WSValue(">rate_x", ratex));
         }
     }
 
@@ -539,7 +539,7 @@ public class GyroSim extends StateDevice<GyroSim.State> {
             getState().RATEY_CALLBACKS.forEach(CALL_RATEY_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Gyro", new WSValue(">rate_y", ratey));
+            ConnectionProcessor.broadcastMessage(id, "Gyro", new WSValue(">rate_y", ratey));
         }
     }
 
@@ -597,7 +597,7 @@ public class GyroSim extends StateDevice<GyroSim.State> {
             getState().RATEZ_CALLBACKS.forEach(CALL_RATEZ_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Gyro", new WSValue(">rate_z", ratez));
+            ConnectionProcessor.broadcastMessage(id, "Gyro", new WSValue(">rate_z", ratez));
         }
     }
 

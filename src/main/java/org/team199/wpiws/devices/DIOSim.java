@@ -121,7 +121,7 @@ public class DIOSim extends StateDevice<DIOSim.State> {
             INITIALIZED_DEVICES.remove(id);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "DIO", new WSValue("<init", initialized));
+            ConnectionProcessor.broadcastMessage(id, "DIO", new WSValue("<init", initialized));
         }
     }
 
@@ -191,7 +191,7 @@ public class DIOSim extends StateDevice<DIOSim.State> {
             getState().INPUT_CALLBACKS.forEach(CALL_INPUT_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "DIO", new WSValue("<input", input));
+            ConnectionProcessor.broadcastMessage(id, "DIO", new WSValue("<input", input));
         }
     }
 
@@ -249,7 +249,7 @@ public class DIOSim extends StateDevice<DIOSim.State> {
             getState().VALUE_CALLBACKS.forEach(CALL_VALUE_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "DIO", new WSValue("<>value", value));
+            ConnectionProcessor.broadcastMessage(id, "DIO", new WSValue("<>value", value));
         }
     }
 

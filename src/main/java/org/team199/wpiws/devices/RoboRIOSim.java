@@ -80,7 +80,7 @@ public class RoboRIOSim {
             getState().FPGABUTTON_CALLBACKS.forEach(CALL_FPGABUTTON_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">fpga_button", fpgabutton));
+            ConnectionProcessor.broadcastMessage("", "RoboRIO", new WSValue(">fpga_button", fpgabutton));
         }
     }
 
@@ -138,7 +138,7 @@ public class RoboRIOSim {
             getState().VINVOLTAGE_CALLBACKS.forEach(CALL_VINVOLTAGE_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">vin_voltage", vinvoltage));
+            ConnectionProcessor.broadcastMessage("", "RoboRIO", new WSValue(">vin_voltage", vinvoltage));
         }
     }
 
@@ -196,7 +196,7 @@ public class RoboRIOSim {
             getState().VINCURRENT_CALLBACKS.forEach(CALL_VINCURRENT_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">vin_current", vincurrent));
+            ConnectionProcessor.broadcastMessage("", "RoboRIO", new WSValue(">vin_current", vincurrent));
         }
     }
 
@@ -254,7 +254,7 @@ public class RoboRIOSim {
             getState().VOLTAGE6V_CALLBACKS.forEach(CALL_VOLTAGE6V_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">6v_voltage", voltage6v));
+            ConnectionProcessor.broadcastMessage("", "RoboRIO", new WSValue(">6v_voltage", voltage6v));
         }
     }
 
@@ -312,7 +312,7 @@ public class RoboRIOSim {
             getState().CURRENT6V_CALLBACKS.forEach(CALL_CURRENT6V_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">6v_current", current6v));
+            ConnectionProcessor.broadcastMessage("", "RoboRIO", new WSValue(">6v_current", current6v));
         }
     }
 
@@ -370,7 +370,7 @@ public class RoboRIOSim {
             getState().ACTIVE6V_CALLBACKS.forEach(CALL_ACTIVE6V_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">6v_active", active6v));
+            ConnectionProcessor.broadcastMessage("", "RoboRIO", new WSValue(">6v_active", active6v));
         }
     }
 
@@ -428,7 +428,7 @@ public class RoboRIOSim {
             getState().FAULTS6V_CALLBACKS.forEach(CALL_FAULTS6V_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">6v_faults", faults6v));
+            ConnectionProcessor.broadcastMessage("", "RoboRIO", new WSValue(">6v_faults", faults6v));
         }
     }
 
@@ -486,7 +486,7 @@ public class RoboRIOSim {
             getState().VOLTAGE5V_CALLBACKS.forEach(CALL_VOLTAGE5V_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">5v_voltage", voltage5v));
+            ConnectionProcessor.broadcastMessage("", "RoboRIO", new WSValue(">5v_voltage", voltage5v));
         }
     }
 
@@ -544,7 +544,7 @@ public class RoboRIOSim {
             getState().CURRENT5V_CALLBACKS.forEach(CALL_CURRENT5V_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">5v_current", current5v));
+            ConnectionProcessor.broadcastMessage("", "RoboRIO", new WSValue(">5v_current", current5v));
         }
     }
 
@@ -602,7 +602,7 @@ public class RoboRIOSim {
             getState().ACTIVE5V_CALLBACKS.forEach(CALL_ACTIVE5V_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">5v_active", active5v));
+            ConnectionProcessor.broadcastMessage("", "RoboRIO", new WSValue(">5v_active", active5v));
         }
     }
 
@@ -660,7 +660,7 @@ public class RoboRIOSim {
             getState().FAULTS5V_CALLBACKS.forEach(CALL_FAULTS5V_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">5v_faults", faults5v));
+            ConnectionProcessor.broadcastMessage("", "RoboRIO", new WSValue(">5v_faults", faults5v));
         }
     }
 
@@ -718,7 +718,7 @@ public class RoboRIOSim {
             getState().VOLTAGE3V3_CALLBACKS.forEach(CALL_VOLTAGE3V3_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">3v3_voltage", voltage3v3));
+            ConnectionProcessor.broadcastMessage("", "RoboRIO", new WSValue(">3v3_voltage", voltage3v3));
         }
     }
 
@@ -776,7 +776,7 @@ public class RoboRIOSim {
             getState().CURRENT3V3_CALLBACKS.forEach(CALL_CURRENT3V3_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">3v3_current", current3v3));
+            ConnectionProcessor.broadcastMessage("", "RoboRIO", new WSValue(">3v3_current", current3v3));
         }
     }
 
@@ -834,7 +834,7 @@ public class RoboRIOSim {
             getState().ACTIVE3V3_CALLBACKS.forEach(CALL_ACTIVE3V3_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">3v3_active", active3v3));
+            ConnectionProcessor.broadcastMessage("", "RoboRIO", new WSValue(">3v3_active", active3v3));
         }
     }
 
@@ -892,7 +892,7 @@ public class RoboRIOSim {
             getState().FAULTS3V3_CALLBACKS.forEach(CALL_FAULTS3V3_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage("", "RoboRIO", new WSValue(">3v3_faults", faults3v3));
+            ConnectionProcessor.broadcastMessage("", "RoboRIO", new WSValue(">3v3_faults", faults3v3));
         }
     }
 

@@ -112,7 +112,7 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
             } else {
                 valueObj = value;
             }
-            ConnectionProcessor.brodcastMessage(id, "SimDevices", new WSValue("<>" + name, valueObj));
+            ConnectionProcessor.broadcastMessage(id, "SimDevices", new WSValue("<>" + name, valueObj));
         }
     }
 

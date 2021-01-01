@@ -121,7 +121,7 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
             INITIALIZED_DEVICES.remove(id);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Encoder", new WSValue("<init", initialized));
+            ConnectionProcessor.broadcastMessage(id, "Encoder", new WSValue("<init", initialized));
         }
     }
 
@@ -191,7 +191,7 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
             getState().CHANNELA_CALLBACKS.forEach(CALL_CHANNELA_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Encoder", new WSValue("<channel_a", channela));
+            ConnectionProcessor.broadcastMessage(id, "Encoder", new WSValue("<channel_a", channela));
         }
     }
 
@@ -249,7 +249,7 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
             getState().CHANNELB_CALLBACKS.forEach(CALL_CHANNELB_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Encoder", new WSValue("<channel_b", channelb));
+            ConnectionProcessor.broadcastMessage(id, "Encoder", new WSValue("<channel_b", channelb));
         }
     }
 
@@ -307,7 +307,7 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
             getState().SAMPLESTOAVG_CALLBACKS.forEach(CALL_SAMPLESTOAVG_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Encoder", new WSValue("<samples_to_avg", samplestoavg));
+            ConnectionProcessor.broadcastMessage(id, "Encoder", new WSValue("<samples_to_avg", samplestoavg));
         }
     }
 
@@ -365,7 +365,7 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
             getState().COUNT_CALLBACKS.forEach(CALL_COUNT_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Encoder", new WSValue(">count", count));
+            ConnectionProcessor.broadcastMessage(id, "Encoder", new WSValue(">count", count));
         }
     }
 
@@ -423,7 +423,7 @@ public class EncoderSim extends StateDevice<EncoderSim.State> {
             getState().PERIOD_CALLBACKS.forEach(CALL_PERIOD_CALLBACK);
         }
         if(notifyRobot) {
-            ConnectionProcessor.brodcastMessage(id, "Encoder", new WSValue(">period", period));
+            ConnectionProcessor.broadcastMessage(id, "Encoder", new WSValue(">period", period));
         }
     }
 
