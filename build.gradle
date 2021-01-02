@@ -20,7 +20,25 @@ dependencies {
     testImplementation 'junit:junit:4.13'
 }
 
+// Add a task to generate java source code for the devices using npx to run
+// the asyncapi generator.
 task generateDeviceFiles(type: NpxTask) {
+    def outputDir = "${buildDir}/generated/sources/asyncapi/org/team199/wpiws/devices"
+    def templateDir = "${projectDir}/asyncapi-template"
+
+    // Define the command line that npx should use
   command = '@asyncapi/generator'
-  args = ['--force-write', '-o', './src/main/java/org/team199/wpiws/devices', 'asyncapi-template/wpilib-ws.yaml', 'asyncapi-template/']
+    args = ['--force-write', '-o', outputDir, "${templateDir}/wpilib-ws.yaml", "${templateDir}/"]
+
+    // Define the inputs and outputs of this task so that gradle only runs it 
+    // when necessary.
+    inputs.files(fileTree(templateDir)).withPropertyName("templateDir")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    outputs.dir(outputDir).withPropertyName("outputDir")
+
 }
+
+// Include the generated files in the source to compile.
+sourceSets.main.java.srcDirs generateDeviceFiles.outputs
+
+
