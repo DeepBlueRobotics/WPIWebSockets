@@ -29,7 +29,7 @@ task generateDeviceFiles(type: NpxTask) {
     // Define the command line that npx should use
     workingDir = buildDir // Because templateDir can't be under it
     command = '@asyncapi/generator'
-    args = ['--force-write', '-o', outputDir, "${templateDir}/wpilib-ws.yaml", "${templateDir}/"]
+    args = ['--force-write', '-o', outputDir, "${templateDir}/wpilib-ws.yaml", "https://github.com/DeepBlueRobotics/WPIWebSocketsTemplate.git"]
 
     // Define the inputs and outputs of this task so that gradle only runs it 
     // when necessary.
@@ -46,5 +46,5 @@ sourceSets.main.java.srcDirs generateDeviceFiles.outputs
 node {
   download = true
   version = '14.15.1'
-  npmVersion = '4.6.1'
+  npmVersion = '6.14.8'
 }
