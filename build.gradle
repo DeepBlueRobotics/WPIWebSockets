@@ -20,21 +20,31 @@ dependencies {
     testImplementation 'junit:junit:4.13'
 }
 
+def templateDir = "${projectDir}/asyncapi-template"
+
+task archiveTemplate(type: Tar) {
+    archiveFileName = "asyncapi-template.tar"
+    destinationDirectory = file("$buildDir/tmp")
+
+    from(templateDir) {
+      exclude "node_modules"
+      into "asyncapi-template"
+    }
+}
+
 // Add a task to generate java source code for the devices using npx to run
 // the asyncapi generator.
 task generateDeviceFiles(type: NpxTask) {
     def outputDir = "${buildDir}/generated/sources/asyncapi/org/team199/wpiws/devices"
-    def templateDir = "${projectDir}/asyncapi-template"
 
     // Define the command line that npx should use
     workingDir = buildDir // Because templateDir can't be under it
     command = '@asyncapi/generator'
-    args = ['--force-write', '-o', outputDir, "${templateDir}/wpilib-ws.yaml", "https://github.com/DeepBlueRobotics/WPIWebSocketsTemplate.git"]
+    args = ['--force-write', '-o', outputDir, "${templateDir}/wpilib-ws.yaml", "$buildDir/tmp/asyncapi-template.tar"]
 
     // Define the inputs and outputs of this task so that gradle only runs it 
     // when necessary.
-    inputs.files(fileTree(templateDir)).withPropertyName("templateDir")
-        .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.files(archiveTemplate.outputs)
     outputs.dir(outputDir).withPropertyName("outputDir")
 
 }
