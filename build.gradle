@@ -38,13 +38,13 @@ task archiveTemplate(type: Tar) {
 // Add a task to generate java source code for the devices using npx to run
 // the asyncapi generator.
 task generateDeviceFiles(type: NpxTask) {
-    def outputDir = "${buildDir}/generated/sources/asyncapi/org/team199/wpiws/devices"
+    def outputDir = "${buildDir}/generated/sources/asyncapi"
 
     // Define the command line that npx should use
     workingDir = buildDir // Because templateDir can't be under it
     command = '@asyncapi/generator'
     args = ['--force-write', 
-        '-o', outputDir,
+        '-o', "${outputDir}/org/team199/wpiws/devices",
         "${templateDir}/wpilib-ws.yaml", 
         file(archiveTemplate.archiveFile).toURI()]
 
