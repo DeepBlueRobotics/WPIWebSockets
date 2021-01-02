@@ -14,7 +14,7 @@ jobs:
     strategy: 
       matrix:
         # os: [ ubuntu-latest, windows-latest, macos-latest ]
-        os: [ windows-latest ]
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
 
     runs-on: ${{ matrix.os }}
 
@@ -24,11 +24,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Setup NodeJS
-      uses: actions/setup-node@v1
-      with:
-        node-version: 14.x
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew build --debug
+      run: ./gradlew build
