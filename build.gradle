@@ -45,6 +45,6 @@ sourceSets.main.java.srcDirs generateDeviceFiles.outputs
 // Use a version of node and npm that is known to work.
 node {
   download = true
-  version = '12.19.0'
-  npmVersion = '6.14.8'
+  version = '14.15.3'
+  npmVersion = '6.14.10'
 }
