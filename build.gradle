@@ -1,3 +1,7 @@
+plugins {
+  id "com.github.node-gradle.node" version "2.2.4"
+}
+
 apply plugin: 'java-library'
 apply plugin: 'jacoco'
 apply plugin: 'maven-publish'
@@ -14,4 +18,49 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.30'
     compile group: 'com.github.cliftonlabs', name: 'json-simple', version: '3.1.1'
     testImplementation 'junit:junit:4.13'
+}
+
+
+// To please the Windows CI server (and perhaps other Windows machines),
+// the template directory needs to be passed to the asyncapi generator as
+// an archive. 
+def templateDir = "${projectDir}/asyncapi-template"
+task archiveTemplate(type: Tar) {
+    archiveFileName = "asyncapi-template.tar"
+    destinationDirectory = file("$buildDir/tmp")
+
+    from(templateDir) {
+      exclude "node_modules"
+      into "asyncapi-template" // npm requires that everything be in a top-level folder
+    }
+}
+
+// Add a task to generate java source code for the devices using npx to run
+// the asyncapi generator.
+task generateDeviceFiles(type: NpxTask) {
+    def outputDir = "${buildDir}/generated/sources/asyncapi"
+
+    // Define the command line that npx should use
+    workingDir = buildDir // Because templateDir can't be under it
+    command = '@asyncapi/generator'
+    args = ['--force-write', 
+        '-o', "${outputDir}/org/team199/wpiws/devices",
+        "${templateDir}/wpilib-ws.yaml", 
+        file(archiveTemplate.archiveFile).toURI()]
+
+    // Define the inputs and outputs of this task so that gradle only runs it 
+    // when necessary.
+    inputs.files(archiveTemplate.outputs)
+    outputs.dir(outputDir).withPropertyName("outputDir")
+
+}
+
+// Include the generated files in the source to compile.
+sourceSets.main.java.srcDirs generateDeviceFiles.outputs
+
+// Use a version of node and npm that is known to work.
+node {
+  download = true
+  version = '14.15.1'
+  npmVersion = '6.14.8'
 }

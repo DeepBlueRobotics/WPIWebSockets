@@ -155,7 +155,7 @@ components:
           description: "True if a DS application is connected"
         ">station":
           type: string
-          description: "Station color and number; supported values are “red1”, “red2”, “red3”, “blue1”, “blue2”, “blue3”."
+          description: "Station color and number; supported values are 'red1', 'red2', 'red3', 'blue1', 'blue2', 'blue3'."
         ">match_time":
           type: number
           description: "Match time countdown, in seconds, for each match period (e.g. for 15 second period, starts at 15 and counts down to 0).  If not in a match, -1."
@@ -183,10 +183,10 @@ components:
           description: "If encoder is initialized in the robot program"
         <channel_a:
           type: integer
-          description: "Digital channel number for “A” phase"
+          description: "Digital channel number for 'A' phase"
         <channel_b:
           type: integer
-          description: "Digital channel number for “B” phase"
+          description: "Digital channel number for 'B' phase"
         <samples_to_avg:
           type: integer
           description: "Number of samples to average for period measurement"
