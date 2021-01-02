@@ -41,4 +41,9 @@ task generateDeviceFiles(type: NpxTask) {
 // Include the generated files in the source to compile.
 sourceSets.main.java.srcDirs generateDeviceFiles.outputs
 
-
+// Use a version of node and npm that is known to work.
+node {
+  download = true
+  version = '12.19.0'
+  npmVersion = '6.14.8'
+}
