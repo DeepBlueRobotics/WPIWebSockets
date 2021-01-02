@@ -20,15 +20,18 @@ dependencies {
     testImplementation 'junit:junit:4.13'
 }
 
-def templateDir = "${projectDir}/asyncapi-template"
 
+// To please the Windows CI server (and perhaps other Windows machines),
+// the template directory needs to be passed to the asyncapi generator as
+// an archive. 
+def templateDir = "${projectDir}/asyncapi-template"
 task archiveTemplate(type: Tar) {
     archiveFileName = "asyncapi-template.tar"
     destinationDirectory = file("$buildDir/tmp")
 
     from(templateDir) {
       exclude "node_modules"
-      into "asyncapi-template"
+      into "asyncapi-template" // npm requires that everything be in a top-level folder
     }
 }
 
@@ -40,7 +43,10 @@ task generateDeviceFiles(type: NpxTask) {
     // Define the command line that npx should use
     workingDir = buildDir // Because templateDir can't be under it
     command = '@asyncapi/generator'
-    args = ['--force-write', '-o', outputDir, "${templateDir}/wpilib-ws.yaml", "$buildDir/tmp/asyncapi-template.tar"]
+    args = ['--force-write', 
+        '-o', outputDir,
+        "${templateDir}/wpilib-ws.yaml", 
+        file(archiveTemplate.archiveFile).toURI()]
 
     // Define the inputs and outputs of this task so that gradle only runs it 
     // when necessary.
