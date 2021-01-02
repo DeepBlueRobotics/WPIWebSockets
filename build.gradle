@@ -27,7 +27,8 @@ task generateDeviceFiles(type: NpxTask) {
     def templateDir = "${projectDir}/asyncapi-template"
 
     // Define the command line that npx should use
-  command = '@asyncapi/generator'
+    workingDir = buildDir // Because templateDir can't be under it
+    command = '@asyncapi/generator'
     args = ['--force-write', '-o', outputDir, "${templateDir}/wpilib-ws.yaml", "${templateDir}/"]
 
     // Define the inputs and outputs of this task so that gradle only runs it 
