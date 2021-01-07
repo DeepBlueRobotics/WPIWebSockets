@@ -19,4 +19,25 @@ function aAn(str) {
     return ['a', 'e', 'i', 'o', 'u'].some(el => str.includes(el));
 }
 
-module.exports = { contains, filterProps, aAn }
+function formatName(type) {
+    switch(type) {
+        case "Accel":
+            return "Accelerometer";
+        case "AI":
+            return "AnalogInput";
+        default:
+            return type;
+    }
+}
+
+function hasId(type) {
+    switch(type) {
+        case "DriverStation":
+        case "RoboRIO":
+            return false;
+        default:
+            return true;
+    }
+}
+
+module.exports = { contains, filterProps, aAn, formatName, hasId }
