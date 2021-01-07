@@ -6,6 +6,9 @@ apply plugin: 'java-library'
 apply plugin: 'jacoco'
 apply plugin: 'maven-publish'
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 group = 'org.carlmontrobotics'
 repositories {
     mavenCentral()

@@ -49,7 +49,7 @@ public final class MessageProcessor {
      * @param processor the method to be called
      */
     public static void registerProcessor(String type, DeviceMessageProcessor processor) {
-        if(type == null || type.isBlank()) {
+        if(type == null || type.isEmpty()) {
             return;
         }
         if(processor == null) {

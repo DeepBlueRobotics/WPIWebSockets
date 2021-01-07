@@ -151,7 +151,7 @@ public class {{ name }}Sim {
      * @return an array of the identifiers of all currently initialized {{ name }}Sims
      */
     public static String[] enumerateDevices() {
-        return INITIALIZED_DEVICES.toArray(CREATE_STRING_ARRAY);
+        return INITIALIZED_DEVICES.toArray(new String[INITIALIZED_DEVICES.size()]);
     }
     {% endif -%}
 
