@@ -1,4 +1,6 @@
 {% macro template(name, type, hasId, schema) -%}
+{% set type = schema.property("type").const() -%}
+{% set schema = schema.property("data") -%}
 {% set hasInit = schema.properties() | contains("<init") -%}
 {% set cstatic = " " if hasId else " static " -%}
 {% set cthis = "this" if hasId else name + "Sim" -%}
