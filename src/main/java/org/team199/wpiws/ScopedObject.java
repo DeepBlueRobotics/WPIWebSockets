@@ -1,6 +1,5 @@
 package org.team199.wpiws;
 
-import java.lang.ref.Cleaner;
 import java.util.function.Consumer;
 
 import org.team199.wpiws.interfaces.ExceptionConsumer;
@@ -11,7 +10,6 @@ import org.team199.wpiws.interfaces.ExceptionConsumer;
  */
 public class ScopedObject<T> implements AutoCloseable {
     
-    private static final Cleaner cleaner = Cleaner.create();
     private final T object;
     private final Consumer<T> closer;
     private boolean isClosed;
@@ -35,7 +33,6 @@ public class ScopedObject<T> implements AutoCloseable {
         this.object = object;
         this.closer = closer;
         this.isClosed = false;
-        cleaner.register(this, this::close);
     }
     
     /**
@@ -60,6 +57,13 @@ public class ScopedObject<T> implements AutoCloseable {
         } catch(Exception e) {
             e.printStackTrace(System.err);
         }
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    protected void finalize() throws Throwable {
+        close();
+        super.finalize();
     }
 
     /**
