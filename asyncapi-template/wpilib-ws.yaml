@@ -65,6 +65,7 @@ components:
             - $ref: "#/components/schemas/joystickData"
             - $ref: "#/components/schemas/pwmData"
             - $ref: "#/components/schemas/relayData"
+            - $ref: "#/components/schemas/solenoidData"
             - $ref: "#/components/schemas/roborioData"
 
     accelData:
@@ -297,6 +298,17 @@ components:
         <rev:
           type: boolean
           description: "True if reverse direction is enabled"
+
+    solenoidData:
+      type: object
+      description: "Solenoid Data (type: Solenoid, device: channel number)"
+      properties:
+        <init:
+          type: boolean
+          description: "If Solenoid is initialized in the robot program"
+        <output:
+          type: boolean
+          description: "The state of the solenoid"
 
     roborioData:
       type: object
