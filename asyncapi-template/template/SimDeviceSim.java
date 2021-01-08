@@ -96,10 +96,6 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
                         valueObj = value.equals("true");
                         break;
                     }
-                    case "i": {
-                        valueObj = Integer.parseInt(value);
-                        break;
-                    }
                     case "d": {
                         valueObj = Double.parseDouble(value);
                         break;
@@ -112,7 +108,7 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
             } else {
                 valueObj = value;
             }
-            ConnectionProcessor.broadcastMessage(id, "SimDevices", new WSValue("<>" + name, valueObj));
+            ConnectionProcessor.broadcastMessage(id, "SimDevice", new WSValue(">" + name, valueObj));
         }
     }
 

@@ -16,6 +16,7 @@ import org.team199.wpiws.devices.PWMSim;
 import org.team199.wpiws.devices.RelaySim;
 import org.team199.wpiws.devices.RoboRIOSim;
 import org.team199.wpiws.devices.SimDeviceSim;
+import org.team199.wpiws.devices.SolenoidSim;
 import org.team199.wpiws.devices.dPWMSim;
 import org.team199.wpiws.interfaces.DeviceMessageProcessor;
 
@@ -40,7 +41,8 @@ public final class MessageProcessor {
         registerProcessor("PWM", PWMSim::processMessage);
         registerProcessor("Relay", RelaySim::processMessage);
         registerProcessor("RoboRIO", RoboRIOSim::processMessage);
-        registerProcessor("SimDevices", SimDeviceSim::processMessage);
+        registerProcessor("Solenoid", SolenoidSim::processMessage);
+        registerProcessor("SimDevice", SimDeviceSim::processMessage);
     }
 
     /**
