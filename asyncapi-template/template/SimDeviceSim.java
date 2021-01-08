@@ -59,6 +59,26 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
     }
 
     /**
+     * Sets the specified value on the SimDeviceSim
+     * @param name the name of the value
+     * @param value the value to associate with the given name
+     */
+    public void set(String name, boolean value) {
+        getState().valueTypes.put(name, "b");
+        set(name, String.valueOf(value), true);
+    }
+
+    /**
+     * Sets the specified value on the SimDeviceSim
+     * @param name the name of the value
+     * @param value the value to associate with the given name
+     */
+    public void set(String name, double value) {
+        getState().valueTypes.put(name, "d");
+        set(name, String.valueOf(value), true);
+    }
+
+    /**
      * Calls the specified callback with the device identifier of this device
      */
     public final Consumer<SimDeviceCallback> CALL_DEVICE_CALLBACK = callback -> callback.callback(id);
