@@ -3,7 +3,9 @@ package org.team199.wpiws.connection;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -31,6 +33,7 @@ public final class ConnectionProcessor {
         }
     }
 
+    public static Set<Runnable> CONNECT_LISTENERS = new CopyOnWriteArraySet<Runnable>();
     /**
      * Called when a WebSocket is opened
      * @param socket the WebSocket which has been opened
@@ -38,6 +41,16 @@ public final class ConnectionProcessor {
     public static void onOpen(WebSocket socket) {
         System.out.println(getSocketInfo(socket) + " connected");
         sockets.add(socket);
+        CONNECT_LISTENERS.forEach(r -> r.run());
+    }
+
+    public static Runnable addOpenListener(Runnable runnable) {
+        CONNECT_LISTENERS.add(runnable);
+        return runnable;
+    }
+
+    public static void removeOpenListener(Runnable runnable) {
+        CONNECT_LISTENERS.remove(runnable);
     }
 
     /**

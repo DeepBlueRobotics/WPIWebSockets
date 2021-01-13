@@ -19,7 +19,9 @@ package org.team199.wpiws.devices;
 import java.util.HashMap;
 {% endif -%}
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -46,7 +48,8 @@ public class {{ name }}Sim {
     {%- else %}
     private static final {{ name }}Sim.State STATE = new State();
     {% endif -%}
-
+    private static final Set<String> UNKNOWN_KEYS = new ConcurrentSkipListSet<>();
+    
     {% if hasId %}
 
     /**
@@ -294,7 +297,10 @@ public class {{ name }}Sim {
                 }
                 {%- endfor %}
                 default: {
-                    System.err.println("{{ name }}Sim ignored unrecognized WSValue: " + value.getKey() + ":" + value.getValue());
+                    if (!UNKNOWN_KEYS.contains(value.getKey())) {
+                        System.err.println("{{ name }}Sim received value '" + value.getKey() + ":" + value.getValue() + " but does not recognize '" + value.getKey() + "'. Values with that key will be ignored.");
+                        UNKNOWN_KEYS.add(value.getKey());    
+                    }
                 }
             }
         }
