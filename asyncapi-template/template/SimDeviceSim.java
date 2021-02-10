@@ -128,7 +128,12 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
             } else {
                 valueObj = value;
             }
-            ConnectionProcessor.broadcastMessage(id, "SimDevice", new WSValue(">" + name, valueObj));
+            // We process CAN Devices as Sim Devices for convenience purposes, but now we must re-convert
+            // SimDevices that are actually CAN Devices back to CAN Devices. 
+            String broadcastType = "SimDevice";
+            if (name == "rawPositionInput") broadcastType = "CANEncoder";
+            else if (name == "voltage") broadcastType = "CANAIn";
+            ConnectionProcessor.broadcastMessage(id, broadcastType, new WSValue(">" + name, valueObj));
         }
     }
 

@@ -144,7 +144,11 @@ public final class ConnectionProcessor {
      * @param message the message to send
      */
     public static void broadcastMessage(String message) {
-        sockets.stream().filter(WebSocket::isOpen).forEach(socket -> socket.send(message));
+        sockets.stream().filter(WebSocket::isOpen).forEach(socket -> {
+            // JSON escapes forward slashes which becomes a problem when we have devices like
+            // TalonSRX[0]/Quad Encoder
+            socket.send(message.replace("\\", ""));
+        });
     }
     
     /**

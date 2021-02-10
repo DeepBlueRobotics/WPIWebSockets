@@ -18,13 +18,13 @@ public final class MessageProcessor {
     static {
         registerProcessor("Accel", AccelerometerSim::processMessage);
         registerProcessor("AI", AnalogInputSim::processMessage);
-        registerProcessor("CANMotor", SimDeviceSim::processMessage);
-        registerProcessor("CANEncoder", SimDeviceSim::processMessage);
-        registerProcessor("CANDIO", SimDeviceSim::processMessage);
         registerProcessor("CANAccel", SimDeviceSim::processMessage);
         registerProcessor("CANAIn", SimDeviceSim::processMessage);
+        registerProcessor("CANDIO", SimDeviceSim::processMessage);
         registerProcessor("CANDutyCycle", SimDeviceSim::processMessage);
+        registerProcessor("CANEncoder", SimDeviceSim::processMessage);
         registerProcessor("CANGyro", SimDeviceSim::processMessage);
+        registerProcessor("CANMotor", SimDeviceSim::processMessage);
         registerProcessor("dPWM", dPWMSim::processMessage);
         registerProcessor("DIO", DIOSim::processMessage);
         registerProcessor("DriverStation", DriverStationSim::processMessage);
