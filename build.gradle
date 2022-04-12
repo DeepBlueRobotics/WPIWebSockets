@@ -12,7 +12,6 @@ targetCompatibility = 1.8
 group = 'org.carlmontrobotics'
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 dependencies {
