@@ -16,10 +16,10 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.5.1'
+    api group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.5.1'
     //Add SLF4J NOP Logger Binding to prevent runtime warnings
-    compile group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.30'
-    compile group: 'com.github.cliftonlabs', name: 'json-simple', version: '3.1.1'
+    api group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.30'
+    api group: 'com.github.cliftonlabs', name: 'json-simple', version: '3.1.1'
     testImplementation 'junit:junit:4.13'
 }
 
