@@ -298,7 +298,7 @@ public class {{ name }}Sim {
                 {%- endfor %}
                 default: {
                     if (!UNKNOWN_KEYS.contains(value.getKey())) {
-                        System.err.println("{{ name }}Sim received value '" + value.getKey() + ":" + value.getValue() + " but does not recognize '" + value.getKey() + "'. Values with that key will be ignored.");
+                        System.err.println("{{ name }}Sim received value '" + value.getKey() + ":" + value.getValue() + "' but does not recognize '" + value.getKey() + "'. Values with that key will be ignored.");
                         UNKNOWN_KEYS.add(value.getKey());    
                     }
                 }
