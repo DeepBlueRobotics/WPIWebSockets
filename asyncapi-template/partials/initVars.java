@@ -6,3 +6,5 @@
 {% set parrtype = prop | formatPropTypeArr %}
 {% set pprimtype = prop | formatPropPrimType %}
 {% set pinit = prop | formatPropInitialValue | safe %}
+{% set isRobotInput = pfname | isRobotInput %}
+{% set isRobotOutput = pfname | isRobotOutput %}

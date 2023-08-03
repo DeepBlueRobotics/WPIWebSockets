@@ -217,6 +217,8 @@ public class {{ name }}Sim {
         return getState().{{ varInfo.pnamel }};
     }
 
+    {%- if varInfo.isRobotInput %}
+
     /**
      * Set {{ prop.description() | lower | trim }}
      * @see #get{{ varInfo.pname }}()
@@ -224,6 +226,7 @@ public class {{ name }}Sim {
     public{{ cstatic }}void set{{ varInfo.pname }}({{ varInfo.pprimtype }} {{ varInfo.pnamel }}) {
         set{{ varInfo.pname }}({{ varInfo.pnamel }}, true);
     }
+    {%- endif %}
 
     /**
      * A Consumer which calls the given callback with the current {{ varInfo.pnamel }} value of this PWMSim
@@ -235,6 +238,9 @@ public class {{ name }}Sim {
             getState().{{ varInfo.pnameu }}_CALLBACKS.forEach(CALL_{{ varInfo.pnameu }}_CALLBACK);
         }
         if(notifyRobot) {
+            {%- if not varInfo.isRobotInput %}
+            System.err.println("WARNING: {{ name }}Sim#set{{ varInfo.pname }}({{ varInfo.pprimtype }}, true) was called, but {{ varInfo.pfname }} is not a robot input!");
+            {%- endif %}
             ConnectionProcessor.broadcastMessage({{ cid }}, "{{ type }}", new WSValue("{{ varInfo.pfname }}", {{ varInfo.pnamel }}));
         }
     }
