@@ -15,12 +15,14 @@
 // EDIT THAT FILE INSTEAD.
 package org.team199.wpiws.devices;
 
-{% if hasId -%}
-import java.util.HashMap;
-{% endif -%}
 import java.util.List;
+{% if hasId -%}
+import java.util.Map;
+{% endif -%}
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
+{% if hasId -%}
+import java.util.concurrent.ConcurrentHashMap;
+{% endif -%}
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -40,11 +42,11 @@ public class {{ name }}Sim extends StateDevice<{{ name }}Sim.State> {
 public class {{ name }}Sim {
 {% endif -%}
     {% if hasInit %}
-    private static final CopyOnWriteArrayList<String> INITIALIZED_DEVICES = new CopyOnWriteArrayList<>();
-    private static final CopyOnWriteArrayList<BooleanCallback> STATIC_INITIALIZED_CALLBACKS = new CopyOnWriteArrayList<>();
+    private static final Set<String> INITIALIZED_DEVICES = new ConcurrentSkipListSet<>();
+    private static final Set<BooleanCallback> STATIC_INITIALIZED_CALLBACKS = new ConcurrentSkipListSet<>();
     {% endif -%}
     {% if hasId %}
-    private static final HashMap<String, {{ name }}Sim.State> STATE_MAP = new HashMap<>();
+    private static final Map<String, {{ name }}Sim.State> STATE_MAP = new ConcurrentHashMap<>();
     {%- else %}
     private static final {{ name }}Sim.State STATE = new State();
     {% endif -%}
@@ -71,7 +73,7 @@ public class {{ name }}Sim {
      * @see #registerInitializedCallback(BooleanCallback, boolean)
      */
     public static ScopedObject<BooleanCallback> registerStaticInitializedCallback(BooleanCallback callback, boolean initialNotify) {
-        STATIC_INITIALIZED_CALLBACKS.addIfAbsent(callback);
+        STATIC_INITIALIZED_CALLBACKS.add(callback);
         if(initialNotify) {
             INITIALIZED_DEVICES.forEach(device -> callback.callback(device, true));
         }
@@ -100,7 +102,7 @@ public class {{ name }}Sim {
      * @see #registerStaticInitializedCallback(BooleanCallback, boolean)
      */
     public ScopedObject<BooleanCallback> registerInitializedCallback(BooleanCallback callback, boolean initialNotify) {
-        getState().INITIALIZED_CALLBACKS.addIfAbsent(callback);
+        getState().INITIALIZED_CALLBACKS.add(callback);
         if(initialNotify) {
             callback.callback(id, getState().init);
         }
@@ -144,7 +146,7 @@ public class {{ name }}Sim {
         if(initialized) {
             STATIC_INITIALIZED_CALLBACKS.forEach(CALL_INITIALIZED_CALLBACK);
             getState().INITIALIZED_CALLBACKS.forEach(CALL_INITIALIZED_CALLBACK);
-            INITIALIZED_DEVICES.addIfAbsent(id);
+            INITIALIZED_DEVICES.add(id);
         } else {
             INITIALIZED_DEVICES.remove(id);
         }
@@ -184,7 +186,7 @@ public class {{ name }}Sim {
      * @see #cancel{{ varInfo.pname }}Callback({{ varInfo.ptype }}Callback)
      */
     public{{ cstatic }}ScopedObject<{{ varInfo.ptype }}Callback> register{{ varInfo.pname }}Callback({{ varInfo.ptype }}Callback callback, boolean initialNotify) {
-        getState().{{ varInfo.pnameu }}_CALLBACKS.addIfAbsent(callback);
+        getState().{{ varInfo.pnameu }}_CALLBACKS.add(callback);
         if(initialNotify) {
             callback.callback({{ cid }}, getState().{{ varInfo.pnamel }});
         }
@@ -318,11 +320,11 @@ public class {{ name }}Sim {
         public {{ varInfo.pprimtype }} {{ varInfo.pnamel }} = {{ varInfo.pinit }};
         {% endfor -%}
         {% if hasInit -%}
-        public final CopyOnWriteArrayList<BooleanCallback> INITIALIZED_CALLBACKS = new CopyOnWriteArrayList<>();
+        public final Set<BooleanCallback> INITIALIZED_CALLBACKS = new ConcurrentSkipListSet<>();
         {% endif -%}
         {% for propName, prop in props -%}
         {% import "../partials/initVars.java" as varInfo with context -%}
-        public final CopyOnWriteArrayList<{{ varInfo.ptype }}Callback> {{ varInfo.pnameu }}_CALLBACKS = new CopyOnWriteArrayList<>();
+        public final Set<{{ varInfo.ptype }}Callback> {{ varInfo.pnameu }}_CALLBACKS = new ConcurrentSkipListSet<>();
         {%- endfor %}
     }
 

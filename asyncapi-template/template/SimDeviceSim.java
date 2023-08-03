@@ -6,11 +6,12 @@ package org.team199.wpiws.devices;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -28,9 +29,9 @@ import org.team199.wpiws.interfaces.StringCallback;
  */
 public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
 
-    private static final HashMap<String, SimDeviceSim.State> STATE_MAP = new HashMap<>();
-    private static final CopyOnWriteArrayList<String> EXISTING_DEVICES = new CopyOnWriteArrayList<>();
-    private static final CopyOnWriteArrayList<Pair<String, SimDeviceCallback>> DEVICE_CALLBACKS = new CopyOnWriteArrayList<>();
+    private static final Map<String, SimDeviceSim.State> STATE_MAP = new ConcurrentHashMap<>();
+    private static final Set<String> EXISTING_DEVICES = new ConcurrentSkipListSet<>();
+    private static final Set<Pair<String, SimDeviceCallback>> DEVICE_CALLBACKS = new ConcurrentSkipListSet<>();
 
     /**
      * Creates a new SimDeviceSim
@@ -95,14 +96,13 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
      */
     public static final Function<Pair<String, StringCallback>, StringCallback> FETCH_VALUE_CALLBACK = pair -> pair.val2;
     private void set(String name, String value, boolean notifyRobot) {
-        if(!EXISTING_DEVICES.contains(id)) {
+        if(EXISTING_DEVICES.add(id)) {
             DEVICE_CALLBACKS.stream().filter(APPLIES_TO_ME).map(FETCH_DEVICE_CALLBACK).forEach(CALL_DEVICE_CALLBACK);
         }
-        EXISTING_DEVICES.addIfAbsent(id);
         getState().values.put(name, value);
         Consumer<StringCallback> callCallback = callback -> callback.callback(name, value);
         if(!getState().existingValues.contains(name)) {
-            getState().existingValues.addIfAbsent(name);
+            getState().existingValues.add(name);
             getState().valueCreatedCallbacks.forEach(callCallback);
         }
         if(get(value) == null || !value.equals(get(value))) {
@@ -140,7 +140,7 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
      * @see #cancelValueCreatedCallback(StringCallback)
      */
     public ScopedObject<StringCallback> registerValueCreatedCallback(StringCallback callback, boolean initialNotify) {
-        getState().valueCreatedCallbacks.addIfAbsent(callback);
+        getState().valueCreatedCallbacks.add(callback);
         if(initialNotify) {
             getState().existingValues.forEach(value -> callback.callback(value, get(value)));
         }
@@ -169,7 +169,7 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
      */
     public ScopedObject<Pair<String, StringCallback>> registerValueChangedCallback(String value, StringCallback callback, boolean initialNotify) {
         Pair<String, StringCallback> callbackPair = new Pair<>(value, callback);
-        getState().valueChangedCallbacks.addIfAbsent(callbackPair);
+        getState().valueChangedCallbacks.add(callbackPair);
         if(initialNotify) {
             callback.callback(value, get(value));
         }
@@ -266,11 +266,11 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
      * Contains all information about the state of a SimDeviceSim
      */
     public static class State {
-        public final Map<String, String> values = new HashMap<>();
-        public final Map<String, String> valueTypes = new HashMap<>();
-        public final CopyOnWriteArrayList<String> existingValues = new CopyOnWriteArrayList<>();
-        public final CopyOnWriteArrayList<StringCallback> valueCreatedCallbacks = new CopyOnWriteArrayList<>();
-        public final CopyOnWriteArrayList<Pair<String, StringCallback>> valueChangedCallbacks = new CopyOnWriteArrayList<>();
+        public final Map<String, String> values = new ConcurrentHashMap<>();
+        public final Map<String, String> valueTypes = new ConcurrentHashMap<>();
+        public final Set<String> existingValues = new ConcurrentSkipListSet<>();
+        public final Set<StringCallback> valueCreatedCallbacks = new ConcurrentSkipListSet<>();
+        public final Set<Pair<String, StringCallback>> valueChangedCallbacks = new ConcurrentSkipListSet<>();
     }
 
 }
