@@ -7,5 +7,5 @@ package org.team199.wpiws.interfaces;
 public interface ExceptionConsumer<T> {
 
     public void accept(T t) throws Exception;
-    
+
 }

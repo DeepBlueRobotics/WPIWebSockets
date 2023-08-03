@@ -159,7 +159,7 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
     public void cancelValueCreatedCallback(StringCallback callback) {
         getState().valueCreatedCallbacks.remove(callback);
     }
-  
+
     /**
      * Registers a SimValueCallback to be called whenever the specified value of this device is changed
      * @param callback the callback function to call
@@ -188,21 +188,21 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
     public void cancelValueChangedCallback(Pair<String, StringCallback> callback) {
         getState().valueChangedCallbacks.remove(callback);
     }
-    
+
     /**
      * @return an array of the identifiers of all created SimDeviceSims. A SimDeviceSim is determined to be created if a value on it has been set.
      */
     public static String[] enumerateDevices(String prefix) {
         return EXISTING_DEVICES.stream().filter(name -> name.startsWith(prefix)).toArray(CREATE_STRING_ARRAY);
     }
-    
+
     /**
      * @return an array of the value names of all values of this SimDeviceSim
      */
     public String[] enumerateValues(String prefix) {
         return getState().existingValues.stream().filter(name -> name.startsWith(prefix)).toArray(CREATE_STRING_ARRAY);
     }
-  
+
     /**
      * Registers a SimDeviceCallback to be called whenever a new SimDeviceSim is created. A SimDeviceSim is determined to be created if a value on it has been set.
      * @param callback the callback function to call
@@ -256,12 +256,12 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
             simDevice.set(value.getKey(), value.getValue().toString(), false);
         });
     }
-    
+
     @Override
     public State generateState() {
         return new State();
     }
-    
+
     /**
      * Contains all information about the state of a SimDeviceSim
      */

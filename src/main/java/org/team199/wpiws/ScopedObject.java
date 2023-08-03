@@ -9,11 +9,11 @@ import org.team199.wpiws.interfaces.ExceptionConsumer;
  * @param T the object type held by this ScopedObject
  */
 public class ScopedObject<T> implements AutoCloseable {
-    
+
     private final T object;
     private final Consumer<T> closer;
     private boolean isClosed;
-    
+
     /**
      * Creates a ScopedObject from an AutoClosable and assigns its close method to {@link AutoCloseable#close()}
      * @param <T> the type of the object
@@ -34,7 +34,7 @@ public class ScopedObject<T> implements AutoCloseable {
         this.closer = closer;
         this.isClosed = false;
     }
-    
+
     /**
      * Retrieves the object associeated with this ScopedObject
      * @return the object associeated with this ScopedObject
@@ -80,5 +80,5 @@ public class ScopedObject<T> implements AutoCloseable {
             }
         };
     }
-    
+
 }

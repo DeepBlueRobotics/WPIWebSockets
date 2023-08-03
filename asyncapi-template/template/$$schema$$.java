@@ -38,32 +38,33 @@ import org.team199.wpiws.interfaces.*;
  */
 {% if hasId -%}
 public class {{ name }}Sim extends StateDevice<{{ name }}Sim.State> {
-{% else -%}
+{%- else %}
 public class {{ name }}Sim {
-{% endif -%}
-    {% if hasInit %}
+{%- endif %}
+
+    {% if hasInit -%}
     private static final Set<String> INITIALIZED_DEVICES = new ConcurrentSkipListSet<>();
     private static final Set<BooleanCallback> STATIC_INITIALIZED_CALLBACKS = new ConcurrentSkipListSet<>();
     {% endif -%}
-    {% if hasId %}
+    {% if hasId -%}
     private static final Map<String, {{ name }}Sim.State> STATE_MAP = new ConcurrentHashMap<>();
-    {%- else %}
+    {% else -%}
     private static final {{ name }}Sim.State STATE = new State();
     {% endif -%}
     private static final Set<String> UNKNOWN_KEYS = new ConcurrentSkipListSet<>();
-    
-    {% if hasId %}
 
+    {% if hasId -%}
     /**
      * Creates a new {{ name }}Sim
-     * @param id the device identifier of this {{ name }}Sim 
+     * @param id the device identifier of this {{ name }}Sim
      */
     public {{ name }}Sim(String id) {
         super(id, STATE_MAP);
     }
-    {% endif -%}
+    {%- endif -%}
 
-    {% if hasInit %}
+    {%- if hasInit %}
+
     /**
      * Registers a BooleanCallback to be called whenever {{ a }} {{ name }}Sim device is initialized or uninitialized
      * @param callback the callback function to call
@@ -92,7 +93,7 @@ public class {{ name }}Sim {
     public static void cancelStaticInitializedCallback(BooleanCallback callback) {
         STATIC_INITIALIZED_CALLBACKS.remove(callback);
     }
-    
+
     /**
      * Registers a BooleanCallback to be called whenever this device is initialized or uninitialized
      * @param callback the callback function to call
@@ -161,19 +162,21 @@ public class {{ name }}Sim {
     public static String[] enumerateDevices() {
         return INITIALIZED_DEVICES.toArray(new String[INITIALIZED_DEVICES.size()]);
     }
-    {% endif -%}
+    {%- endif -%}
 
-    {% if hasId %}
+    {%- if hasId %}
+
     @Override
     protected State generateState() {
         return new State();
     }
-    
-    {% else %}
+
+    {% else -%}
+
     protected static {{ name }}Sim.State getState() {
         return STATE;
     }
-    
+
     {% endif -%}
 
     {% for propName, prop in props -%}
@@ -207,7 +210,7 @@ public class {{ name }}Sim {
     }
 
     /**
-     * @return {{ prop.description() | lower }}
+     * @return {{ prop.description() | lower | trim }}
      * @see #set{{ varInfo.pname }}({{ varInfo.pprimtype }})
      */
     public{{ cstatic }}{{ varInfo.pprimtype }} get{{ varInfo.pname }}() {
@@ -215,7 +218,7 @@ public class {{ name }}Sim {
     }
 
     /**
-     * Set {{ prop.description() | lower }}
+     * Set {{ prop.description() | lower | trim }}
      * @see #get{{ varInfo.pname }}()
      */
     public{{ cstatic }}void set{{ varInfo.pname }}({{ varInfo.pprimtype }} {{ varInfo.pnamel }}) {
@@ -281,7 +284,7 @@ public class {{ name }}Sim {
     private{{ cstatic }}void processValue(WSValue value) {
         if(value.getKey() instanceof String && value.getValue() != null) {
             switch((String)value.getKey()) {
-                {% if hasInit -%}
+                {%- if hasInit %}
                 case "<init": {
                     filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_INITIALIZED);
                     break;
@@ -299,9 +302,8 @@ public class {{ name }}Sim {
                 }
                 {%- endfor %}
                 default: {
-                    if (!UNKNOWN_KEYS.contains(value.getKey())) {
+                    if (UNKNOWN_KEYS.add(value.getKey())) {
                         System.err.println("{{ name }}Sim received value '" + value.getKey() + ":" + value.getValue() + "' but does not recognize '" + value.getKey() + "'. Values with that key will be ignored.");
-                        UNKNOWN_KEYS.add(value.getKey());    
                     }
                 }
             }
@@ -309,21 +311,21 @@ public class {{ name }}Sim {
     }
 
     /**
-     * Contains all information about the state of a {{ name }}Sim
+     * Contains all information about the state of {{ a }} {{ name }}Sim
      */
     public static class State {
-        {% if hasInit -%}
+        {%- if hasInit -%}
         public boolean init = false;
-        {% endif -%}
+        {%- endif -%}
         {% for propName, prop in props -%}
-        {% import "../partials/initVars.java" as varInfo with context -%}
+        {% import "../partials/initVars.java" as varInfo with context %}
         public {{ varInfo.pprimtype }} {{ varInfo.pnamel }} = {{ varInfo.pinit }};
-        {% endfor -%}
-        {% if hasInit -%}
+        {%- endfor -%}
+        {%- if hasInit -%}
         public final Set<BooleanCallback> INITIALIZED_CALLBACKS = new ConcurrentSkipListSet<>();
-        {% endif -%}
+        {%- endif -%}
         {% for propName, prop in props -%}
-        {% import "../partials/initVars.java" as varInfo with context -%}
+        {% import "../partials/initVars.java" as varInfo with context %}
         public final Set<{{ varInfo.ptype }}Callback> {{ varInfo.pnameu }}_CALLBACKS = new ConcurrentSkipListSet<>();
         {%- endfor %}
     }

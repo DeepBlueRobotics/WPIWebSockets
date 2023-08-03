@@ -26,10 +26,10 @@ import org.team199.wpiws.interfaces.DeviceMessageProcessor;
  * Manages a list of {@link DeviceMessageProcessor} objects which handle messages for different device types
  */
 public final class MessageProcessor {
-    
+
     private static final Map<String, DeviceMessageProcessor> processors = new ConcurrentHashMap<>();
     private static final Set<String> unknownTypes = new ConcurrentSkipListSet<>();
-    
+
     static {
         registerProcessor("Accel", AccelerometerSim::processMessage);
         registerProcessor("AI", AnalogInputSim::processMessage);
@@ -79,7 +79,7 @@ public final class MessageProcessor {
         }
         processor.processMessage(device, data);
     }
-    
+
     private MessageProcessor() {}
 
 }

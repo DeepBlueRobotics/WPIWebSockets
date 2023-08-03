@@ -12,5 +12,5 @@ public interface StringCallback {
      * @param value the String data value
      */
     public void callback(String name, String value);
-    
+
 }
