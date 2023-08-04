@@ -320,18 +320,18 @@ public class {{ name }}Sim {
      * Contains all information about the state of {{ a }} {{ name }}Sim
      */
     public static class State {
-        {%- if hasInit -%}
+        {% if hasInit -%}
         public boolean init = false;
         {%- endif -%}
-        {% for propName, prop in props -%}
-        {% import "../partials/initVars.java" as varInfo with context %}
+        {%- for propName, prop in props -%}
+        {%- import "../partials/initVars.java" as varInfo with context %}
         public {{ varInfo.pprimtype }} {{ varInfo.pnamel }} = {{ varInfo.pinit }};
-        {%- endfor -%}
-        {%- if hasInit -%}
+        {%- endfor %}
+        {% if hasInit -%}
         public final Set<BooleanCallback> INITIALIZED_CALLBACKS = new ConcurrentSkipListSet<>();
         {%- endif -%}
-        {% for propName, prop in props -%}
-        {% import "../partials/initVars.java" as varInfo with context %}
+        {%- for propName, prop in props -%}
+        {%- import "../partials/initVars.java" as varInfo with context %}
         public final Set<{{ varInfo.ptype }}Callback> {{ varInfo.pnameu }}_CALLBACKS = new ConcurrentSkipListSet<>();
         {%- endfor %}
     }
