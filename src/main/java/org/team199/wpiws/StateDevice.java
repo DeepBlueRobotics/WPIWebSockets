@@ -17,7 +17,7 @@ public abstract class StateDevice<T> {
      */
     public static final IntFunction<String[]> CREATE_STRING_ARRAY = String[]::new;
     /**
-     * The identifier associated with this StateEvent
+     * The identifier associated with this StateDevice
      */
     protected final String id;
     private final T state;

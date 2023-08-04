@@ -76,7 +76,38 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
      */
     public void set(String name, double value) {
         getState().valueTypes.put(name, "d");
+        getState().valueBidirectionality.putIfAbsent(name, false);
         set(name, String.valueOf(value), true);
+    }
+
+    /**
+     * Sets the specified value to be bidirectional on the SimDeviceSim. This means that the value can be set from the robot code as well as from the simulation code.
+     * This method MUST be called before the value is set from simulation code. If the value is first set by robot code, this is handled automatically.
+     * For more information, see <a href="https://github.com/DeepBlueRobotics/WPIWebSockets/issues/30">DeepBlueRobotics/WPIWebSockets#30</a>.
+     * @param name the name of the value
+     */
+    public void setBidirectional(String name) {
+        if(Boolean.FALSE.equals(getState().valueBidirectionality.put(name, true))) { // This is the same as oldValue == false, but also accounts for null
+            System.err.println("WARNING: SimDeviceSim (" + id + "): User code is setting " + name + " to be bidirectional, but it has already been used non-bidirectionally! This may cause unexpected behavior. (See DeepBlueRobotics/WPIWebSockets#30)");
+        }
+    }
+
+    /**
+     * Checks whether the specified value is bidirectional on the SimDeviceSim.
+     * @param name the name of the value
+     * @return <code>true</code> if the value is bidirectional, <code>false</code> if it is non-bidirectional or if the value does not yet exist
+     */
+    public boolean isBidirectional(String name) {
+        return getState().valueBidirectionality.getOrDefault(name, false);
+    }
+
+    /**
+     * Determines the prefix to use for the specified value when sending it to the robot code.
+     * @param name the name of the value
+     * @return the prefix to use for the specified value
+     */
+    public String getPrefix(String name) {
+        return isBidirectional(name) ? "<>" : ">";
     }
 
     /**
@@ -128,7 +159,7 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
             } else {
                 valueObj = value;
             }
-            ConnectionProcessor.broadcastMessage(id, "SimDevice", new WSValue(">" + name, valueObj));
+            ConnectionProcessor.broadcastMessage(id, "SimDevice", new WSValue(getPrefix(name) + name, valueObj));
         }
     }
 
@@ -241,7 +272,19 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
         SimDeviceSim simDevice = new SimDeviceSim(device);
         data.stream().filter(Objects::nonNull).forEach(value -> {
             String key = value.getKey();
-            value.setKey(key.substring(key.startsWith("<>") ? 2 : 1));
+            String formattedKey;
+            if(key.startsWith("<>")) {
+                formattedKey = key.substring(2);
+                if(Boolean.FALSE.equals(simDevice.getState().valueBidirectionality.put(formattedKey, true))) { // This is the same as oldValue == false, but also accounts for null
+                    System.err.println("WARNING: SimDeviceSim (" + device + "): WPILib is setting " + formattedKey + " to be bidirectional, but it has already been used non-bidirectionally! This may cause unexpected behavior. (See DeepBlueRobotics/WPIWebSockets#30)");
+                }
+            } else {
+                formattedKey = key.substring(1);
+                if(Boolean.TRUE.equals(simDevice.getState().valueBidirectionality.put(formattedKey, false))) { // This is the same as oldValue == true, but also accounts for null
+                    System.err.println("WARNING: SimDeviceSim (" + device + "): WPILib is setting " + formattedKey + " to be non-bidirectional, but it has already been used bidirectionally! This may cause unexpected behavior. (See DeepBlueRobotics/WPIWebSockets#30)");
+                }
+            }
+            value.setKey(formattedKey);
             if(Boolean.class.isAssignableFrom(value.getValue().getClass())) {
                 simDevice.getState().valueTypes.put(value.getKey(), "b");
             } else if(BigDecimal.class.isAssignableFrom(value.getValue().getClass())) {
@@ -268,6 +311,7 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
     public static class State {
         public final Map<String, String> values = new ConcurrentHashMap<>();
         public final Map<String, String> valueTypes = new ConcurrentHashMap<>();
+        public final Map<String, Boolean> valueBidirectionality = new ConcurrentHashMap<>();
         public final Set<String> existingValues = new ConcurrentSkipListSet<>();
         public final Set<StringCallback> valueCreatedCallbacks = new ConcurrentSkipListSet<>();
         public final Set<Pair<String, StringCallback>> valueChangedCallbacks = new ConcurrentSkipListSet<>();
