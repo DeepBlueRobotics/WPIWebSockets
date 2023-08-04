@@ -13,7 +13,7 @@ import com.github.cliftonlabs.json_simple.JsonArray;
 public abstract class StateDevice<T> {
 
     /**
-     * An IntFunction which is equivilent to <code>String[]::new</code>
+     * An IntFunction which is equivalent to <code>String[]::new</code>
      */
     public static final IntFunction<String[]> CREATE_STRING_ARRAY = String[]::new;
     /**

@@ -24,7 +24,7 @@ public final class ConnectionProcessor {
     private static Object threadExecutorLock = new Object();
 
     /**
-     * Allows custom handling of message processing. This allows for syncronous execution of callbacks with another thread.
+     * Allows custom handling of message processing. This allows for synchronous execution of callbacks with another thread.
      * @param executor A Consumer which will be fed Runnable calls which forward messages to the rest of the code
      */
     public static void setThreadExecutor(Consumer<Runnable> executor) {
@@ -103,7 +103,7 @@ public final class ConnectionProcessor {
 
     /**
      * Called when an error occurs while processing data for a Websocket
-     * @param socket the WebSocket on which the error occured
+     * @param socket the WebSocket on which the error occurred
      * @param e the Exception which was thrown
      */
     public static void onError(WebSocket socket, Exception e) {
@@ -148,7 +148,7 @@ public final class ConnectionProcessor {
     }
 
     /**
-     * Retrieves info about the specifed WebSocket to display to the user
+     * Retrieves info about the specified WebSocket to display to the user
      * @param socket the WebSocket
      */
     public static String getSocketInfo(WebSocket socket) {

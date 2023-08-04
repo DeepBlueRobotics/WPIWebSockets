@@ -37,7 +37,7 @@ public class ScopedObject<T> implements AutoCloseable {
 
     /**
      * Retrieves the object associeated with this ScopedObject
-     * @return the object associeated with this ScopedObject
+     * @return the object associated with this ScopedObject
      */
     public T getObject() {
         return object;

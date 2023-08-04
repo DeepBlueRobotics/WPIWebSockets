@@ -103,7 +103,7 @@ public final class WSConnection {
         public void onClose(int code, String reason, boolean remote) {
             ConnectionProcessor.onClose(this, code, reason, remote);
             if(autoReconnect && remote) {
-                System.out.println("Reconnnecting...");
+                System.out.println("Reconnecting...");
                 RunningObject.start(this::tryReconnect);
             }
         }
