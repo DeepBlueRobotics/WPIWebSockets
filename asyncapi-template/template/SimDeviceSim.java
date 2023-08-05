@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -31,7 +32,7 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
 
     private static final Map<String, SimDeviceSim.State> STATE_MAP = new ConcurrentHashMap<>();
     private static final Set<String> EXISTING_DEVICES = new ConcurrentSkipListSet<>();
-    private static final Set<Pair<String, SimDeviceCallback>> DEVICE_CALLBACKS = new ConcurrentSkipListSet<>();
+    private static final Set<Pair<String, SimDeviceCallback>> DEVICE_CALLBACKS = new CopyOnWriteArraySet<>();
 
     /**
      * Creates a new SimDeviceSim
@@ -313,8 +314,8 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
         public final Map<String, String> valueTypes = new ConcurrentHashMap<>();
         public final Map<String, Boolean> valueBidirectionality = new ConcurrentHashMap<>();
         public final Set<String> existingValues = new ConcurrentSkipListSet<>();
-        public final Set<StringCallback> valueCreatedCallbacks = new ConcurrentSkipListSet<>();
-        public final Set<Pair<String, StringCallback>> valueChangedCallbacks = new ConcurrentSkipListSet<>();
+        public final Set<StringCallback> valueCreatedCallbacks = new CopyOnWriteArraySet<>();
+        public final Set<Pair<String, StringCallback>> valueChangedCallbacks = new CopyOnWriteArraySet<>();
     }
 
 }

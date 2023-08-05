@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 {% endif -%}
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -44,7 +45,7 @@ public class {{ name }}Sim {
 
     {% if hasInit -%}
     private static final Set<String> INITIALIZED_DEVICES = new ConcurrentSkipListSet<>();
-    private static final Set<BooleanCallback> STATIC_INITIALIZED_CALLBACKS = new ConcurrentSkipListSet<>();
+    private static final Set<BooleanCallback> STATIC_INITIALIZED_CALLBACKS = new CopyOnWriteArraySet<>();
     {% endif -%}
     {% if hasId -%}
     private static final Map<String, {{ name }}Sim.State> STATE_MAP = new ConcurrentHashMap<>();
@@ -328,11 +329,11 @@ public class {{ name }}Sim {
         public {{ varInfo.pprimtype }} {{ varInfo.pnamel }} = {{ varInfo.pinit }};
         {%- endfor %}
         {% if hasInit -%}
-        public final Set<BooleanCallback> INITIALIZED_CALLBACKS = new ConcurrentSkipListSet<>();
+        public final Set<BooleanCallback> INITIALIZED_CALLBACKS = new CopyOnWriteArraySet<>();
         {%- endif -%}
         {%- for propName, prop in props -%}
         {%- import "../partials/initVars.java" as varInfo with context %}
-        public final Set<{{ varInfo.ptype }}Callback> {{ varInfo.pnameu }}_CALLBACKS = new ConcurrentSkipListSet<>();
+        public final Set<{{ varInfo.ptype }}Callback> {{ varInfo.pnameu }}_CALLBACKS = new CopyOnWriteArraySet<>();
         {%- endfor %}
     }
 
