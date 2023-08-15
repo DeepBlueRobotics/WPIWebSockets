@@ -19,7 +19,7 @@ public abstract class StateDevice<T> {
     /**
      * The identifier associated with this StateDevice
      */
-    protected final String id;
+    public final String id;
     private final T state;
 
     /**
