@@ -59,6 +59,10 @@ public class ScopedObject<T> implements AutoCloseable {
         }
     }
 
+    public boolean isClosed() {
+        return isClosed;
+    }
+
     @Override
     protected void finalize() throws Throwable {
         close();
