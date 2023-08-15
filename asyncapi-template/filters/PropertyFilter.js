@@ -75,4 +75,12 @@ function formatPropInitialValue(prop) {
     }
 }
 
-module.exports = { formatPropName, cap1, formatPropType, formatPropTypeArr, formatPropPrimType, formatPropInitialValue }
+function isRobotInput(prop) {
+    return prop.startsWith(">") || prop.startsWith("<>");
+}
+
+function isRobotOutput(prop) {
+    return prop.startsWith("<");
+}
+
+module.exports = { formatPropName, cap1, formatPropType, formatPropTypeArr, formatPropPrimType, formatPropInitialValue, isRobotInput, isRobotOutput }

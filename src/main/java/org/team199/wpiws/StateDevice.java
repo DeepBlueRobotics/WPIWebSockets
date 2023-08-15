@@ -11,15 +11,15 @@ import com.github.cliftonlabs.json_simple.JsonArray;
  * Represents a device which has a number of internal states based on a given id
  */
 public abstract class StateDevice<T> {
-    
+
     /**
-     * An IntFunction which is equivilent to <code>String[]::new</code>
+     * An IntFunction which is equivalent to <code>String[]::new</code>
      */
     public static final IntFunction<String[]> CREATE_STRING_ARRAY = String[]::new;
     /**
-     * The identifier associated with this StateEvent
+     * The identifier associated with this StateDevice
      */
-    protected final String id;
+    public final String id;
     private final T state;
 
     /**
@@ -35,7 +35,7 @@ public abstract class StateDevice<T> {
         }
         this.state = stateMap.get(id);
     }
-    
+
     /**
      * Retrieves the state from the state map based on this StateDevice's unique identifier
      * @return the state from the state map based on this StateDevice's unique identifier
@@ -44,7 +44,7 @@ public abstract class StateDevice<T> {
     protected T getState() {
         return state;
     }
-    
+
     /**
      * Generates a blank state to be stored in this device type's state map
      */

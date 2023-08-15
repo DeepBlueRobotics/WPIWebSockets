@@ -15,13 +15,16 @@
 // EDIT THAT FILE INSTEAD.
 package org.team199.wpiws.devices;
 
-{% if hasId -%}
-import java.util.HashMap;
-{% endif -%}
 import java.util.List;
+{% if hasId -%}
+import java.util.Map;
+{% endif -%}
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
+{% if hasId -%}
+import java.util.concurrent.ConcurrentHashMap;
+{% endif -%}
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -36,32 +39,33 @@ import org.team199.wpiws.interfaces.*;
  */
 {% if hasId -%}
 public class {{ name }}Sim extends StateDevice<{{ name }}Sim.State> {
-{% else -%}
+{%- else %}
 public class {{ name }}Sim {
-{% endif -%}
-    {% if hasInit %}
-    private static final CopyOnWriteArrayList<String> INITIALIZED_DEVICES = new CopyOnWriteArrayList<>();
-    private static final CopyOnWriteArrayList<BooleanCallback> STATIC_INITIALIZED_CALLBACKS = new CopyOnWriteArrayList<>();
+{%- endif %}
+
+    {% if hasInit -%}
+    private static final Set<String> INITIALIZED_DEVICES = new ConcurrentSkipListSet<>();
+    private static final Set<BooleanCallback> STATIC_INITIALIZED_CALLBACKS = new CopyOnWriteArraySet<>();
     {% endif -%}
-    {% if hasId %}
-    private static final HashMap<String, {{ name }}Sim.State> STATE_MAP = new HashMap<>();
-    {%- else %}
+    {% if hasId -%}
+    private static final Map<String, {{ name }}Sim.State> STATE_MAP = new ConcurrentHashMap<>();
+    {% else -%}
     private static final {{ name }}Sim.State STATE = new State();
     {% endif -%}
     private static final Set<String> UNKNOWN_KEYS = new ConcurrentSkipListSet<>();
-    
-    {% if hasId %}
 
+    {% if hasId -%}
     /**
      * Creates a new {{ name }}Sim
-     * @param id the device identifier of this {{ name }}Sim 
+     * @param id the device identifier of this {{ name }}Sim
      */
     public {{ name }}Sim(String id) {
         super(id, STATE_MAP);
     }
-    {% endif -%}
+    {%- endif -%}
 
-    {% if hasInit %}
+    {%- if hasInit %}
+
     /**
      * Registers a BooleanCallback to be called whenever {{ a }} {{ name }}Sim device is initialized or uninitialized
      * @param callback the callback function to call
@@ -71,7 +75,7 @@ public class {{ name }}Sim {
      * @see #registerInitializedCallback(BooleanCallback, boolean)
      */
     public static ScopedObject<BooleanCallback> registerStaticInitializedCallback(BooleanCallback callback, boolean initialNotify) {
-        STATIC_INITIALIZED_CALLBACKS.addIfAbsent(callback);
+        STATIC_INITIALIZED_CALLBACKS.add(callback);
         if(initialNotify) {
             INITIALIZED_DEVICES.forEach(device -> callback.callback(device, true));
         }
@@ -90,7 +94,7 @@ public class {{ name }}Sim {
     public static void cancelStaticInitializedCallback(BooleanCallback callback) {
         STATIC_INITIALIZED_CALLBACKS.remove(callback);
     }
-    
+
     /**
      * Registers a BooleanCallback to be called whenever this device is initialized or uninitialized
      * @param callback the callback function to call
@@ -100,7 +104,7 @@ public class {{ name }}Sim {
      * @see #registerStaticInitializedCallback(BooleanCallback, boolean)
      */
     public ScopedObject<BooleanCallback> registerInitializedCallback(BooleanCallback callback, boolean initialNotify) {
-        getState().INITIALIZED_CALLBACKS.addIfAbsent(callback);
+        getState().INITIALIZED_CALLBACKS.add(callback);
         if(initialNotify) {
             callback.callback(id, getState().init);
         }
@@ -144,7 +148,7 @@ public class {{ name }}Sim {
         if(initialized) {
             STATIC_INITIALIZED_CALLBACKS.forEach(CALL_INITIALIZED_CALLBACK);
             getState().INITIALIZED_CALLBACKS.forEach(CALL_INITIALIZED_CALLBACK);
-            INITIALIZED_DEVICES.addIfAbsent(id);
+            INITIALIZED_DEVICES.add(id);
         } else {
             INITIALIZED_DEVICES.remove(id);
         }
@@ -159,19 +163,21 @@ public class {{ name }}Sim {
     public static String[] enumerateDevices() {
         return INITIALIZED_DEVICES.toArray(new String[INITIALIZED_DEVICES.size()]);
     }
-    {% endif -%}
+    {%- endif -%}
 
-    {% if hasId %}
+    {%- if hasId %}
+
     @Override
     protected State generateState() {
         return new State();
     }
-    
-    {% else %}
+
+    {% else -%}
+
     protected static {{ name }}Sim.State getState() {
         return STATE;
     }
-    
+
     {% endif -%}
 
     {% for propName, prop in props -%}
@@ -184,7 +190,7 @@ public class {{ name }}Sim {
      * @see #cancel{{ varInfo.pname }}Callback({{ varInfo.ptype }}Callback)
      */
     public{{ cstatic }}ScopedObject<{{ varInfo.ptype }}Callback> register{{ varInfo.pname }}Callback({{ varInfo.ptype }}Callback callback, boolean initialNotify) {
-        getState().{{ varInfo.pnameu }}_CALLBACKS.addIfAbsent(callback);
+        getState().{{ varInfo.pnameu }}_CALLBACKS.add(callback);
         if(initialNotify) {
             callback.callback({{ cid }}, getState().{{ varInfo.pnamel }});
         }
@@ -205,20 +211,23 @@ public class {{ name }}Sim {
     }
 
     /**
-     * @return {{ prop.description() | lower }}
+     * @return {{ prop.description() | lower | trim }}
      * @see #set{{ varInfo.pname }}({{ varInfo.pprimtype }})
      */
     public{{ cstatic }}{{ varInfo.pprimtype }} get{{ varInfo.pname }}() {
         return getState().{{ varInfo.pnamel }};
     }
 
+    {%- if varInfo.isRobotInput %}
+
     /**
-     * Set {{ prop.description() | lower }}
+     * Set {{ prop.description() | lower | trim }}
      * @see #get{{ varInfo.pname }}()
      */
     public{{ cstatic }}void set{{ varInfo.pname }}({{ varInfo.pprimtype }} {{ varInfo.pnamel }}) {
         set{{ varInfo.pname }}({{ varInfo.pnamel }}, true);
     }
+    {%- endif %}
 
     /**
      * A Consumer which calls the given callback with the current {{ varInfo.pnamel }} value of this PWMSim
@@ -230,6 +239,9 @@ public class {{ name }}Sim {
             getState().{{ varInfo.pnameu }}_CALLBACKS.forEach(CALL_{{ varInfo.pnameu }}_CALLBACK);
         }
         if(notifyRobot) {
+            {%- if not varInfo.isRobotInput %}
+            System.err.println("WARNING: {{ name }}Sim#set{{ varInfo.pname }}({{ varInfo.pprimtype }}, true) was called, but {{ varInfo.pfname }} is not a robot input!");
+            {%- endif %}
             ConnectionProcessor.broadcastMessage({{ cid }}, "{{ type }}", new WSValue("{{ varInfo.pfname }}", {{ varInfo.pnamel }}));
         }
     }
@@ -279,7 +291,7 @@ public class {{ name }}Sim {
     private{{ cstatic }}void processValue(WSValue value) {
         if(value.getKey() instanceof String && value.getValue() != null) {
             switch((String)value.getKey()) {
-                {% if hasInit -%}
+                {%- if hasInit %}
                 case "<init": {
                     filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_INITIALIZED);
                     break;
@@ -297,9 +309,8 @@ public class {{ name }}Sim {
                 }
                 {%- endfor %}
                 default: {
-                    if (!UNKNOWN_KEYS.contains(value.getKey())) {
+                    if (UNKNOWN_KEYS.add(value.getKey())) {
                         System.err.println("{{ name }}Sim received value '" + value.getKey() + ":" + value.getValue() + "' but does not recognize '" + value.getKey() + "'. Values with that key will be ignored.");
-                        UNKNOWN_KEYS.add(value.getKey());    
                     }
                 }
             }
@@ -307,22 +318,22 @@ public class {{ name }}Sim {
     }
 
     /**
-     * Contains all information about the state of a {{ name }}Sim
+     * Contains all information about the state of {{ a }} {{ name }}Sim
      */
     public static class State {
         {% if hasInit -%}
         public boolean init = false;
-        {% endif -%}
-        {% for propName, prop in props -%}
-        {% import "../partials/initVars.java" as varInfo with context -%}
+        {%- endif -%}
+        {%- for propName, prop in props -%}
+        {%- import "../partials/initVars.java" as varInfo with context %}
         public {{ varInfo.pprimtype }} {{ varInfo.pnamel }} = {{ varInfo.pinit }};
-        {% endfor -%}
+        {%- endfor %}
         {% if hasInit -%}
-        public final CopyOnWriteArrayList<BooleanCallback> INITIALIZED_CALLBACKS = new CopyOnWriteArrayList<>();
-        {% endif -%}
-        {% for propName, prop in props -%}
-        {% import "../partials/initVars.java" as varInfo with context -%}
-        public final CopyOnWriteArrayList<{{ varInfo.ptype }}Callback> {{ varInfo.pnameu }}_CALLBACKS = new CopyOnWriteArrayList<>();
+        public final Set<BooleanCallback> INITIALIZED_CALLBACKS = new CopyOnWriteArraySet<>();
+        {%- endif -%}
+        {%- for propName, prop in props -%}
+        {%- import "../partials/initVars.java" as varInfo with context %}
+        public final Set<{{ varInfo.ptype }}Callback> {{ varInfo.pnameu }}_CALLBACKS = new CopyOnWriteArraySet<>();
         {%- endfor %}
     }
 

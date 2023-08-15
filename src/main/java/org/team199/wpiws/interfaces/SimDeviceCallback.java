@@ -5,7 +5,7 @@ package org.team199.wpiws.interfaces;
  */
 @FunctionalInterface
 public interface SimDeviceCallback {
-    
+
     /**
      * Calls the callback
      * @param name the device identifier of the device calling the callback
