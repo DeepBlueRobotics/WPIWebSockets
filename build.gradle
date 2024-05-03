@@ -44,7 +44,7 @@ task generateDeviceFiles(type: NpxTask) {
 
     // Define the command line that npx should use
     workingDir = buildDir // Because templateDir can't be under it
-    command = '@asyncapi/generator'
+    command = '@asyncapi/generator@1.17.25'
     args = ['--force-write', 
         '-o', "${outputDir}/org/team199/wpiws/devices",
         "https://raw.githubusercontent.com/wpilibsuite/allwpilib/master/simulation/halsim_ws_core/doc/wpilib-ws.yaml", 
