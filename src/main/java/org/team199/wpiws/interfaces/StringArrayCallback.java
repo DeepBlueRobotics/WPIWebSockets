@@ -11,6 +11,6 @@ public interface StringArrayCallback {
      * @param name the device identifier of the device calling the callback
      * @param value the String data values
      */
-    public void callback(String name, String value);
+    public void callback(String name, String[] value);
 
 }
