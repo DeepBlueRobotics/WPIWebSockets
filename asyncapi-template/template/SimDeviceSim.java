@@ -6,11 +6,13 @@ package org.team199.wpiws.devices;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -28,9 +30,9 @@ import org.team199.wpiws.interfaces.StringCallback;
  */
 public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
 
-    private static final HashMap<String, SimDeviceSim.State> STATE_MAP = new HashMap<>();
-    private static final CopyOnWriteArrayList<String> EXISTING_DEVICES = new CopyOnWriteArrayList<>();
-    private static final CopyOnWriteArrayList<Pair<String, SimDeviceCallback>> DEVICE_CALLBACKS = new CopyOnWriteArrayList<>();
+    private static final Map<String, SimDeviceSim.State> STATE_MAP = new ConcurrentHashMap<>();
+    private static final Set<String> EXISTING_DEVICES = new ConcurrentSkipListSet<>();
+    private static final Set<Pair<String, SimDeviceCallback>> DEVICE_CALLBACKS = new CopyOnWriteArraySet<>();
 
     /**
      * Creates a new SimDeviceSim
@@ -75,7 +77,38 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
      */
     public void set(String name, double value) {
         getState().valueTypes.put(name, "d");
+        getState().valueBidirectionality.putIfAbsent(name, false);
         set(name, String.valueOf(value), true);
+    }
+
+    /**
+     * Sets the specified value to be bidirectional on the SimDeviceSim. This means that the value can be set from the robot code as well as from the simulation code.
+     * This method MUST be called before the value is set from simulation code. If the value is first set by robot code, this is handled automatically.
+     * For more information, see <a href="https://github.com/DeepBlueRobotics/WPIWebSockets/issues/30">DeepBlueRobotics/WPIWebSockets#30</a>.
+     * @param name the name of the value
+     */
+    public void setBidirectional(String name) {
+        if(Boolean.FALSE.equals(getState().valueBidirectionality.put(name, true))) { // This is the same as oldValue == false, but also accounts for null
+            System.err.println("WARNING: SimDeviceSim (" + id + "): User code is setting " + name + " to be bidirectional, but it has already been used non-bidirectionally! This may cause unexpected behavior. (See DeepBlueRobotics/WPIWebSockets#30)");
+        }
+    }
+
+    /**
+     * Checks whether the specified value is bidirectional on the SimDeviceSim.
+     * @param name the name of the value
+     * @return <code>true</code> if the value is bidirectional, <code>false</code> if it is non-bidirectional or if the value does not yet exist
+     */
+    public boolean isBidirectional(String name) {
+        return getState().valueBidirectionality.getOrDefault(name, false);
+    }
+
+    /**
+     * Determines the prefix to use for the specified value when sending it to the robot code.
+     * @param name the name of the value
+     * @return the prefix to use for the specified value
+     */
+    public String getPrefix(String name) {
+        return isBidirectional(name) ? "<>" : ">";
     }
 
     /**
@@ -95,14 +128,13 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
      */
     public static final Function<Pair<String, StringCallback>, StringCallback> FETCH_VALUE_CALLBACK = pair -> pair.val2;
     private void set(String name, String value, boolean notifyRobot) {
-        if(!EXISTING_DEVICES.contains(id)) {
+        if(EXISTING_DEVICES.add(id)) {
             DEVICE_CALLBACKS.stream().filter(APPLIES_TO_ME).map(FETCH_DEVICE_CALLBACK).forEach(CALL_DEVICE_CALLBACK);
         }
-        EXISTING_DEVICES.addIfAbsent(id);
         getState().values.put(name, value);
         Consumer<StringCallback> callCallback = callback -> callback.callback(name, value);
         if(!getState().existingValues.contains(name)) {
-            getState().existingValues.addIfAbsent(name);
+            getState().existingValues.add(name);
             getState().valueCreatedCallbacks.forEach(callCallback);
         }
         if(get(value) == null || !value.equals(get(value))) {
@@ -128,7 +160,7 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
             } else {
                 valueObj = value;
             }
-            ConnectionProcessor.broadcastMessage(id, "SimDevice", new WSValue(">" + name, valueObj));
+            ConnectionProcessor.broadcastMessage(id, "SimDevice", new WSValue(getPrefix(name) + name, valueObj));
         }
     }
 
@@ -140,7 +172,7 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
      * @see #cancelValueCreatedCallback(StringCallback)
      */
     public ScopedObject<StringCallback> registerValueCreatedCallback(StringCallback callback, boolean initialNotify) {
-        getState().valueCreatedCallbacks.addIfAbsent(callback);
+        getState().valueCreatedCallbacks.add(callback);
         if(initialNotify) {
             getState().existingValues.forEach(value -> callback.callback(value, get(value)));
         }
@@ -159,7 +191,7 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
     public void cancelValueCreatedCallback(StringCallback callback) {
         getState().valueCreatedCallbacks.remove(callback);
     }
-  
+
     /**
      * Registers a SimValueCallback to be called whenever the specified value of this device is changed
      * @param callback the callback function to call
@@ -169,7 +201,7 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
      */
     public ScopedObject<Pair<String, StringCallback>> registerValueChangedCallback(String value, StringCallback callback, boolean initialNotify) {
         Pair<String, StringCallback> callbackPair = new Pair<>(value, callback);
-        getState().valueChangedCallbacks.addIfAbsent(callbackPair);
+        getState().valueChangedCallbacks.add(callbackPair);
         if(initialNotify) {
             callback.callback(value, get(value));
         }
@@ -188,21 +220,21 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
     public void cancelValueChangedCallback(Pair<String, StringCallback> callback) {
         getState().valueChangedCallbacks.remove(callback);
     }
-    
+
     /**
      * @return an array of the identifiers of all created SimDeviceSims. A SimDeviceSim is determined to be created if a value on it has been set.
      */
     public static String[] enumerateDevices(String prefix) {
         return EXISTING_DEVICES.stream().filter(name -> name.startsWith(prefix)).toArray(CREATE_STRING_ARRAY);
     }
-    
+
     /**
      * @return an array of the value names of all values of this SimDeviceSim
      */
     public String[] enumerateValues(String prefix) {
         return getState().existingValues.stream().filter(name -> name.startsWith(prefix)).toArray(CREATE_STRING_ARRAY);
     }
-  
+
     /**
      * Registers a SimDeviceCallback to be called whenever a new SimDeviceSim is created. A SimDeviceSim is determined to be created if a value on it has been set.
      * @param callback the callback function to call
@@ -241,7 +273,19 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
         SimDeviceSim simDevice = new SimDeviceSim(device);
         data.stream().filter(Objects::nonNull).forEach(value -> {
             String key = value.getKey();
-            value.setKey(key.substring(key.startsWith("<>") ? 2 : 1));
+            String formattedKey;
+            if(key.startsWith("<>")) {
+                formattedKey = key.substring(2);
+                if(Boolean.FALSE.equals(simDevice.getState().valueBidirectionality.put(formattedKey, true))) { // This is the same as oldValue == false, but also accounts for null
+                    System.err.println("WARNING: SimDeviceSim (" + device + "): WPILib is setting " + formattedKey + " to be bidirectional, but it has already been used non-bidirectionally! This may cause unexpected behavior. (See DeepBlueRobotics/WPIWebSockets#30)");
+                }
+            } else {
+                formattedKey = key.substring(1);
+                if(Boolean.TRUE.equals(simDevice.getState().valueBidirectionality.put(formattedKey, false))) { // This is the same as oldValue == true, but also accounts for null
+                    System.err.println("WARNING: SimDeviceSim (" + device + "): WPILib is setting " + formattedKey + " to be non-bidirectional, but it has already been used bidirectionally! This may cause unexpected behavior. (See DeepBlueRobotics/WPIWebSockets#30)");
+                }
+            }
+            value.setKey(formattedKey);
             if(Boolean.class.isAssignableFrom(value.getValue().getClass())) {
                 simDevice.getState().valueTypes.put(value.getKey(), "b");
             } else if(BigDecimal.class.isAssignableFrom(value.getValue().getClass())) {
@@ -256,21 +300,22 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
             simDevice.set(value.getKey(), value.getValue().toString(), false);
         });
     }
-    
+
     @Override
     public State generateState() {
         return new State();
     }
-    
+
     /**
      * Contains all information about the state of a SimDeviceSim
      */
     public static class State {
-        public final Map<String, String> values = new HashMap<>();
-        public final Map<String, String> valueTypes = new HashMap<>();
-        public final CopyOnWriteArrayList<String> existingValues = new CopyOnWriteArrayList<>();
-        public final CopyOnWriteArrayList<StringCallback> valueCreatedCallbacks = new CopyOnWriteArrayList<>();
-        public final CopyOnWriteArrayList<Pair<String, StringCallback>> valueChangedCallbacks = new CopyOnWriteArrayList<>();
+        public final Map<String, String> values = new ConcurrentHashMap<>();
+        public final Map<String, String> valueTypes = new ConcurrentHashMap<>();
+        public final Map<String, Boolean> valueBidirectionality = new ConcurrentHashMap<>();
+        public final Set<String> existingValues = new ConcurrentSkipListSet<>();
+        public final Set<StringCallback> valueCreatedCallbacks = new CopyOnWriteArraySet<>();
+        public final Set<Pair<String, StringCallback>> valueChangedCallbacks = new CopyOnWriteArraySet<>();
     }
 
 }

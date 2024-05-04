@@ -18,13 +18,13 @@ import com.github.cliftonlabs.json_simple.JsonKey;
  * Manages Websocket Connections
  */
 public final class ConnectionProcessor {
-    
+
     private static final CopyOnWriteArrayList<WebSocket> sockets = new CopyOnWriteArrayList<>();
     private static Consumer<Runnable> threadExecutor = Runnable::run;
     private static Object threadExecutorLock = new Object();
-    
+
     /**
-     * Allows custom handling of message processing. This allows for syncronous execution of callbacks with another thread.
+     * Allows custom handling of message processing. This allows for synchronous execution of callbacks with another thread.
      * @param executor A Consumer which will be fed Runnable calls which forward messages to the rest of the code
      */
     public static void setThreadExecutor(Consumer<Runnable> executor) {
@@ -103,14 +103,14 @@ public final class ConnectionProcessor {
 
     /**
      * Called when an error occurs while processing data for a Websocket
-     * @param socket the WebSocket on which the error occured
+     * @param socket the WebSocket on which the error occurred
      * @param e the Exception which was thrown
      */
     public static void onError(WebSocket socket, Exception e) {
         System.err.println("Error on: " + (socket == null ? "<null>" : getSocketInfo(socket)));
         e.printStackTrace(System.err);
     }
-    
+
     /**
      * Broadcasts a message to all connected WebSockets
      * @param device the device name of the device which sent the message
@@ -120,7 +120,7 @@ public final class ConnectionProcessor {
     public static void broadcastMessage(Object device, String type, WSValue data) {
         broadcastMessage(device, type, Arrays.asList(new WSValue[] {data}));
     }
-    
+
     /**
      * Broadcasts a message to all connected WebSockets
      * @param device the device name of the device which sent the message
@@ -138,7 +138,7 @@ public final class ConnectionProcessor {
         String messageJson = message.toJson();
         broadcastMessage(messageJson);
     }
-    
+
     /**
      * Broadcasts a message to all connected WebSockets
      * @param message the message to send
@@ -146,15 +146,15 @@ public final class ConnectionProcessor {
     public static void broadcastMessage(String message) {
         sockets.stream().filter(WebSocket::isOpen).forEach(socket -> socket.send(message));
     }
-    
+
     /**
-     * Retrieves info about the specifed WebSocket to display to the user
+     * Retrieves info about the specified WebSocket to display to the user
      * @param socket the WebSocket
      */
     public static String getSocketInfo(WebSocket socket) {
         return "local: " + (socket.getLocalSocketAddress() == null ? "<unknown>" : socket.getLocalSocketAddress().toString()) + " remote: " +
             (socket.getRemoteSocketAddress() == null ? "<disconnected>" : socket.getRemoteSocketAddress().toString());
     }
-    
+
     private ConnectionProcessor() {}
 }

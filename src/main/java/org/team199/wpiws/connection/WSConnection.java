@@ -16,7 +16,7 @@ import org.java_websocket.server.WebSocketServer;
  * Sets up Websockets and forwards their calls to {@link ConnectionProcessor}
  */
 public final class WSConnection {
-    
+
     /**
      * Connects to a WebSocket server on the given URI
      * @param uri the URI to which to connect
@@ -25,9 +25,9 @@ public final class WSConnection {
     public static RunningObject<WebSocketClient> connect(URI uri, boolean autoReconnect) {
         return new RunningObject<>(new WSClientImpl(uri, autoReconnect));
     }
-    
+
     /**
-     * Connects to a the WPI HALSim server using either its default location or the environment variables: HALSIMWS_HOST, HALSIMWS_PORT, and HALSIMWS_URI 
+     * Connects to a the WPI HALSim server using either its default location or the environment variables: HALSIMWS_HOST, HALSIMWS_PORT, and HALSIMWS_URI
      * @return a running WebSocketClient connected to the WPI HALSim server
      */
     public static RunningObject<WebSocketClient> connectHALSim(boolean autoReconnect) throws URISyntaxException {
@@ -40,7 +40,7 @@ public final class WSConnection {
         client.object.setConnectionLostTimeout(0);
         return client;
     }
-    
+
     /**
      * Starts a WebSocketServer on the given address
      * @param addr the address on which to start the server
@@ -49,9 +49,9 @@ public final class WSConnection {
     public static RunningObject<WebSocketServer> startServer(InetSocketAddress addr) {
         return new RunningObject<>(new WSServerImpl(addr));
     }
-    
+
     /**
-     * Starts a server on either the default location of the WPI HALSim or a generated address based on the environment variables: HALSIMWS_HOST and HALSIMWS_PORT 
+     * Starts a server on either the default location of the WPI HALSim or a generated address based on the environment variables: HALSIMWS_HOST and HALSIMWS_PORT
      * @return a running WebSocketClient connected to the WPI HALSim server
      */
     public static RunningObject<WebSocketServer> startHALSimServer() {
@@ -71,9 +71,9 @@ public final class WSConnection {
         server.object.setConnectionLostTimeout(0);
         return server;
     }
-    
+
     private WSConnection() {}
-    
+
     /**
      * A WebSocketClient which forwards its method calls to {@link ConnectionProcessor}
      */
@@ -87,7 +87,7 @@ public final class WSConnection {
             this.autoReconnect = autoReconnect;
             retryTimeout = 1;
         }
-        
+
         @Override
         public void onOpen(ServerHandshake handshake) {
             retryTimeout = 0;
@@ -103,7 +103,7 @@ public final class WSConnection {
         public void onClose(int code, String reason, boolean remote) {
             ConnectionProcessor.onClose(this, code, reason, remote);
             if(autoReconnect && remote) {
-                System.out.println("Reconnnecting...");
+                System.out.println("Reconnecting...");
                 RunningObject.start(this::tryReconnect);
             }
         }
@@ -135,9 +135,9 @@ public final class WSConnection {
                 System.err.println("Interrupted while reconnecting!");
             }
         }
-        
+
     }
-    
+
     /**
      * A WebSocketServer which forwards its method calls to {@link ConnectionProcessor}
      */
@@ -146,7 +146,7 @@ public final class WSConnection {
         public WSServerImpl(InetSocketAddress addr) {
             super(addr);
         }
-        
+
         @Override
         public void onOpen(WebSocket socket, ClientHandshake handshake) {
             ConnectionProcessor.onOpen(socket);
@@ -171,7 +171,7 @@ public final class WSConnection {
         public void onStart() {
             System.out.println("Starting Server on: " + getAddress().toString());
         }
-        
+
     }
-    
+
 }

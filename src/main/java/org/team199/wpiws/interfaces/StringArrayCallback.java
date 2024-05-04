@@ -12,5 +12,5 @@ public interface StringArrayCallback {
      * @param value the String data values
      */
     public void callback(String name, String value);
-    
+
 }

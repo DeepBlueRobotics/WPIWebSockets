@@ -1,8 +1,10 @@
 package org.team199.wpiws.connection;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.team199.wpiws.devices.AccelerometerSim;
 import org.team199.wpiws.devices.AnalogInputSim;
@@ -24,10 +26,10 @@ import org.team199.wpiws.interfaces.DeviceMessageProcessor;
  * Manages a list of {@link DeviceMessageProcessor} objects which handle messages for different device types
  */
 public final class MessageProcessor {
-    
-    private static final HashMap<String, DeviceMessageProcessor> processors = new HashMap<>();
-    private static final ArrayList<String> unknownTypes = new ArrayList<>();
-    
+
+    private static final Map<String, DeviceMessageProcessor> processors = new ConcurrentHashMap<>();
+    private static final Set<String> unknownTypes = new ConcurrentSkipListSet<>();
+
     static {
         registerProcessor("Accel", AccelerometerSim::processMessage);
         registerProcessor("AI", AnalogInputSim::processMessage);
@@ -70,15 +72,14 @@ public final class MessageProcessor {
     public static void process(String device, String type, List<WSValue> data) {
         DeviceMessageProcessor processor = processors.get(type);
         if(processor == null) {
-            if(!unknownTypes.contains(type)) {
-                unknownTypes.add(type);
+            if(unknownTypes.add(type)) {
                 System.err.println("No processor found for device of type: \"" + type + "\" messages for devices of this type will be ignored");
             }
             return;
         }
         processor.processMessage(device, data);
     }
-    
+
     private MessageProcessor() {}
 
 }

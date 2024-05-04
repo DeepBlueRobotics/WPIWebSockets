@@ -1,5 +1,7 @@
 package org.team199.wpiws;
 
+import java.util.Objects;
+
 /**
  * Binds two objects as one
  * @param T the type of the first object
@@ -30,7 +32,7 @@ public class Pair<T, U> {
     public boolean equals(Object obj) {
         if(obj instanceof Pair) {
             Pair<?, ?> other = (Pair<?, ?>)obj;
-            return val1.equals(other.val1) && val2.equals(other.val2);
+            return Objects.equals(val1, other.val1) && Objects.equals(val2, other.val2);
         }
         return false;
     }
