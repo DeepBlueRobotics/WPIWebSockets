@@ -15,10 +15,10 @@ repositories {
 }
 
 dependencies {
-    api group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.5.1'
+    implementation group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.5.1'
     //Add SLF4J NOP Logger Binding to prevent runtime warnings
-    api group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.30'
-    api group: 'com.github.cliftonlabs', name: 'json-simple', version: '3.1.1'
+    implementation group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.30'
+    implementation group: 'com.github.cliftonlabs', name: 'json-simple', version: '3.1.1'
     testImplementation 'junit:junit:4.13'
 }
 
@@ -63,8 +63,8 @@ sourceSets.main.java.srcDirs generateDeviceFiles.outputs
 // Use a version of node and npm that is known to work.
 node {
   download = true
-  version = '18.17.0'
-  npmVersion = '9.8.1'
+  version = '20.12.2'
+  npmVersion = '10.5.0'
 }
 
 publishing {
