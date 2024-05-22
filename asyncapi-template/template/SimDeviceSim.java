@@ -269,7 +269,7 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
      * @param device the device identifier of the device sending the message
      * @param data the data associated with the message
      */
-    public static void processMessage(String device, List<WSValue> data) {
+    public static void processMessage(String device, String type, List<WSValue> data) {
         SimDeviceSim simDevice = new SimDeviceSim(device);
         data.stream().filter(Objects::nonNull).forEach(value -> {
             String key = value.getKey();

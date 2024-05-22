@@ -49,6 +49,7 @@ public class {{ name }}Sim {
     {% endif -%}
     {% if hasId -%}
     private static final Map<String, {{ name }}Sim.State> STATE_MAP = new ConcurrentHashMap<>();
+    private final String type;
     {% else -%}
     private static final {{ name }}Sim.State STATE = new State();
     {% endif -%}
@@ -58,9 +59,15 @@ public class {{ name }}Sim {
     /**
      * Creates a new {{ name }}Sim
      * @param id the device identifier of this {{ name }}Sim
+     * @param type the type of this {{ name }}Sim
      */
-    public {{ name }}Sim(String id) {
+    public {{ name }}Sim(String id, String type) {
         super(id, STATE_MAP);
+        this.type = type;
+    }
+
+    public {{ name }}Sim(String id) {
+        this(id, "{{ type }}");
     }
     {%- endif -%}
 
@@ -153,7 +160,7 @@ public class {{ name }}Sim {
             INITIALIZED_DEVICES.remove(id);
         }
         if(notifyRobot) {
-            ConnectionProcessor.broadcastMessage(id, "{{ type }}", new WSValue("<init", initialized));
+            ConnectionProcessor.broadcastMessage(id, type, new WSValue("<init", initialized));
         }
     }
 
@@ -242,7 +249,11 @@ public class {{ name }}Sim {
             {%- if not varInfo.isRobotInput %}
             System.err.println("WARNING: {{ name }}Sim#set{{ varInfo.pname }}({{ varInfo.pprimtype }}, true) was called, but {{ varInfo.pfname }} is not a robot input!");
             {%- endif %}
+            {% if hasId -%}
+            ConnectionProcessor.broadcastMessage({{ cid }}, type, new WSValue("{{ varInfo.pfname }}", {{ varInfo.pnamel }}));
+            {%- else %}
             ConnectionProcessor.broadcastMessage({{ cid }}, "{{ type }}", new WSValue("{{ varInfo.pfname }}", {{ varInfo.pnamel }}));
+            {%- endif %}
         }
     }
 
@@ -251,15 +262,16 @@ public class {{ name }}Sim {
     /**
      * An implementation of {@link org.team199.wpiws.interfaces.DeviceMessageProcessor} which processes WPI HALSim messages for {{ name }}Sims
      * @param device the device identifier of the device sending the message
+     * @param type the type of the device sending the message
      * @param data the data associated with the message
      */
-    public static void processMessage(String device, List<WSValue> data) {
+    public static void processMessage(String device, String type, List<WSValue> data) {
         // Process all of the values, but save the "<init" value for last
         // so that the rest of the state has been set when the initialize
         // callback is called.
         WSValue init = null;
         {%- if hasId %}
-        {{ name }}Sim simDevice = new {{ name }}Sim(device);
+        {{ name }}Sim simDevice = new {{ name }}Sim(device, type);
 
         for(WSValue value: data) {
             if (value.getKey().equals("<init"))

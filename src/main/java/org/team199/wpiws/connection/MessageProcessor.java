@@ -8,6 +8,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.team199.wpiws.devices.AccelerometerSim;
 import org.team199.wpiws.devices.AnalogInputSim;
+import org.team199.wpiws.devices.CANEncoderSim;
+import org.team199.wpiws.devices.CANMotorSim;
 import org.team199.wpiws.devices.DIOSim;
 import org.team199.wpiws.devices.DriverStationSim;
 import org.team199.wpiws.devices.DutyCycleSim;
@@ -45,6 +47,14 @@ public final class MessageProcessor {
         registerProcessor("RoboRIO", RoboRIOSim::processMessage);
         registerProcessor("Solenoid", SolenoidSim::processMessage);
         registerProcessor("SimDevice", SimDeviceSim::processMessage);
+        registerProcessor("CANMotor", CANMotorSim::processMessage);
+        registerProcessor("CANEncoder", CANEncoderSim::processMessage);
+        registerProcessor("CANDutyCycle", DutyCycleSim::processMessage);
+        registerProcessor("CANAccel", AccelerometerSim::processMessage);
+        registerProcessor("CANAIn", AnalogInputSim::processMessage);
+        registerProcessor("CANDIO", DIOSim::processMessage);
+        registerProcessor("CANGyro", GyroSim::processMessage);
+
     }
 
     /**
@@ -70,14 +80,37 @@ public final class MessageProcessor {
      * @param data the values of that device which have been modified
      */
     public static void process(String device, String type, List<WSValue> data) {
-        DeviceMessageProcessor processor = processors.get(type);
+        // Per the spec, some message with a type of SimDevice have a data
+        // format that is identical to hardware devices. In particular a
+        // SimDevice message with device=DutyCyle:Name has the same data format
+        // as a DutyCycle message, and a SimDevice message with
+        // device=CAN{Gyro,AI,Accel,DIO,DutyCycle}:Name has the same data format
+        // as a {Gyro,AI,Accel,DIO,DutyCycle} message. The
+        // CAN{Gyro,AI,Accel,DIO,DutyCycle} processors are registered as aliases
+        // for the the their non CAN counterparts. CANMotor and CANEncoder have
+        // their own processors because there is no Motor processor and the
+        // CANEncoder data format is different from the Encoder data format.
+        String dataType = type;
+        if (type.equals("SimDevice")) {
+            String[] deviceParts = device.split(":");
+            if (deviceParts.length == 2) {
+                dataType = deviceParts[0];
+            }
+        }
+
+        // Use the data type to find the appropriate processor.
+        DeviceMessageProcessor processor = processors.get(dataType);
         if(processor == null) {
-            if(unknownTypes.add(type)) {
-                System.err.println("No processor found for device of type: \"" + type + "\" messages for devices of this type will be ignored");
+            if(unknownTypes.add(dataType)) {
+                System.err.println("No processor found for device with data type: \"" + dataType + "\". Messages with this data type will be ignored.");
             }
             return;
         }
-        processor.processMessage(device, data);
+
+        // Pass the actual device type to the processor which will pass it on to
+        // the *Sim constructor so that the *Sim object creates messages with
+        // the correct type.
+        processor.processMessage(device, type, data);
     }
 
     private MessageProcessor() {}
