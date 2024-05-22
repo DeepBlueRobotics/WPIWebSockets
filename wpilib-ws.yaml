@@ -537,7 +537,7 @@ components:
             <init:
               type: boolean
               description: "If CANMotor is initialized in the robot program"
-            <percentOutput:
+            "<percentOutput":
               type: number
               description: "Percent Output"
               minimum: -1.0
@@ -554,6 +554,14 @@ components:
               type: number
               description: "Bus voltage in Volts"
               minimum: 0.0
+            "<neutralDeadband":
+              type: number
+              description: "Neutral Deadband"
+              minimum: 0
+              maximum: 1.0
+            "<brakeMode":
+              type: boolean
+              description: "Is in brake mode"
 
     canencoderData:
       type: object
