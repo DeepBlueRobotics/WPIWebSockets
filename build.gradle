@@ -41,18 +41,19 @@ task archiveTemplate(type: Tar) {
 // the asyncapi generator.
 task generateDeviceFiles(type: NpxTask) {
     def outputDir = "${buildDir}/generated/sources/asyncapi"
+    def specYaml = "${projectDir}/wpilib-ws.yaml"
 
     // Define the command line that npx should use
     workingDir = buildDir // Because templateDir can't be under it
     command = '@asyncapi/generator@1.17.25'
     args = ['--force-write', 
         '-o', "${outputDir}/org/team199/wpiws/devices",
-        "https://raw.githubusercontent.com/wpilibsuite/allwpilib/master/simulation/halsim_ws_core/doc/wpilib-ws.yaml", 
+        specYaml, 
         file(archiveTemplate.archiveFile).toURI()]
 
     // Define the inputs and outputs of this task so that gradle only runs it 
     // when necessary.
-    inputs.files(archiveTemplate.outputs)
+    inputs.files(archiveTemplate.outputs, file(specYaml))
     outputs.dir(outputDir).withPropertyName("outputDir")
 
 }

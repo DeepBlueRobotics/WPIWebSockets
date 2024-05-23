@@ -14,8 +14,9 @@ public interface DeviceMessageProcessor {
     /**
      * Processes a WPI HALSim message
      * @param device the device identifier of the device sending the message
+     * @param type the type of the device sending the message
      * @param data the data associated with the message
      */
-    public void processMessage(String device, List<WSValue> data);
+    public void processMessage(String device, String type, List<WSValue> data);
 
 }
