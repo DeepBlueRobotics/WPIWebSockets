@@ -1,3 +1,6 @@
+{%- if schemaName === "simdeviceData" -%}
+{% include "../partials/SimDeviceSim.java" -%}
+{%- else -%}
 {% set type = schema.property("type").const() -%}
 {% set name = type | formatName -%}
 {% set hasId = type | hasId -%}
@@ -350,3 +353,4 @@ public class {{ name }}Sim {
     }
 
 }
+{% endif -%}
