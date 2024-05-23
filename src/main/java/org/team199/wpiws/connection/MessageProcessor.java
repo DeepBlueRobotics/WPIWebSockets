@@ -98,8 +98,8 @@ public final class MessageProcessor {
             }
         }
 
-        // Use the data type to find the appropriate processor.
-        DeviceMessageProcessor processor = processors.get(dataType);
+        // Use the data type to find the appropriate processor. Fallback on SimDevice if the parsing above returned an invalid type.
+        DeviceMessageProcessor processor = processors.get(dataType, type.equals("SimDevice") ? processors.get("SimDevice") : null);
         if(processor == null) {
             if(unknownTypes.add(dataType)) {
                 System.err.println("No processor found for device with data type: \"" + dataType + "\". Messages with this data type will be ignored.");
