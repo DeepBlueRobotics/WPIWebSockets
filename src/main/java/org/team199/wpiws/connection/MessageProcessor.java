@@ -93,7 +93,7 @@ public final class MessageProcessor {
         String dataType = type;
         if (type.equals("SimDevice")) {
             String[] deviceParts = device.split(":");
-            if (deviceParts.length == 2) {
+            if (deviceParts.length > 1) {
                 dataType = deviceParts[0];
             }
         }
