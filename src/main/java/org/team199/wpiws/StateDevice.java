@@ -89,6 +89,7 @@ public abstract class StateDevice<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T parseArray(JsonArray jsonArray, Class<T> requestedType, Function<JsonObject, ?> parser) {
         if (requestedType == int[].class) {
             int[] intArray = new int[jsonArray.size()];
@@ -114,9 +115,9 @@ public abstract class StateDevice<T> {
                 stringArray[i] = jsonArray.getString(i);
             }
             return (T) stringArray;
-        } else if(requestedType.componentType().isArray()) {
+        } else if(requestedType.getComponentType().isArray()) {
             if(jsonArray.isEmpty() || jsonArray.get(0) instanceof JsonArray) {
-                return (T) jsonArray.stream().map(o -> parseArray((JsonArray)o, requestedType.componentType(), parser)).toArray(Object[]::new);
+                return (T) jsonArray.stream().map(o -> parseArray((JsonArray)o, requestedType.getComponentType(), parser)).toArray(Object[]::new);
             }
         } else if(parser != null) {
             if(jsonArray.isEmpty() || jsonArray.get(0) instanceof JsonObject) {
