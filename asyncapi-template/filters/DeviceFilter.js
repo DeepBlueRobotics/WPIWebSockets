@@ -25,6 +25,10 @@ function formatName(type) {
             return "Accelerometer";
         case "AI":
             return "AnalogInput";
+        case "AO":
+            return "AnalogOutput"
+        case "CTREPCM":
+            return "PCM";
         default:
             return type;
     }

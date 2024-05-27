@@ -90,7 +90,7 @@ public final class ConnectionProcessor {
             JsonObject jsonMessage = (JsonObject)Jsoner.deserialize(message);
             String device = jsonMessage.getString(MessageKeys.DEVICE);
             String type = jsonMessage.getString(MessageKeys.TYPE);
-            Map<String, String> dataObject = jsonMessage.getMap(MessageKeys.DATA);
+            Map<String, Object> dataObject = jsonMessage.getMap(MessageKeys.DATA);
             List<WSValue> data = dataObject.entrySet().stream()
                 .map(entry -> new WSValue(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
@@ -127,7 +127,6 @@ public final class ConnectionProcessor {
      * @param type the device type of the device which sent the message
      * @param data the values of that device which have been modified
      */
-    @SuppressWarnings("all")
     public static void broadcastMessage(Object device, String type, List<WSValue> data) {
         JsonObject message = new JsonObject();
         message.put(MessageKeys.DEVICE, device);

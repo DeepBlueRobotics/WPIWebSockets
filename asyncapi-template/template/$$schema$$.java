@@ -35,6 +35,7 @@ import org.team199.wpiws.StateDevice;
 import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
+import org.team199.wpiws.types.*;
 
 /**
  * Represents a simulated {{ name | lower }}
@@ -184,13 +185,13 @@ public class {{ name }}Sim {
     {% for propName, prop in props -%}
     {% import "../partials/initVars.java" as varInfo with context -%}
     /**
-     * Registers a {{ varInfo.ptype }}Callback to be called whenever the {{ varInfo.pnamel }} of this device is changed
+     * Registers a {{ varInfo.callbackType }} to be called whenever the {{ varInfo.pnamel }} of this device is changed
      * @param callback the callback function to call
      * @param initialNotify if <code>true</code>, calls the callback function with this device's current {{ varInfo.pnamel }} value
      * @return the callback object that can be used to cancel the callback
-     * @see #cancel{{ varInfo.pname }}Callback({{ varInfo.callbackType }}Callback)
+     * @see #cancel{{ varInfo.pname }}Callback({{ varInfo.callbackType }})
      */
-    public{{ cstatic }}{{ varInfo.ptype }}Callback register{{ varInfo.pname }}Callback({{ varInfo.ptype }}Callback callback, boolean initialNotify) {
+    public{{ cstatic }}{{ varInfo.callbackType }} register{{ varInfo.pname }}Callback({{ varInfo.callbackType }} callback, boolean initialNotify) {
         getState().{{ varInfo.pnameu }}_CALLBACKS.add(callback);
         if(initialNotify) {
             callback.callback({{ cid }}, getState().{{ varInfo.pnamel }});
@@ -203,7 +204,7 @@ public class {{ name }}Sim {
      * @param callback the callback to deregister
      * @see #register{{ varInfo.pname }}Callback({{ varInfo.ptype }}Callback, boolean)
      */
-    public{{ cstatic }}void cancel{{ varInfo.pname }}Callback({{ varInfo.ptype }}Callback callback) {
+    public{{ cstatic }}void cancel{{ varInfo.pname }}Callback({{ varInfo.callbackType }} callback) {
         getState().{{ varInfo.pnameu }}_CALLBACKS.remove(callback);
     }
 
@@ -211,7 +212,7 @@ public class {{ name }}Sim {
      * @return {{ prop.description() | lower | trim }}
      * @see #set{{ varInfo.pname }}({{ varInfo.pprimtype }})
      */
-    public{{ cstatic }}{{ varInfo.pprimtype }} get{{ varInfo.pname }}() {
+    public{{ cstatic }}{{ varInfo.ptype }} get{{ varInfo.pname }}() {
         return getState().{{ varInfo.pnamel }};
     }
 
@@ -221,7 +222,7 @@ public class {{ name }}Sim {
      * Set {{ prop.description() | lower | trim }}
      * @see #get{{ varInfo.pname }}()
      */
-    public{{ cstatic }}void set{{ varInfo.pname }}({{ varInfo.pprimtype }} {{ varInfo.pnamel }}) {
+    public{{ cstatic }}void set{{ varInfo.pname }}({{ varInfo.ptype }} {{ varInfo.pnamel }}) {
         set{{ varInfo.pname }}({{ varInfo.pnamel }}, true);
     }
     {%- endif %}
@@ -229,15 +230,15 @@ public class {{ name }}Sim {
     /**
      * A Consumer which calls the given callback with the current {{ varInfo.pnamel }} value of this PWMSim
      */
-    public{{ cstatic }}final Consumer<{{ varInfo.ptype }}Callback> CALL_{{ varInfo.pnameu }}_CALLBACK = callback -> callback.callback({{ cid }}, getState().{{ varInfo.pnamel }});
-    private{{ cstatic }}void set{{ varInfo.pname }}({{ varInfo.pprimtype }} {{ varInfo.pnamel }}, boolean notifyRobot) {
+    public{{ cstatic }}final Consumer<{{ varInfo.callbackType }}> CALL_{{ varInfo.pnameu }}_CALLBACK = callback -> callback.callback({{ cid }}, getState().{{ varInfo.pnamel }});
+    private{{ cstatic }}void set{{ varInfo.pname }}({{ varInfo.ptype }} {{ varInfo.pnamel }}, boolean notifyRobot) {
         if({{ varInfo.pnamel }} != getState().{{ varInfo.pnamel }}) {
             getState().{{ varInfo.pnamel }} = {{ varInfo.pnamel }};
             getState().{{ varInfo.pnameu }}_CALLBACKS.forEach(CALL_{{ varInfo.pnameu }}_CALLBACK);
         }
         if(notifyRobot) {
             {%- if not varInfo.isRobotInput %}
-            System.err.println("WARNING: {{ name }}Sim#set{{ varInfo.pname }}({{ varInfo.pprimtype }}, true) was called, but {{ varInfo.pfname }} is not a robot input!");
+            System.err.println("WARNING: {{ name }}Sim#set{{ varInfo.pname }}({{ varInfo.ptype }}, true) was called, but {{ varInfo.pfname }} is not a robot input!");
             {%- endif %}
             {% if hasId -%}
             ConnectionProcessor.broadcastMessage({{ cid }}, type, new WSValue("{{ varInfo.pfname }}", {{ varInfo.pnamel }}));
@@ -288,14 +289,14 @@ public class {{ name }}Sim {
     {% endif -%}
     {% for propName, prop in props -%}
     {% import "../partials/initVars.java" as varInfo with context -%}
-    private{{ cstatic }}final BiConsumer<{{ varInfo.parrtype }}, Boolean> SET_{{ varInfo.pnameu }} = {{ cthis }}::set{{ varInfo.pname }};
+    private{{ cstatic }}final BiConsumer<{{ varInfo.pobjtype }}, Boolean> SET_{{ varInfo.pnameu }} = {{ cthis }}::set{{ varInfo.pname }};
     {% endfor -%}
     private{{ cstatic }}void processValue(WSValue value) {
         if(value.getKey() instanceof String && value.getValue() != null) {
             switch((String)value.getKey()) {
                 {%- if hasInit %}
                 case "<init": {
-                    filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_INITIALIZED);
+                    filterMessageAndIgnoreRobotState(value.getValue(), Boolean.class, SET_INITIALIZED, null);
                     break;
                 }
                 {%- endif -%}
@@ -303,9 +304,9 @@ public class {{ name }}Sim {
                 {% import "../partials/initVars.java" as varInfo with context %}
                 case "{{ varInfo.pfname }}": {
                     {% if hasId -%}
-                    filterMessageAndIgnoreRobotState(value.getValue(), {{ varInfo.parrtype }}.class, SET_{{ varInfo.pnameu }});
+                    filterMessageAndIgnoreRobotState(value.getValue(), {{ varInfo.pobjtype }}.class, SET_{{ varInfo.pnameu }}, {{ varInfo.parser }});
                     {% else -%}
-                    StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), {{ varInfo.parrtype }}.class, SET_{{ varInfo.pnameu }});
+                    StateDevice.filterMessageAndIgnoreRobotState(value.getValue(), {{ varInfo.pobjtype }}.class, SET_{{ varInfo.pnameu }}, {{ varInfo.parser }});
                     {% endif -%}
                     break;
                 }
@@ -328,14 +329,14 @@ public class {{ name }}Sim {
         {%- endif -%}
         {%- for propName, prop in props -%}
         {%- import "../partials/initVars.java" as varInfo with context %}
-        public {{ varInfo.pprimtype }} {{ varInfo.pnamel }} = {{ varInfo.pinit }};
+        public {{ varInfo.ptype }} {{ varInfo.pnamel }} = {{ varInfo.pinit }};
         {%- endfor %}
         {% if hasInit -%}
         public final Set<BooleanCallback> INITIALIZED_CALLBACKS = new CopyOnWriteArraySet<>();
         {%- endif -%}
         {%- for propName, prop in props -%}
         {%- import "../partials/initVars.java" as varInfo with context %}
-        public final Set<{{ varInfo.ptype }}Callback> {{ varInfo.pnameu }}_CALLBACKS = new CopyOnWriteArraySet<>();
+        public final Set<{{ varInfo.callbackType }}> {{ varInfo.pnameu }}_CALLBACKS = new CopyOnWriteArraySet<>();
         {%- endfor %}
     }
 

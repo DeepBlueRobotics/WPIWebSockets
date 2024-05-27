@@ -2,9 +2,10 @@
 {% set pname = pfname | formatPropName %}
 {% set pnamel = pname | lower %}
 {% set pnameu = pname | upper %}
-{% set ptype = prop | formatPropType %}
-{% set parrtype = prop | formatPropTypeArr %}
-{% set pprimtype = prop | formatPropPrimType %}
-{% set pinit = prop | formatPropInitialValue | safe %}
+{% set ptype = prop | formatPropType(name, propName) %}
+{% set pobjtype = prop | formatPropObjType(name, propName) %}
+{% set callbackType = prop | formatPropCallbackType(name, propName) | safe %}
+{% set parser = prop | formatPropParser(name, propName) %}
+{% set pinit = prop | formatPropInitialValue(name, propName) | safe %}
 {% set isRobotInput = pfname | isRobotInput %}
 {% set isRobotOutput = pfname | isRobotOutput %}

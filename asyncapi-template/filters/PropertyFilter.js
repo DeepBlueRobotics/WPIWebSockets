@@ -1,3 +1,11 @@
+const objectTypes = [
+    { schema: "AddressableLED", propName: "<data", type: "LEDColor", initialValue: "new LEDColor(0, 0, 0)" }
+];
+
+function findObjectType(schemaName, propName) {
+    return objectTypes.find(obj => obj.schema === schemaName && obj.propName === propName);
+}
+
 function formatPropName(name) {
     var sname = name.substring(name.startsWith("<>") ? 2 : 1);
     var parts = sname.split("_");
@@ -17,31 +25,9 @@ function cap1(str) {
     return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
 }
 
-function formatPropType(prop) {
+function formatPropType(prop, schemaName, propName) {
     if(prop.type() === "array") {
-        return formatPropType(prop.items()) + "Array";
-    }
-    switch(prop.type()) {
-        case "boolean":
-            return "Boolean";
-        case "integer":
-            return "Integer";
-        case "number":
-            return "Double";
-        case "string":
-            return "String";
-        default:
-            return undefined;
-    }
-}
-
-function formatPropTypeArr(prop) {
-    return prop.type() === "array" ? formatPropPrimType(prop) : formatPropType(prop);
-}
-
-function formatPropPrimType(prop) {
-    if(prop.type() === "array") {
-        return formatPropPrimType(prop.items()) + "[]";
+        return formatPropType(prop.items(), schemaName, propName) + "[]";
     }
     switch(prop.type()) {
         case "boolean":
@@ -52,14 +38,55 @@ function formatPropPrimType(prop) {
             return "double";
         case "string":
             return "String";
+        case "object":
+            return findObjectType(schemaName, propName)?.type;
         default:
             return undefined;
     }
 }
 
-function formatPropInitialValue(prop) {
+function formatPropObjType(prop, schemaName, propName) {
+    switch(prop.type()) {
+        case "boolean":
+            return "Boolean";
+        case "integer":
+            return "Integer";
+        case "number":
+            return "Double";
+        default:
+            return formatPropType(prop, schemaName, propName);
+    }
+}
+
+function formatPropCallbackType(prop, schemaName, propName) {
+    switch(prop.type()) {
+        case "boolean":
+            return "BooleanCallback";
+        case "integer":
+            return "IntegerCallback";
+        case "number":
+            return "DoubleCallback";
+        default:
+            return "ObjectCallback<" + formatPropType(prop, schemaName, propName) + ">";
+    }
+}
+
+function formatPropParser(prop, schemaName, propName) {
+    while(prop.type() === "array") prop = prop.items();
+    switch(prop.type()) {
+        case "boolean":
+        case "integer":
+        case "number":
+        case "string":
+            return "null";
+        default:
+            return findObjectType(schemaName, propName)?.type + "::fromJson";
+    }
+}
+
+function formatPropInitialValue(prop, schemaName, propName) {
     if(prop.type() === "array") {
-        var str = formatPropPrimType(prop);
+        var str = formatPropType(prop, schemaName, propName);
         return "new " + str.substring(0, str.length-1) + "0]";
     }
     switch(prop.type()) {
@@ -70,6 +97,8 @@ function formatPropInitialValue(prop) {
             return "0";
         case "string":
             return '""';
+        case "object":
+            return findObjectType(schemaName, propName)?.initialValue;
         default:
             return undefined;
     }
@@ -83,4 +112,4 @@ function isRobotOutput(prop) {
     return prop.startsWith("<");
 }
 
-module.exports = { formatPropName, cap1, formatPropType, formatPropTypeArr, formatPropPrimType, formatPropInitialValue, isRobotInput, isRobotOutput }
+module.exports = { formatPropName, cap1, formatPropType, formatPropObjType, formatPropCallbackType, formatPropParser, formatPropInitialValue, isRobotInput, isRobotOutput }

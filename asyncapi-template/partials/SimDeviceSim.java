@@ -22,7 +22,7 @@ import org.team199.wpiws.StateDevice;
 import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.SimDeviceCallback;
-import org.team199.wpiws.interfaces.StringCallback;
+import org.team199.wpiws.interfaces.ObjectCallback;
 
 /**
  * Represents a miscellaneous simulated device
@@ -125,13 +125,13 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
     /**
      * Retrieves the second argument of the given Pair
      */
-    public static final Function<Pair<String, StringCallback>, StringCallback> FETCH_VALUE_CALLBACK = pair -> pair.val2;
+    public static final Function<Pair<String, ObjectCallback<String>>, ObjectCallback<String>> FETCH_VALUE_CALLBACK = pair -> pair.val2;
     private void set(String name, String value, boolean notifyRobot) {
         if(EXISTING_DEVICES.add(id)) {
             DEVICE_CALLBACKS.stream().filter(APPLIES_TO_ME).map(FETCH_DEVICE_CALLBACK).forEach(CALL_DEVICE_CALLBACK);
         }
         getState().values.put(name, value);
-        Consumer<StringCallback> callCallback = callback -> callback.callback(name, value);
+        Consumer<ObjectCallback<String>> callCallback = callback -> callback.callback(name, value);
         if(!getState().existingValues.contains(name)) {
             getState().existingValues.add(name);
             getState().valueCreatedCallbacks.forEach(callCallback);
@@ -168,9 +168,9 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
      * @param callback the callback function to call
      * @param initialNotify if <code>true</code>, calls the callback function with all currently initialized values
      * @return the callback object that can be used to cancel the callback
-     * @see #cancelValueCreatedCallback(StringCallback)
+     * @see #cancelValueCreatedCallback(ObjectCallback<String>)
      */
-    public StringCallback registerValueCreatedCallback(StringCallback callback, boolean initialNotify) {
+    public ObjectCallback<String> registerValueCreatedCallback(ObjectCallback<String> callback, boolean initialNotify) {
         getState().valueCreatedCallbacks.add(callback);
         if(initialNotify) {
             getState().existingValues.forEach(value -> callback.callback(value, get(value)));
@@ -181,9 +181,9 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
     /**
      * Deregisters the given value created callback
      * @param callback the callback to deregister
-     * @see #registerValueCreatedCallback(StringCallback, boolean)
+     * @see #registerValueCreatedCallback(ObjectCallback<String>, boolean)
      */
-    public void cancelValueCreatedCallback(StringCallback callback) {
+    public void cancelValueCreatedCallback(ObjectCallback<String> callback) {
         getState().valueCreatedCallbacks.remove(callback);
     }
 
@@ -195,8 +195,8 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
      * @return a Pair of the form (value, callback) that can be used to cancel the callback
      * @see #cancelValueChangedCallback(Pair)
      */
-    public Pair<String, StringCallback> registerValueChangedCallback(String value, StringCallback callback, boolean initialNotify) {
-        Pair<String, StringCallback> callbackPair = new Pair<>(value, callback);
+    public Pair<String, ObjectCallback<String>> registerValueChangedCallback(String value, ObjectCallback<String> callback, boolean initialNotify) {
+        Pair<String, ObjectCallback<String>> callbackPair = new Pair<>(value, callback);
         getState().valueChangedCallbacks.add(callbackPair);
         if(initialNotify) {
             callback.callback(value, get(value));
@@ -207,9 +207,9 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
     /**
      * Deregisters the given value changed callback
      * @param callback the callback to deregister
-     * @see #registerValueChangedCallback(String, StringCallback, boolean)
+     * @see #registerValueChangedCallback(String, ObjectCallback<String>, boolean)
      */
-    public void cancelValueChangedCallback(Pair<String, StringCallback> callback) {
+    public void cancelValueChangedCallback(Pair<String, ObjectCallback<String>> callback) {
         getState().valueChangedCallbacks.remove(callback);
     }
 
@@ -303,8 +303,8 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
         public final Map<String, String> valueTypes = new ConcurrentHashMap<>();
         public final Map<String, Boolean> valueBidirectionality = new ConcurrentHashMap<>();
         public final Set<String> existingValues = new ConcurrentSkipListSet<>();
-        public final Set<StringCallback> valueCreatedCallbacks = new CopyOnWriteArraySet<>();
-        public final Set<Pair<String, StringCallback>> valueChangedCallbacks = new CopyOnWriteArraySet<>();
+        public final Set<ObjectCallback<String>> valueCreatedCallbacks = new CopyOnWriteArraySet<>();
+        public final Set<Pair<String, ObjectCallback<String>>> valueChangedCallbacks = new CopyOnWriteArraySet<>();
     }
 
 }

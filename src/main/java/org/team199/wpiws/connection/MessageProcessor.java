@@ -7,7 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.team199.wpiws.devices.AccelerometerSim;
+import org.team199.wpiws.devices.AddressableLEDSim;
 import org.team199.wpiws.devices.AnalogInputSim;
+import org.team199.wpiws.devices.AnalogOutputSim;
 import org.team199.wpiws.devices.CANEncoderSim;
 import org.team199.wpiws.devices.CANMotorSim;
 import org.team199.wpiws.devices.DIOSim;
@@ -15,7 +17,9 @@ import org.team199.wpiws.devices.DriverStationSim;
 import org.team199.wpiws.devices.DutyCycleSim;
 import org.team199.wpiws.devices.EncoderSim;
 import org.team199.wpiws.devices.GyroSim;
+import org.team199.wpiws.devices.HALSim;
 import org.team199.wpiws.devices.JoystickSim;
+import org.team199.wpiws.devices.PCMSim;
 import org.team199.wpiws.devices.PWMSim;
 import org.team199.wpiws.devices.RelaySim;
 import org.team199.wpiws.devices.RoboRIOSim;
@@ -34,13 +38,17 @@ public final class MessageProcessor {
 
     static {
         registerProcessor("Accel", AccelerometerSim::processMessage);
+        registerProcessor("AddressableLED", AddressableLEDSim::processMessage);
         registerProcessor("AI", AnalogInputSim::processMessage);
+        registerProcessor("AO", AnalogOutputSim::processMessage);
+        registerProcessor("CTREPCM", PCMSim::processMessage);
         registerProcessor("dPWM", dPWMSim::processMessage);
         registerProcessor("DIO", DIOSim::processMessage);
         registerProcessor("DriverStation", DriverStationSim::processMessage);
         registerProcessor("DutyCycle", DutyCycleSim::processMessage);
         registerProcessor("Encoder", EncoderSim::processMessage);
         registerProcessor("Gyro", GyroSim::processMessage);
+        registerProcessor("HAL", HALSim::processMessage);
         registerProcessor("Joystick", JoystickSim::processMessage);
         registerProcessor("PWM", PWMSim::processMessage);
         registerProcessor("Relay", RelaySim::processMessage);
