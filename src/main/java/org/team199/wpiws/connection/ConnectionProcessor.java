@@ -127,7 +127,6 @@ public final class ConnectionProcessor {
      * @param type the device type of the device which sent the message
      * @param data the values of that device which have been modified
      */
-    @SuppressWarnings("all")
     public static void broadcastMessage(Object device, String type, List<WSValue> data) {
         JsonObject message = new JsonObject();
         message.put(MessageKeys.DEVICE, device);
