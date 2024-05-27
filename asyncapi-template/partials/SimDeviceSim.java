@@ -18,7 +18,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.team199.wpiws.Pair;
-import org.team199.wpiws.ScopedObject;
 import org.team199.wpiws.StateDevice;
 import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
@@ -168,21 +167,17 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
      * Registers a SimValueCallback to be called whenever a specified value for this device is created
      * @param callback the callback function to call
      * @param initialNotify if <code>true</code>, calls the callback function with all currently initialized values
-     * @return a ScopedObject which can be used to close the callback
+     * @return the callback object that can be used to cancel the callback
      * @see #cancelValueCreatedCallback(StringCallback)
      */
-    public ScopedObject<StringCallback> registerValueCreatedCallback(StringCallback callback, boolean initialNotify) {
+    public StringCallback registerValueCreatedCallback(StringCallback callback, boolean initialNotify) {
         getState().valueCreatedCallbacks.add(callback);
         if(initialNotify) {
             getState().existingValues.forEach(value -> callback.callback(value, get(value)));
         }
-        return new ScopedObject<>(callback, CANCEL_VALUE_CREATED_CALLBACK);
+        return callback;
     }
 
-    /**
-     * A Consumer which calls {@link #cancelValueCreatedCallback(StringCallback)}
-     */
-    public final Consumer<StringCallback> CANCEL_VALUE_CREATED_CALLBACK = this::cancelValueCreatedCallback;
     /**
      * Deregisters the given value created callback
      * @param callback the callback to deregister
@@ -197,22 +192,18 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
      * @param value the value to watch for changes
      * @param callback the callback function to call
      * @param initialNotify if <code>true</code>, calls the callback function with the current value
-     * @return a ScopedObject which can be used to close the callback
+     * @return a Pair of the form (value, callback) that can be used to cancel the callback
      * @see #cancelValueChangedCallback(Pair)
      */
-    public ScopedObject<Pair<String, StringCallback>> registerValueChangedCallback(String value, StringCallback callback, boolean initialNotify) {
+    public Pair<String, StringCallback> registerValueChangedCallback(String value, StringCallback callback, boolean initialNotify) {
         Pair<String, StringCallback> callbackPair = new Pair<>(value, callback);
         getState().valueChangedCallbacks.add(callbackPair);
         if(initialNotify) {
             callback.callback(value, get(value));
         }
-        return new ScopedObject<>(callbackPair, CANCEL_VALUE_CHANGED_CALLBACK);
+        return callbackPair;
     }
 
-    /**
-     * A Consumer which calls {@link #cancelValueChangedCallback(Pair)}
-     */
-    public final Consumer<Pair<String, StringCallback>> CANCEL_VALUE_CHANGED_CALLBACK = this::cancelValueChangedCallback;
     /**
      * Deregisters the given value changed callback
      * @param callback the callback to deregister
@@ -241,22 +232,18 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
      * @param prefix the prefix to search for
      * @param callback the callback function to call
      * @param initialNotify if <code>true</code>, calls the callback function with all created SimDeviceSims
-     * @return a ScopedObject which can be used to close the callback
+     * @return a Pair of the form (prefix, callback) that can be used to cancel the callback
      * @see #cancelDeviceCreatedCallback(Pair)
      */
-    public static ScopedObject<Pair<String, SimDeviceCallback>> registerDeviceCreatedCallback(String prefix, SimDeviceCallback callback, boolean initialNotify) {
+    public static Pair<String, SimDeviceCallback> registerDeviceCreatedCallback(String prefix, SimDeviceCallback callback, boolean initialNotify) {
         Pair<String, SimDeviceCallback> callbackPair = new Pair<>(prefix, callback);
         DEVICE_CALLBACKS.add(callbackPair);
         if(initialNotify) {
             Arrays.stream(enumerateDevices(prefix)).forEach(callback::callback);
         }
-        return new ScopedObject<>(callbackPair, CANCEL_DEVICE_CREATED_CALLBACK);
+        return callbackPair;
     }
 
-    /**
-     * A Consumer which calls {@link #cancelDeviceCreatedCallback(Pair)}
-     */
-    public static final Consumer<Pair<String, SimDeviceCallback>> CANCEL_DEVICE_CREATED_CALLBACK = SimDeviceSim::cancelDeviceCreatedCallback;
     /**
      * Deregisters the given device created callback
      * @param callback the callback to deregister
