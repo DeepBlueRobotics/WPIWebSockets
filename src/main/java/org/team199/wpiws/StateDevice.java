@@ -1,6 +1,7 @@
 package org.team199.wpiws;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -89,7 +90,7 @@ public abstract class StateDevice<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public static <T> T parseArray(JsonArray jsonArray, Class<T> requestedType, Function<JsonObject, ?> parser) {
         if (requestedType == int[].class) {
             int[] intArray = new int[jsonArray.size()];
@@ -117,11 +118,13 @@ public abstract class StateDevice<T> {
             return (T) stringArray;
         } else if(requestedType.getComponentType().isArray()) {
             if(jsonArray.isEmpty() || jsonArray.get(0) instanceof JsonArray) {
-                return (T) jsonArray.stream().map(o -> parseArray((JsonArray)o, requestedType.getComponentType(), parser)).toArray(Object[]::new);
+                Object[] array = jsonArray.stream().map(o -> parseArray((JsonArray)o, requestedType.getComponentType(), parser)).toArray(Object[]::new);
+                return (T) Arrays.copyOf(array, array.length, (Class) requestedType);
             }
         } else if(parser != null) {
             if(jsonArray.isEmpty() || jsonArray.get(0) instanceof JsonObject) {
-                return (T) jsonArray.stream().map(o -> parser.apply((JsonObject)o)).toArray(Object[]::new);
+                Object[] array = jsonArray.stream().map(o -> parser.apply((JsonObject)o)).toArray(Object[]::new);
+                return (T) Arrays.copyOf(array, array.length, (Class) requestedType);
             }
         }
         return null;
