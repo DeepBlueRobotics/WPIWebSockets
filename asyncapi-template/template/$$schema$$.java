@@ -31,7 +31,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import org.team199.wpiws.ScopedObject;
 import org.team199.wpiws.StateDevice;
 import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
@@ -81,22 +80,18 @@ public class {{ name }}Sim {
      * Registers a BooleanCallback to be called whenever {{ a }} {{ name }}Sim device is initialized or uninitialized
      * @param callback the callback function to call
      * @param initialNotify if <code>true</code>, calls the callback function with the device identifiers of all currently initialized {{ name }}Sims
-     * @return a ScopedObject which can be used to close the callback
+     * @return the callback object that can be used to cancel the callback
      * @see #cancelStaticInitializedCallback(BooleanCallback)
      * @see #registerInitializedCallback(BooleanCallback, boolean)
      */
-    public static ScopedObject<BooleanCallback> registerStaticInitializedCallback(BooleanCallback callback, boolean initialNotify) {
+    public static BooleanCallback registerStaticInitializedCallback(BooleanCallback callback, boolean initialNotify) {
         STATIC_INITIALIZED_CALLBACKS.add(callback);
         if(initialNotify) {
             INITIALIZED_DEVICES.forEach(device -> callback.callback(device, true));
         }
-        return new ScopedObject<>(callback, CANCEL_STATIC_INITIALIZED_CALLBACK);
+        return callback;
     }
 
-    /**
-     * A Consumer which calls {@link #cancelStaticInitializedCallback(BooleanCallback)}
-     */
-    public static final Consumer<BooleanCallback> CANCEL_STATIC_INITIALIZED_CALLBACK = {{ name }}Sim::cancelStaticInitializedCallback;
     /**
      * Deregisters the given static initialized callback
      * @param callback the callback to deregister
@@ -110,22 +105,18 @@ public class {{ name }}Sim {
      * Registers a BooleanCallback to be called whenever this device is initialized or uninitialized
      * @param callback the callback function to call
      * @param initialNotify if <code>true</code>, calls the callback function with this device's current initialized state
-     * @return a ScopedObject which can be used to close the callback
+     * @return the callback object that can be used to cancel the callback
      * @see #cancelInitializedCallback(BooleanCallback)
      * @see #registerStaticInitializedCallback(BooleanCallback, boolean)
      */
-    public ScopedObject<BooleanCallback> registerInitializedCallback(BooleanCallback callback, boolean initialNotify) {
+    public BooleanCallback registerInitializedCallback(BooleanCallback callback, boolean initialNotify) {
         getState().INITIALIZED_CALLBACKS.add(callback);
         if(initialNotify) {
             callback.callback(id, getState().init);
         }
-        return new ScopedObject<>(callback, CANCEL_INITIALIZED_CALLBACK);
+        return callback;
     }
 
-    /**
-     * A Consumer which calls {@link #cancelInitializedCallback(BooleanCallback)}
-     */
-    public final Consumer<BooleanCallback> CANCEL_INITIALIZED_CALLBACK = this::cancelInitializedCallback;
     /**
      * Deregisters the given initialized callback
      * @param callback the callback to deregister
@@ -197,7 +188,7 @@ public class {{ name }}Sim {
      * Registers a {{ varInfo.callbackType }} to be called whenever the {{ varInfo.pnamel }} of this device is changed
      * @param callback the callback function to call
      * @param initialNotify if <code>true</code>, calls the callback function with this device's current {{ varInfo.pnamel }} value
-     * @return a ScopedObject which can be used to close the callback
+     * @return the callback object that can be used to cancel the callback
      * @see #cancel{{ varInfo.pname }}Callback({{ varInfo.callbackType }}Callback)
      */
     public{{ cstatic }}ScopedObject<{{ varInfo.callbackType }}> register{{ varInfo.pname }}Callback({{ varInfo.callbackType }} callback, boolean initialNotify) {
@@ -205,13 +196,9 @@ public class {{ name }}Sim {
         if(initialNotify) {
             callback.callback({{ cid }}, getState().{{ varInfo.pnamel }});
         }
-        return new ScopedObject<>(callback, CANCEL_{{ varInfo.pnameu }}_CALLBACK);
+        return callback;
     }
 
-    /**
-     * A Consumer which calls {@link #cancel{{ varInfo.pname }}Callback({{ varInfo.ptype }}Callback)}
-     */
-    public{{ cstatic }}final Consumer<{{ varInfo.callbackType }}> CANCEL_{{ varInfo.pnameu }}_CALLBACK = {{ cthis }}::cancel{{ varInfo.pname }}Callback;
     /**
      * Deregisters the given {{ varInfo.pnamel }} callback
      * @param callback the callback to deregister
