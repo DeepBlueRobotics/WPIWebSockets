@@ -168,9 +168,9 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
      * @param callback the callback function to call
      * @param initialNotify if <code>true</code>, calls the callback function with all currently initialized values
      * @return the callback object that can be used to cancel the callback
-     * @see #cancelValueCreatedCallback(StringCallback)
+     * @see #cancelValueCreatedCallback(ObjectCallback<String>)
      */
-    public ObjectCallback<String> registerValueCreatedCallback(StringCallback callback, boolean initialNotify) {
+    public ObjectCallback<String> registerValueCreatedCallback(ObjectCallback<String> callback, boolean initialNotify) {
         getState().valueCreatedCallbacks.add(callback);
         if(initialNotify) {
             getState().existingValues.forEach(value -> callback.callback(value, get(value)));
@@ -195,8 +195,8 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
      * @return a Pair of the form (value, callback) that can be used to cancel the callback
      * @see #cancelValueChangedCallback(Pair)
      */
-    public Pair<String, ObjectCallback<String>> registerValueChangedCallback(String value, StringCallback callback, boolean initialNotify) {
-        Pair<String, StringCallback> callbackPair = new Pair<>(value, callback);
+    public Pair<String, ObjectCallback<String>> registerValueChangedCallback(String value, ObjectCallback<String> callback, boolean initialNotify) {
+        Pair<String, ObjectCallback<String>> callbackPair = new Pair<>(value, callback);
         getState().valueChangedCallbacks.add(callbackPair);
         if(initialNotify) {
             callback.callback(value, get(value));

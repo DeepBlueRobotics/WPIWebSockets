@@ -189,9 +189,9 @@ public class {{ name }}Sim {
      * @param callback the callback function to call
      * @param initialNotify if <code>true</code>, calls the callback function with this device's current {{ varInfo.pnamel }} value
      * @return the callback object that can be used to cancel the callback
-     * @see #cancel{{ varInfo.pname }}Callback({{ varInfo.callbackType }}Callback)
+     * @see #cancel{{ varInfo.pname }}Callback({{ varInfo.callbackType }})
      */
-    public{{ cstatic }}ScopedObject<{{ varInfo.callbackType }}> register{{ varInfo.pname }}Callback({{ varInfo.callbackType }} callback, boolean initialNotify) {
+    public{{ cstatic }}{{ varInfo.callbackType }} register{{ varInfo.pname }}Callback({{ varInfo.callbackType }} callback, boolean initialNotify) {
         getState().{{ varInfo.pnameu }}_CALLBACKS.add(callback);
         if(initialNotify) {
             callback.callback({{ cid }}, getState().{{ varInfo.pnamel }});
