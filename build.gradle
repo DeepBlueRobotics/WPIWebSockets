@@ -1,5 +1,5 @@
 plugins {
-  id "com.github.node-gradle.node" version "2.2.4"
+    id "com.github.node-gradle.node" version "2.2.4"
 }
 
 apply plugin: 'java-library'
@@ -25,15 +25,15 @@ dependencies {
 
 // To please the Windows CI server (and perhaps other Windows machines),
 // the template directory needs to be passed to the asyncapi generator as
-// an archive. 
+// an archive.
 def templateDir = "${projectDir}/asyncapi-template"
 task archiveTemplate(type: Tar) {
     archiveFileName = "asyncapi-template.tar"
     destinationDirectory = file("$buildDir/tmp")
 
     from(templateDir) {
-      exclude "node_modules"
-      into "asyncapi-template" // npm requires that everything be in a top-level folder
+        exclude "node_modules"
+        into "asyncapi-template" // npm requires that everything be in a top-level folder
     }
 }
 
