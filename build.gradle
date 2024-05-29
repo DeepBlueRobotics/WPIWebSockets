@@ -40,6 +40,11 @@ task archiveTemplate(type: Tar) {
 // Add a task to generate java source code for the devices using npx to run
 // the asyncapi generator.
 task generateDeviceFiles(type: NpxTask) {
+    // Clean the output directory first (See #40)
+    doFirst {
+        delete outputs
+    }
+
     def outputDir = "${buildDir}/generated/sources/asyncapi"
 
     // Define the command line that npx should use
