@@ -36,8 +36,6 @@ task archiveTemplate(type: Tar) {
         into "asyncapi-template" // npm requires that everything be in a top-level folder
     }
 
-    System.out.
-
     // Allow the outputs of this task to be cached
     outputs.cacheIf { true }
 }
