@@ -61,7 +61,7 @@ task generateDeviceFiles(type: NpxTask) {
     outputs.dir(outputDir).withPropertyName("outputDir")
 
     // Allow the outputs of this task to be cached
-    task.outputs.cacheIf { true }
+    outputs.cacheIf { true }
 }
 
 // Include the generated files in the source to compile.
