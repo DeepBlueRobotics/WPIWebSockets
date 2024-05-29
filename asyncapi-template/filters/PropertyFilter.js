@@ -112,4 +112,22 @@ function isRobotOutput(prop) {
     return prop.startsWith("<");
 }
 
-module.exports = { formatPropName, cap1, formatPropType, formatPropObjType, formatPropCallbackType, formatPropParser, formatPropInitialValue, isRobotInput, isRobotOutput }
+function usesCustomTypes(props, schemaName) {
+    for (const [propName, prop] of Object.entries(props)) {
+        if (formatPropParser(prop, schemaName, propName) !== "null") return true;
+    }
+    return false;
+}
+
+module.exports = {
+    formatPropName,
+    cap1,
+    formatPropType,
+    formatPropObjType,
+    formatPropCallbackType,
+    formatPropParser,
+    formatPropInitialValue,
+    isRobotInput,
+    isRobotOutput,
+    usesCustomTypes
+}
