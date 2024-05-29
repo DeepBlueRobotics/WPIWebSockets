@@ -35,6 +35,9 @@ task archiveTemplate(type: Tar) {
         exclude "node_modules"
         into "asyncapi-template" // npm requires that everything be in a top-level folder
     }
+
+    // Allow the outputs of this task to be cached
+    outputs.cacheIf { true }
 }
 
 // Add a task to generate java source code for the devices using npx to run
