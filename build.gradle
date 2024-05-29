@@ -36,6 +36,8 @@ task archiveTemplate(type: Tar) {
         into "asyncapi-template" // npm requires that everything be in a top-level folder
     }
 
+    System.out.
+
     // Allow the outputs of this task to be cached
     outputs.cacheIf { true }
 }
@@ -77,17 +79,17 @@ task cleanDeviceFiles(type: Delete) {
 
 // Use a version of node and npm that is known to work.
 node {
-  download = true
-  version = '20.12.2'
-  npmVersion = '10.5.0'
+    download = true
+    version = '20.12.2'
+    npmVersion = '10.5.0'
 }
 
 publishing {
-  publications {
-    maven(MavenPublication) {
-      groupId = 'org.carlmontrobotics'
-      artifactId = 'WPIWebSockets'
-      from components.java
+    publications {
+        maven(MavenPublication) {
+            groupId = 'org.carlmontrobotics'
+            artifactId = 'WPIWebSockets'
+            from components.java
+        }
     }
-  }
 }
