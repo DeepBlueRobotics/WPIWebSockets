@@ -59,11 +59,15 @@ task generateDeviceFiles(type: NpxTask) {
     // when necessary.
     inputs.files(archiveTemplate.outputs)
     outputs.dir(outputDir).withPropertyName("outputDir")
-
 }
 
 // Include the generated files in the source to compile.
 sourceSets.main.java.srcDirs generateDeviceFiles.outputs
+
+// Add a task to manually clean the generated devices folder.
+task cleanDeviceFiles(type: Delete) {
+    delete generateDeviceFiles.outputs
+}
 
 // Use a version of node and npm that is known to work.
 node {
