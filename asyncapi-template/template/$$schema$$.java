@@ -35,7 +35,9 @@ import org.team199.wpiws.StateDevice;
 import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.*;
+{%- if (props | usesCustomTypes(name)) %}
 import org.team199.wpiws.types.*;
+{%- endif %}
 
 /**
  * Represents a simulated {{ name | lower }}
