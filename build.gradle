@@ -55,7 +55,7 @@ task generateDeviceFiles(type: NpxTask) {
     command = '@asyncapi/generator@1.17.25'
     args = ['--force-write',
         '-o', "${outputDir}/org/team199/wpiws/devices",
-        "https://raw.githubusercontent.com/wpilibsuite/allwpilib/3b8d8a367b49bea28d5423dca53f913c13ff6936/simulation/halsim_ws_core/doc/wpilib-ws.yaml",
+        "https://raw.githubusercontent.com/DeepBlueRobotics/allwpilib/5e85b83d920d78a1ec6b1e1919ddcbeece7d25e1/simulation/halsim_ws_core/doc/wpilib-ws.yaml",
         file(archiveTemplate.archiveFile).toURI()]
 
     // Define the inputs and outputs of this task so that gradle only runs it
