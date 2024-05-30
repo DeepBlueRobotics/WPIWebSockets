@@ -10,7 +10,12 @@ import org.team199.wpiws.devices.AccelerometerSim;
 import org.team199.wpiws.devices.AddressableLEDSim;
 import org.team199.wpiws.devices.AnalogInputSim;
 import org.team199.wpiws.devices.AnalogOutputSim;
+import org.team199.wpiws.devices.CANAccelerometerSim;
+import org.team199.wpiws.devices.CANAnalogInputSim;
+import org.team199.wpiws.devices.CANDIOSim;
+import org.team199.wpiws.devices.CANDutyCycleSim;
 import org.team199.wpiws.devices.CANEncoderSim;
+import org.team199.wpiws.devices.CANGyroSim;
 import org.team199.wpiws.devices.CANMotorSim;
 import org.team199.wpiws.devices.DIOSim;
 import org.team199.wpiws.devices.DriverStationSim;
@@ -57,11 +62,11 @@ public final class MessageProcessor {
         registerProcessor("SimDevice", SimDeviceSim::processMessage);
         registerProcessor("CANMotor", CANMotorSim::processMessage);
         registerProcessor("CANEncoder", CANEncoderSim::processMessage);
-        registerProcessor("CANDutyCycle", DutyCycleSim::processMessage);
-        registerProcessor("CANAccel", AccelerometerSim::processMessage);
-        registerProcessor("CANAIn", AnalogInputSim::processMessage);
-        registerProcessor("CANDIO", DIOSim::processMessage);
-        registerProcessor("CANGyro", GyroSim::processMessage);
+        registerProcessor("CANDutyCycle", CANDutyCycleSim::processMessage);
+        registerProcessor("CANAccel", CANAccelerometerSim::processMessage);
+        registerProcessor("CANAIn", CANAnalogInputSim::processMessage);
+        registerProcessor("CANDIO", CANDIOSim::processMessage);
+        registerProcessor("CANGyro", CANGyroSim::processMessage);
 
     }
 
@@ -88,29 +93,14 @@ public final class MessageProcessor {
      * @param data the values of that device which have been modified
      */
     public static void process(String device, String type, List<WSValue> data) {
-        // Per the spec, some message with a type of SimDevice have a data
-        // format that is identical to hardware devices. In particular a
-        // SimDevice message with device=DutyCyle:Name has the same data format
-        // as a DutyCycle message, and a SimDevice message with
-        // device=CAN{Gyro,AI,Accel,DIO,DutyCycle}:Name has the same data format
-        // as a {Gyro,AI,Accel,DIO,DutyCycle} message. The
-        // CAN{Gyro,AI,Accel,DIO,DutyCycle} processors are registered as aliases
-        // for the the their non CAN counterparts. CANMotor and CANEncoder have
-        // their own processors because there is no Motor processor and the
-        // CANEncoder data format is different from the Encoder data format.
-        String dataType = type;
-        if (type.equals("SimDevice")) {
-            String[] deviceParts = device.split(":");
-            if (deviceParts.length > 1) {
-                dataType = deviceParts[0];
-            }
-        }
-
         // Use the data type to find the appropriate processor. Fallback on SimDevice if the parsing above returned an invalid type.
-        DeviceMessageProcessor processor = processors.getOrDefault(dataType, type.equals("SimDevice") ? processors.get("SimDevice") : null);
+        DeviceMessageProcessor processor = processors.get(type);
         if(processor == null) {
-            if(unknownTypes.add(dataType)) {
-                System.err.println("No processor found for device with data type: \"" + dataType + "\". Messages with this data type will be ignored.");
+            if (unknownTypes.add(type)) {
+                System.err.println(
+                        "No processor found for device with data type: \""
+                                + type
+                                + "\". Messages with this data type will be ignored.");
             }
             return;
         }

@@ -26,7 +26,11 @@ function formatName(type) {
         case "AI":
             return "AnalogInput";
         case "AO":
-            return "AnalogOutput"
+            return "AnalogOutput";
+        case "CANAccel":
+            return "CANAccelerometer";
+        case "CANAIn":
+            return "CANAnalogInput";
         case "CTREPCM":
             return "PCM";
         default:
