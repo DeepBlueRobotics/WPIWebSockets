@@ -26,10 +26,10 @@ import org.mockito.InOrder;
 import org.mockito.MockedStatic;
 import org.team199.wpiws.Pair;
 import org.team199.wpiws.connection.ConnectionProcessor;
-import org.team199.wpiws.connection.MessageProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.BooleanCallback;
 import org.team199.wpiws.interfaces.ObjectCallback;
+import org.team199.wpiws.interfaces.TestUtils;
 import org.team199.wpiws.interfaces.TriFunction;
 import org.team199.wpiws.types.LEDColor;
 
@@ -56,10 +56,8 @@ public class DevicesTest {
             callbacks.add(AccelerometerSim.registerStaticInitializedCallback(
                     nonNotifiedCallbackBeforeValueInit, false));
 
-            MessageProcessor.process(deviceName1, "Accel",
-                    Arrays.asList(new WSValue("<init", true)));
-            MessageProcessor.process(deviceName2, "Accel",
-                    Arrays.asList(new WSValue("<init", true)));
+			TestUtils.setValueFromRobot(deviceName1, "Accel", "<init", true);
+			TestUtils.setValueFromRobot(deviceName2, "Accel", "<init", true);
 
             BooleanCallback notifiedCallbackAfterValueInit = mock();
             callbacks.add(AccelerometerSim.registerStaticInitializedCallback(
@@ -68,16 +66,13 @@ public class DevicesTest {
             callbacks.add(AccelerometerSim.registerStaticInitializedCallback(
                     nonNotifiedCallbackAfterValueInit, false));
 
-            MessageProcessor.process(deviceName1, "Accel",
-                    Arrays.asList(new WSValue("<init", true)));
-            MessageProcessor.process(deviceName1, "Accel",
-                    Arrays.asList(new WSValue("<init", false)));
+			TestUtils.setValueFromRobot(deviceName1, "Accel", "<init", true);
+			TestUtils.setValueFromRobot(deviceName1, "Accel", "<init", false);
 
             callbacks
                     .forEach(AccelerometerSim::cancelStaticInitializedCallback);
 
-            MessageProcessor.process(deviceName1, "Accel",
-                    Arrays.asList(new WSValue("<init", true)));
+			TestUtils.setValueFromRobot(deviceName1, "Accel", "<init", true);
 
             // Now, we'll check that we saw all the correct invocations
             InOrder order;
@@ -434,8 +429,8 @@ public class DevicesTest {
 
         private void setValueFromRobot(String deviceName,
                 Pair<VarType, Object> newValue) {
-            MessageProcessor.process(deviceName, typeName,
-                    Arrays.asList(new WSValue(valueName, newValue.val2)));
+			TestUtils.setValueFromRobot(deviceName, typeName, valueName,
+					newValue.val2);
         }
 
         private void assertDeepEquals(Object expected, Object actual) {
