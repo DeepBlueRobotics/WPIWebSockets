@@ -149,8 +149,8 @@ public class {{ name }}Sim {
      */
     public final Consumer<BooleanCallback> CALL_INITIALIZED_CALLBACK = callback -> callback.callback(id, getState().init);
     private void setInitialized(boolean initialized, boolean notifyRobot) {
-        getState().init = initialized;
-        if(initialized) {
+        if(initialized != getState().init) {
+            getState().init = initialized;
             STATIC_INITIALIZED_CALLBACKS.forEach(CALL_INITIALIZED_CALLBACK);
             getState().INITIALIZED_CALLBACKS.forEach(CALL_INITIALIZED_CALLBACK);
             INITIALIZED_DEVICES.add(id);
