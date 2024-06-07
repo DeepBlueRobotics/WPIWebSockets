@@ -65,22 +65,16 @@ public class DevicesTest {
                 TriFunction<T, R, Boolean, R> callbackRegistrationFunction,
                 BiConsumer<T, R> callbackCancellationFunction,
                 Function<T, U> getterFunction, BiConsumer<T, U> setterFunction,
-                U defaultValue, U alternateValue,
-                Function<U, ?> serializer,
+                U defaultValue, U alternateValue, Function<U, ?> serializer,
                 Function<ObjectCallback<U>, R> callbackConverter) {
-            return new Object[] {
-                "%s-'%s'".formatted(typeName, valueName), // testName
-                constructor,
-                callbackConverter,
-                callbackRegistrationFunction,
-                callbackCancellationFunction,
-                getterFunction,
-                setterFunction,
-                new Pair<>(defaultValue, serializer.apply(defaultValue)), // defaultValue
-                new Pair<>(alternateValue, serializer.apply(alternateValue)), // alternateValue
-                typeName,
-                valueName
-            };
+            return new Object[] {"%s-'%s'".formatted(typeName, valueName), // testName
+                    constructor, callbackConverter,
+                    callbackRegistrationFunction, callbackCancellationFunction,
+                    getterFunction, setterFunction,
+                    new Pair<>(defaultValue, serializer.apply(defaultValue)), // defaultValue
+                    new Pair<>(alternateValue,
+                            serializer.apply(alternateValue)), // alternateValue
+                    typeName, valueName};
         }
 
         private static <U, R> Object[] createTestCase(String typeName,
@@ -88,156 +82,103 @@ public class DevicesTest {
                 BiFunction<R, Boolean, R> callbackRegistrationFunction,
                 Consumer<R> callbackCancellationFunction,
                 Supplier<U> getterFunction, Consumer<U> setterFunction,
-                U defaultValue, U alternateValue,
-                Function<U, ?> serializer,
+                U defaultValue, U alternateValue, Function<U, ?> serializer,
                 Function<ObjectCallback<U>, R> callbackConverter) {
-            return createTestCase(
-                typeName,
-                valueName,
-                (name) -> null,
-                (sim, callback, initialNotify) -> callbackRegistrationFunction.apply(callback, initialNotify),
-                (sim, callback) -> callbackCancellationFunction.accept(callback),
-                (sim) -> getterFunction.get(),
-                (sim, value) -> setterFunction.accept(value),
-                defaultValue,
-                alternateValue,
-                serializer,
-                callbackConverter
-            );
+            return createTestCase(typeName, valueName, (name) -> null,
+                    (sim, callback,
+                            initialNotify) -> callbackRegistrationFunction
+                                    .apply(callback, initialNotify),
+                    (sim, callback) -> callbackCancellationFunction
+                            .accept(callback),
+                    (sim) -> getterFunction.get(),
+                    (sim, value) -> setterFunction.accept(value), defaultValue,
+                    alternateValue, serializer, callbackConverter);
         }
 
         @Parameters(name = "{index}: {0}")
         public static Object[] callbacksToTest() {
             return new Object[] {
-                // Boolean
-                createTestCase(
-                    "DIO",
-                    "<>value",
-                    DIOSim::new,
-                    DIOSim::registerValueCallback,
-                    DIOSim::cancelValueCallback,
-                    DIOSim::getValue,
-                    DIOSim::setValue,
-                    false,
-                    true,
-                    Function.identity(),
-                    c -> c::callback
-                ),
-                // Double
-                createTestCase(
-                    "Accel",
-                    ">x",
-                    AccelerometerSim::new,
-                    AccelerometerSim::registerXCallback,
-                    AccelerometerSim::cancelXCallback,
-                    AccelerometerSim::getX,
-                    AccelerometerSim::setX,
-                    0.0,
-                    0.1,
-                    BigDecimal::new,
-                    c -> c::callback
-                ),
-                // Integer
-                createTestCase(
-                    "AI",
-                    ">accum_value",
-                    AnalogInputSim::new,
-                    AnalogInputSim::registerAccumValueCallback,
-                    AnalogInputSim::cancelAccumValueCallback,
-                    AnalogInputSim::getAccumValue,
-                    AnalogInputSim::setAccumValue,
-                    0,
-                    1,
-                    BigDecimal::new,
-                    c -> c::callback
-                ),
-                // String
-                createTestCase(
-                    "DriverStation",
-                    ">game_data",
-                    DriverStationSim::registerGameDataCallback,
-                    DriverStationSim::cancelGameDataCallback,
-                    DriverStationSim::getGameData,
-                    DriverStationSim::setGameData,
-                    "",
-                    "data",
-                    Function.identity(),
-                    c -> c::callback
-                ),
-                // Boolean[]
-                createTestCase(
-                    "Joystick",
-                    ">buttons",
-                    JoystickSim::new,
-                    JoystickSim::registerButtonsCallback,
-                    JoystickSim::cancelButtonsCallback,
-                    JoystickSim::getButtons,
-                    JoystickSim::setButtons,
-                    new boolean[0],
-                    new boolean[] { false },
-                    (buttons) -> {
-                        JsonArray arr = new JsonArray();
-                        for(boolean b: buttons) arr.add(b);
-                        return arr;
-                    },
-                    c -> c::callback
-                ),
-                // Double[]
-                createTestCase(
-                    "Joystick",
-                    ">axes",
-                    JoystickSim::new,
-                    JoystickSim::registerAxesCallback,
-                    JoystickSim::cancelAxesCallback,
-                    JoystickSim::getAxes,
-                    JoystickSim::setAxes,
-                    new double[0],
-                    new double[] { 0 },
-                    (axes) -> new JsonArray(Arrays.stream(axes).mapToObj(BigDecimal::new).toList()),
-                    c -> c::callback
-                ),
-                // Integer[]
-                createTestCase(
-                    "Joystick",
-                    ">povs",
-                    JoystickSim::new,
-                    JoystickSim::registerPovsCallback,
-                    JoystickSim::cancelPovsCallback,
-                    JoystickSim::getPovs,
-                    JoystickSim::setPovs,
-                    new int[0],
-                    new int[] { 0 },
-                    (povs) -> new JsonArray(Arrays.stream(povs).mapToObj(BigDecimal::new).toList()),
-                    c -> c::callback
-                ),
-                // LEDColor[]
-                createTestCase(
-                    "AddressableLED",
-                    "<data",
-                    AddressableLEDSim::new,
-                    AddressableLEDSim::registerDataCallback,
-                    AddressableLEDSim::cancelDataCallback,
-                    AddressableLEDSim::getData,
-                    null,
-                    new LEDColor[0],
-                    new LEDColor[] { new LEDColor(0, 0, 0) },
-                    (data) -> new JsonArray(Arrays.stream(data).map(LEDColor::toJson).map(jsonString -> {
-                        try {
-                            return Jsoner.deserialize(jsonString);
-                        } catch(JsonException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }).toList()),
-                    c -> c::callback
-                )
-            };
+                    // Boolean
+                    createTestCase("DIO", "<>value", DIOSim::new,
+                            DIOSim::registerValueCallback,
+                            DIOSim::cancelValueCallback, DIOSim::getValue,
+                            DIOSim::setValue, false, true, Function.identity(),
+                            c -> c::callback),
+                    // Double
+                    createTestCase("Accel", ">x", AccelerometerSim::new,
+                            AccelerometerSim::registerXCallback,
+                            AccelerometerSim::cancelXCallback,
+                            AccelerometerSim::getX, AccelerometerSim::setX, 0.0,
+                            0.1, BigDecimal::new, c -> c::callback),
+                    // Integer
+                    createTestCase("AI", ">accum_value", AnalogInputSim::new,
+                            AnalogInputSim::registerAccumValueCallback,
+                            AnalogInputSim::cancelAccumValueCallback,
+                            AnalogInputSim::getAccumValue,
+                            AnalogInputSim::setAccumValue, 0, 1,
+                            BigDecimal::new, c -> c::callback),
+                    // String
+                    createTestCase("DriverStation", ">game_data",
+                            DriverStationSim::registerGameDataCallback,
+                            DriverStationSim::cancelGameDataCallback,
+                            DriverStationSim::getGameData,
+                            DriverStationSim::setGameData, "", "data",
+                            Function.identity(), c -> c::callback),
+                    // Boolean[]
+                    createTestCase("Joystick", ">buttons", JoystickSim::new,
+                            JoystickSim::registerButtonsCallback,
+                            JoystickSim::cancelButtonsCallback,
+                            JoystickSim::getButtons, JoystickSim::setButtons,
+                            new boolean[0], new boolean[] {false},
+                            (buttons) -> {
+                                JsonArray arr = new JsonArray();
+                                for (boolean b : buttons)
+                                    arr.add(b);
+                                return arr;
+                            }, c -> c::callback),
+                    // Double[]
+                    createTestCase("Joystick", ">axes", JoystickSim::new,
+                            JoystickSim::registerAxesCallback,
+                            JoystickSim::cancelAxesCallback,
+                            JoystickSim::getAxes, JoystickSim::setAxes,
+                            new double[0], new double[] {0},
+                            (axes) -> new JsonArray(Arrays.stream(axes)
+                                    .mapToObj(BigDecimal::new).toList()),
+                            c -> c::callback),
+                    // Integer[]
+                    createTestCase("Joystick", ">povs", JoystickSim::new,
+                            JoystickSim::registerPovsCallback,
+                            JoystickSim::cancelPovsCallback,
+                            JoystickSim::getPovs, JoystickSim::setPovs,
+                            new int[0], new int[] {0},
+                            (povs) -> new JsonArray(Arrays.stream(povs)
+                                    .mapToObj(BigDecimal::new).toList()),
+                            c -> c::callback),
+                    // LEDColor[]
+                    createTestCase("AddressableLED", "<data",
+                            AddressableLEDSim::new,
+                            AddressableLEDSim::registerDataCallback,
+                            AddressableLEDSim::cancelDataCallback,
+                            AddressableLEDSim::getData, null, new LEDColor[0],
+                            new LEDColor[] {new LEDColor(0, 0, 0)},
+                            (data) -> new JsonArray(Arrays.stream(data)
+                                    .map(LEDColor::toJson).map(jsonString -> {
+                                        try {
+                                            return Jsoner
+                                                    .deserialize(jsonString);
+                                        } catch (JsonException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    }).toList()),
+                            c -> c::callback)};
         }
 
         @Test
         public void testCallback() {
             String deviceName = getDeviceName("testCallback");
             T sim = constructor.apply(deviceName);
-            if(sim == null) deviceName = ""; // If a device is static, it's called with deviceName=""
+            if (sim == null)
+                deviceName = ""; // If a device is static, it's called with deviceName=""
 
             ArrayList<R> callbacks = new ArrayList<>();
             try {
@@ -314,7 +255,8 @@ public class DevicesTest {
                 callbacks.forEach(callback -> callbackCancellationFunction
                         .accept(sim, callback));
 
-                // Reset the value to the default. (The other tests may check this if the sim is static)
+                // Reset the value to the default. (The other tests may check this if the sim is
+                // static)
                 setValueFromRobot(deviceName, defaultValue);
             }
         }
@@ -329,19 +271,22 @@ public class DevicesTest {
         public void testRobotSetter() {
             String deviceName = getDeviceName("testRobotSetter");
             T sim = constructor.apply(deviceName);
-            if(sim == null) deviceName = ""; // If a device is static, it's called with deviceName=""
+            if (sim == null)
+                deviceName = ""; // If a device is static, it's called with deviceName=""
 
             try (MockedStatic<ConnectionProcessor> connectionProcessor =
                     mockStatic(ConnectionProcessor.class)) {
 
                 assertDeepEquals(defaultValue.val1, getterFunction.apply(sim));
                 setValueFromRobot(deviceName, alternateValue);
-                assertDeepEquals(alternateValue.val1, getterFunction.apply(sim));
+                assertDeepEquals(alternateValue.val1,
+                        getterFunction.apply(sim));
 
                 // No messages should've been broadcast back to the
                 connectionProcessor.verifyNoInteractions();
             } finally {
-                // Reset the value to the default. (The other tests may check this if the sim is static)
+                // Reset the value to the default. (The other tests may check this if the sim is
+                // static)
                 setValueFromRobot(deviceName, defaultValue);
             }
         }
@@ -352,7 +297,8 @@ public class DevicesTest {
 
             String deviceName = getDeviceName("testSimSetter");
             T sim = constructor.apply(deviceName);
-            if(sim == null) deviceName = ""; // If a device is static, it's called with deviceName=""
+            if (sim == null)
+                deviceName = ""; // If a device is static, it's called with deviceName=""
             String finalDeviceName = deviceName; // For lambdas
 
             try (MockedStatic<ConnectionProcessor> connectionProcessor =
@@ -360,31 +306,44 @@ public class DevicesTest {
 
                 assertDeepEquals(defaultValue.val1, getterFunction.apply(sim));
                 setterFunction.accept(sim, alternateValue.val1);
-                assertDeepEquals(alternateValue.val1, getterFunction.apply(sim));
+                assertDeepEquals(alternateValue.val1,
+                        getterFunction.apply(sim));
                 connectionProcessor.verify(() -> ConnectionProcessor
-                        .broadcastMessage(eq(finalDeviceName), eq(typeName), (WSValue) argThat(arg ->
-                            // Some sims send the raw value, some send a serialized version.
-                            // If it doesn't throw an exception during serialization, it's probably fine
-                            Objects.equals(arg, new WSValue(valueName, alternateValue.val1)) ||
-                            Objects.equals(arg, new WSValue(valueName, alternateValue.val2))
-                        )));
+                        .broadcastMessage(eq(finalDeviceName), eq(typeName),
+                                (WSValue) argThat(arg ->
+                                // Some sims send the raw value, some send a serialized version.
+                                // If it doesn't throw an exception during serialization, it's
+                                // probably fine
+                                Objects.equals(arg,
+                                        new WSValue(valueName,
+                                                alternateValue.val1))
+                                        || Objects.equals(arg, new WSValue(
+                                                valueName,
+                                                alternateValue.val2)))));
 
                 // The robot code should be re-notified every time set is called
                 setterFunction.accept(sim, alternateValue.val1);
-                assertDeepEquals(alternateValue.val1, getterFunction.apply(sim));
-                connectionProcessor.verify(
-                    () -> ConnectionProcessor.broadcastMessage(eq(finalDeviceName), eq(typeName),  (WSValue) argThat(arg ->
-                        // Some sims send the raw value, some send a serialized version.
-                        // If it doesn't throw an exception during serialization, it's probably fine
-                        Objects.equals(arg, new WSValue(valueName, alternateValue.val1)) ||
-                        Objects.equals(arg, new WSValue(valueName, alternateValue.val2))
-                    )),
+                assertDeepEquals(alternateValue.val1,
+                        getterFunction.apply(sim));
+                connectionProcessor.verify(() -> ConnectionProcessor
+                        .broadcastMessage(eq(finalDeviceName), eq(typeName),
+                                (WSValue) argThat(arg ->
+                                // Some sims send the raw value, some send a serialized version.
+                                // If it doesn't throw an exception during serialization, it's
+                                // probably fine
+                                Objects.equals(arg,
+                                        new WSValue(valueName,
+                                                alternateValue.val1))
+                                        || Objects.equals(arg,
+                                                new WSValue(valueName,
+                                                        alternateValue.val2)))),
                         times(2) // Two times total
-                    );
+                );
 
                 connectionProcessor.verifyNoMoreInteractions();
             } finally {
-                // Reset the value to the default. (The other tests may check this if the sim is static)
+                // Reset the value to the default. (The other tests may check this if the sim is
+                // static)
                 setValueFromRobot(deviceName, defaultValue);
             }
         }
@@ -396,13 +355,19 @@ public class DevicesTest {
         }
 
         private void assertDeepEquals(Object expected, Object actual) {
-            assertTrue("Expected: %s but got %s".formatted(formatObject(expected), formatObject(actual)), Objects.deepEquals(expected, actual));
+            assertTrue(
+                    "Expected: %s but got %s".formatted(formatObject(expected),
+                            formatObject(actual)),
+                    Objects.deepEquals(expected, actual));
         }
 
         private String formatObject(Object obj) {
-            if(obj == null) return "<null>";
-            if(obj instanceof Object[]) return Arrays.toString((Object[]) obj);
-            if(obj instanceof String) return "\"%s\"".formatted(obj);
+            if (obj == null)
+                return "<null>";
+            if (obj instanceof Object[])
+                return Arrays.toString((Object[]) obj);
+            if (obj instanceof String)
+                return "\"%s\"".formatted(obj);
             return obj.toString();
         }
 
