@@ -138,6 +138,11 @@ public class DevicesTest {
                     setValueFromRobot(deviceName, defaultValue);
                 }
 
+                callbacks.forEach(callback -> callbackCancellationFunction
+                        .accept(sim, callback));
+
+                setValueFromRobot(deviceName, alternateValue);
+
                 boolean isPrimitive = alternateValue.val1.getClass().isPrimitive();
 
                 // Now, we'll check that we saw all the correct invocations
@@ -151,6 +156,7 @@ public class DevicesTest {
                 // Repeat sets should not trigger the callback
                 order.verify(notifiedCallbackBeforeValueInit)
                         .callback(eq(deviceName), eq(defaultValue.val1));
+                // Sets after cancellation should not trigger the callback
                 verifyNoMoreInteractions(notifiedCallbackBeforeValueInit);
 
                 order = inOrder(nonNotifiedCallbackBeforeValueInit);
@@ -159,6 +165,7 @@ public class DevicesTest {
                 // Repeat sets should not trigger the callback
                 order.verify(nonNotifiedCallbackBeforeValueInit)
                         .callback(eq(deviceName), eq(defaultValue.val1));
+                // Sets after cancellation should not trigger the callback
                 verifyNoMoreInteractions(nonNotifiedCallbackBeforeValueInit);
 
                 order = inOrder(notifiedCallbackAfterValueInit);
@@ -175,6 +182,7 @@ public class DevicesTest {
                 .callback(eq(deviceName), eq(alternateValue.val1));
                 order.verify(nonNotifiedCallbackAfterValueInit)
                         .callback(eq(deviceName), eq(defaultValue.val1));
+                // Sets after cancellation should not trigger the callback
                 verifyNoMoreInteractions(nonNotifiedCallbackAfterValueInit);
             } finally {
                 callbacks.forEach(callback -> callbackCancellationFunction
