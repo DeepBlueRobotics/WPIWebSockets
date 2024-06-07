@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -143,15 +144,13 @@ public class DevicesTest {
 
                 setValueFromRobot(deviceName, alternateValue);
 
-                boolean isPrimitive = alternateValue.val1.getClass().isPrimitive();
-
                 // Now, we'll check that we saw all the correct invocations
                 InOrder order;
 
                 order = inOrder(notifiedCallbackBeforeValueInit);
                 order.verify(notifiedCallbackBeforeValueInit)
                         .callback(eq(deviceName), eq(defaultValue.val1));
-                order.verify(notifiedCallbackBeforeValueInit, times(isPrimitive ? 1 : 2))
+                order.verify(notifiedCallbackBeforeValueInit)
                         .callback(eq(deviceName), eq(alternateValue.val1));
                 // Repeat sets should not trigger the callback
                 order.verify(notifiedCallbackBeforeValueInit)
@@ -160,7 +159,7 @@ public class DevicesTest {
                 verifyNoMoreInteractions(notifiedCallbackBeforeValueInit);
 
                 order = inOrder(nonNotifiedCallbackBeforeValueInit);
-                order.verify(nonNotifiedCallbackBeforeValueInit, times(isPrimitive ? 1 : 2))
+                order.verify(nonNotifiedCallbackBeforeValueInit)
                         .callback(eq(deviceName), eq(alternateValue.val1));
                 // Repeat sets should not trigger the callback
                 order.verify(nonNotifiedCallbackBeforeValueInit)
@@ -169,7 +168,7 @@ public class DevicesTest {
                 verifyNoMoreInteractions(nonNotifiedCallbackBeforeValueInit);
 
                 order = inOrder(notifiedCallbackAfterValueInit);
-                order.verify(notifiedCallbackAfterValueInit, times(isPrimitive ? 1 : 2))
+                order.verify(notifiedCallbackAfterValueInit)
                         .callback(eq(deviceName), eq(alternateValue.val1));
                 // Repeat sets should not trigger the callback
                 order.verify(notifiedCallbackAfterValueInit)
@@ -178,8 +177,6 @@ public class DevicesTest {
 
                 order = inOrder(nonNotifiedCallbackAfterValueInit);
                 // Repeat sets should not trigger the callback
-                if(!isPrimitive) order.verify(nonNotifiedCallbackAfterValueInit)
-                .callback(eq(deviceName), eq(alternateValue.val1));
                 order.verify(nonNotifiedCallbackAfterValueInit)
                         .callback(eq(deviceName), eq(defaultValue.val1));
                 // Sets after cancellation should not trigger the callback
@@ -204,9 +201,9 @@ public class DevicesTest {
             try (MockedStatic<ConnectionProcessor> connectionProcessor =
                     mockStatic(ConnectionProcessor.class)) {
 
-                assertEquals(defaultValue.val1, getterFunction.apply(sim));
+                assertDeepEquals(defaultValue.val1, getterFunction.apply(sim));
                 setValueFromRobot(deviceName, alternateValue);
-                assertEquals(alternateValue.val1, getterFunction.apply(sim));
+                assertDeepEquals(alternateValue.val1, getterFunction.apply(sim));
 
                 // No messages should've been broadcast back to the
                 connectionProcessor.verifyNoInteractions();
@@ -223,16 +220,16 @@ public class DevicesTest {
             try (MockedStatic<ConnectionProcessor> connectionProcessor =
                     mockStatic(ConnectionProcessor.class)) {
 
-                assertEquals(defaultValue, getterFunction.apply(sim));
+                assertDeepEquals(defaultValue, getterFunction.apply(sim));
                 setterFunction.accept(sim, alternateValue.val1);
-                assertEquals(alternateValue.val1, getterFunction.apply(sim));
+                assertDeepEquals(alternateValue.val1, getterFunction.apply(sim));
                 connectionProcessor.verify(() -> ConnectionProcessor
                         .broadcastMessage(deviceName, typeName, eq(
                                 new WSValue(valueName, connectionProcessor))));
 
                 // The robot code should be re-notified every time set is called
                 setterFunction.accept(sim, alternateValue.val1);
-                assertEquals(alternateValue.val1, getterFunction.apply(sim));
+                assertDeepEquals(alternateValue.val1, getterFunction.apply(sim));
                 connectionProcessor.verify(() -> ConnectionProcessor
                         .broadcastMessage(eq(deviceName), eq(typeName), eq(
                                 new WSValue(valueName, connectionProcessor))));
@@ -247,13 +244,14 @@ public class DevicesTest {
                     Arrays.asList(new WSValue(valueName, newValue.val2)));
         }
 
-        // A custom implementation of assertEquals that correctly handles arrays
-        private void assertEquals(Object expected, Object actual) {
-            if(expected instanceof Object[]) {
-                assertArrayEquals((Object[]) expected, (Object[]) actual);
-            } else {
-                assertEquals(expected, actual);
-            }
+        private void assertDeepEquals(Object expected, Object actual) {
+            assertTrue("Expected: %s but got %s".formatted(formatObject(expected), formatObject(actual)), Objects.deepEquals(expected, actual));
+        }
+
+        private String formatObject(Object obj) {
+            if(obj == null) return "<null>";
+            if(obj instanceof Object[]) return Arrays.toString((Object[]) obj);
+            return obj.toString();
         }
 
         @Parameter(0)

@@ -22,6 +22,7 @@ import java.util.List;
 {% if hasId -%}
 import java.util.Map;
 {% endif -%}
+import java.util.Objects;
 import java.util.Set;
 {% if hasId -%}
 import java.util.concurrent.ConcurrentHashMap;
@@ -234,7 +235,7 @@ public class {{ name }}Sim {
      */
     public{{ cstatic }}final Consumer<{{ varInfo.callbackType }}> CALL_{{ varInfo.pnameu }}_CALLBACK = callback -> callback.callback({{ cid }}, getState().{{ varInfo.pnamel }});
     private{{ cstatic }}void set{{ varInfo.pname }}({{ varInfo.ptype }} {{ varInfo.pnamel }}, boolean notifyRobot) {
-        if({{ varInfo.pnamel }} != getState().{{ varInfo.pnamel }}) {
+        if(!Objects.deepEquals({{ varInfo.pnamel }}, getState().{{ varInfo.pnamel }})) {
             getState().{{ varInfo.pnamel }} = {{ varInfo.pnamel }};
             getState().{{ varInfo.pnameu }}_CALLBACKS.forEach(CALL_{{ varInfo.pnameu }}_CALLBACK);
         }
