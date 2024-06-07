@@ -1,5 +1,7 @@
 package org.team199.wpiws.connection;
 
+import java.util.Objects;
+
 /**
  * Represents a device value in the WPIWebSockets protocol
  */
@@ -50,6 +52,18 @@ public class WSValue {
      */
     public void setValue(Object value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        if (obj instanceof WSValue) {
+            WSValue other = (WSValue) obj;
+            return Objects.equals(key, other.getKey())
+                    && Objects.equals(value, other.getValue());
+        }
+        return false;
     }
 
 }

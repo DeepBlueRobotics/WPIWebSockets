@@ -48,4 +48,18 @@ public class LEDColor implements Jsonable {
         }
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof LEDColor) {
+            LEDColor other = (LEDColor) obj;
+            return r == other.r && g == other.g && b == other.b;
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "LEDColor[r=%d,g=%d,b=%d]".formatted(r, g, b);
+    }
+
 }
