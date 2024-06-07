@@ -5,6 +5,7 @@ import static org.junit.Assume.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.Before;
@@ -15,9 +16,12 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.ArgumentMatcher;
+import org.mockito.InOrder;
 import org.mockito.MockedStatic;
+import org.team199.wpiws.Pair;
 import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
+import org.team199.wpiws.interfaces.ObjectCallback;
 import org.team199.wpiws.interfaces.TestUtils;
 import org.team199.wpiws.interfaces.TriConsumer;
 
@@ -54,6 +58,88 @@ public class SimDeviceSimTest {
 					new Object[] {"%s-bidirectional".formatted(valueName),
 							setterFunction, defaultValue, alternateValue,
 							valueName, true}};
+		}
+
+		@Test
+		public void testValueChangedCallback() {
+			String deviceName = getDeviceName("testValueChangedCallback");
+			SimDeviceSim sim = new SimDeviceSim(deviceName);
+
+			ArrayList<Pair<String, ObjectCallback<String>>> callbacks =
+					new ArrayList<>();
+			try {
+
+				// First, we'll run our test case
+				ObjectCallback<String> notifiedCallbackBeforeValueInit = mock();
+				callbacks.add(sim.registerValueChangedCallback(valueName,
+						notifiedCallbackBeforeValueInit, true));
+				ObjectCallback<String> nonNotifiedCallbackBeforeValueInit =
+						mock();
+				callbacks.add(sim.registerValueChangedCallback(valueName,
+						nonNotifiedCallbackBeforeValueInit, false));
+
+				setValueFromRobot(deviceName, alternateValue);
+
+				ObjectCallback<String> notifiedCallbackAfterValueInit = mock();
+				callbacks.add(sim.registerValueChangedCallback(valueName,
+						notifiedCallbackAfterValueInit, true));
+				ObjectCallback<String> nonNotifiedCallbackAfterValueInit =
+						mock();
+				callbacks.add(sim.registerValueChangedCallback(valueName,
+						nonNotifiedCallbackAfterValueInit, false));
+
+				setValueFromRobot(deviceName, alternateValue);
+				setValueFromRobot(deviceName, defaultValue);
+
+				// Sets on other values should not trigger the callback
+				TestUtils.setValueFromRobot(deviceName, "SimDevice",
+						valueName + "-noCallbacks", alternateValue);
+
+				callbacks.forEach(sim::cancelValueChangedCallback);
+
+				setValueFromRobot(deviceName, alternateValue);
+
+				// Now, we'll check that we saw all the correct invocations
+				InOrder order;
+
+				order = inOrder(notifiedCallbackBeforeValueInit);
+				order.verify(notifiedCallbackBeforeValueInit)
+						.callback(eq(valueName), eq(null));
+				order.verify(notifiedCallbackBeforeValueInit)
+						.callback(eq(valueName), eq(alternateValue.toString()));
+				// Repeat sets should not trigger the callback
+				order.verify(notifiedCallbackBeforeValueInit)
+						.callback(eq(valueName), eq(defaultValue.toString()));
+				// Sets after cancellation should not trigger the callback
+				verifyNoMoreInteractions(notifiedCallbackBeforeValueInit);
+
+				order = inOrder(nonNotifiedCallbackBeforeValueInit);
+				order.verify(nonNotifiedCallbackBeforeValueInit)
+						.callback(eq(valueName), eq(alternateValue.toString()));
+				// Repeat sets should not trigger the callback
+				order.verify(nonNotifiedCallbackBeforeValueInit)
+						.callback(eq(valueName), eq(defaultValue.toString()));
+				// Sets after cancellation should not trigger the callback
+				verifyNoMoreInteractions(nonNotifiedCallbackBeforeValueInit);
+
+				order = inOrder(notifiedCallbackAfterValueInit);
+				order.verify(notifiedCallbackAfterValueInit)
+						.callback(eq(valueName), eq(alternateValue.toString()));
+				// Repeat sets should not trigger the callback
+				order.verify(notifiedCallbackAfterValueInit)
+						.callback(eq(valueName), eq(defaultValue.toString()));
+				verifyNoMoreInteractions(notifiedCallbackAfterValueInit);
+
+				order = inOrder(nonNotifiedCallbackAfterValueInit);
+				// Repeat sets should not trigger the callback
+				order.verify(nonNotifiedCallbackAfterValueInit)
+						.callback(eq(valueName), eq(defaultValue.toString()));
+				// Sets after cancellation should not trigger the callback
+				verifyNoMoreInteractions(nonNotifiedCallbackAfterValueInit);
+
+			} finally {
+				callbacks.forEach(sim::cancelValueChangedCallback);
+			}
 		}
 
 		@Before
