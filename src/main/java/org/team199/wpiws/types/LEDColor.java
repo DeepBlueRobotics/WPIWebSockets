@@ -24,7 +24,7 @@ public class LEDColor implements Jsonable {
 
     @Override
     public String toJson() {
-        return String.format("{\"r\":%d,\"g\": %d\"b\": %d}", r, g, b);
+        return String.format("{\"r\":%d, \"g\": %d, \"b\": %d}", r, g, b);
     }
 
     @Override
