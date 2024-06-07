@@ -5,12 +5,17 @@ import static org.junit.Assume.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.function.Supplier;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
@@ -63,7 +68,7 @@ public class DevicesTest {
                 BiConsumer<T, R> callbackCancellationFunction,
                 Function<T, U> getterFunction, BiConsumer<T, U> setterFunction,
                 U defaultValue, U alternateValue,
-                Function<U, Object> serializer,
+                Function<U, ?> serializer,
                 Function<ObjectCallback<U>, R> callbackConverter) {
             return new Object[] {
                 "%s-'%s'".formatted(typeName, valueName), // testName
@@ -80,9 +85,130 @@ public class DevicesTest {
             };
         }
 
+        private static <U, R> Object[] createTestCase(String typeName,
+                String valueName,
+                BiFunction<R, Boolean, R> callbackRegistrationFunction,
+                Consumer<R> callbackCancellationFunction,
+                Supplier<U> getterFunction, Consumer<U> setterFunction,
+                U defaultValue, U alternateValue,
+                Function<U, ?> serializer,
+                Function<ObjectCallback<U>, R> callbackConverter) {
+            return createTestCase(
+                typeName,
+                valueName,
+                (name) -> null,
+                (sim, callback, initialNotify) -> callbackRegistrationFunction.apply(callback, initialNotify),
+                (sim, callback) -> callbackCancellationFunction.accept(callback),
+                (sim) -> getterFunction.get(),
+                (sim, value) -> setterFunction.accept(value),
+                defaultValue,
+                alternateValue,
+                serializer,
+                callbackConverter
+            );
+        }
+
         @Parameters(name = "{index}: {0}")
         public static Object[] callbacksToTest() {
             return new Object[] {
+                // Boolean
+                createTestCase(
+                    "DIO",
+                    "<>value",
+                    DIOSim::new,
+                    DIOSim::registerValueCallback,
+                    DIOSim::cancelValueCallback,
+                    DIOSim::getValue,
+                    DIOSim::setValue,
+                    false,
+                    true,
+                    Function.identity(),
+                    c -> c::callback
+                ),
+                // Double
+                createTestCase(
+                    "Accel",
+                    ">x",
+                    AccelerometerSim::new,
+                    AccelerometerSim::registerXCallback,
+                    AccelerometerSim::cancelXCallback,
+                    AccelerometerSim::getX,
+                    AccelerometerSim::setX,
+                    0.0,
+                    0.1,
+                    BigDecimal::new,
+                    c -> c::callback
+                ),
+                // Integer
+                createTestCase(
+                    "AI",
+                    ">accum_value",
+                    AnalogInputSim::new,
+                    AnalogInputSim::registerAccumValueCallback,
+                    AnalogInputSim::cancelAccumValueCallback,
+                    AnalogInputSim::getAccumValue,
+                    AnalogInputSim::setAccumValue,
+                    0,
+                    1,
+                    BigDecimal::new,
+                    c -> c::callback
+                ),
+                // String
+                createTestCase(
+                    ">game_data",
+                    ">accum_value",
+                    DriverStationSim::registerGameDataCallback,
+                    DriverStationSim::cancelGameDataCallback,
+                    DriverStationSim::getGameData,
+                    DriverStationSim::setGameData,
+                    "",
+                    "data",
+                    Function.identity(),
+                    c -> c::callback
+                ),
+                // Boolean[]
+                createTestCase(
+                    "Joystick",
+                    ">buttons",
+                    JoystickSim::new,
+                    JoystickSim::registerButtonsCallback,
+                    JoystickSim::cancelButtonsCallback,
+                    JoystickSim::getButtons,
+                    JoystickSim::setButtons,
+                    new boolean[0],
+                    new boolean[] { false },
+                    (buttons) -> new JsonArray(Arrays.asList(buttons)),
+                    c -> c::callback
+                ),
+                // Double[]
+                createTestCase(
+                    "Joystick",
+                    ">axes",
+                    JoystickSim::new,
+                    JoystickSim::registerAxesCallback,
+                    JoystickSim::cancelAxesCallback,
+                    JoystickSim::getAxes,
+                    JoystickSim::setAxes,
+                    new double[0],
+                    new double[] { 0 },
+                    (axes) -> new JsonArray(DoubleStream.of(axes).mapToObj(BigDecimal::new).toList()),
+                    c -> c::callback
+                ),
+                // Integer[]
+                createTestCase(
+                    "Joystick",
+                    ">povs",
+                    JoystickSim::new,
+                    JoystickSim::registerPovsCallback,
+                    JoystickSim::cancelPovsCallback,
+                    JoystickSim::getPovs,
+                    JoystickSim::setPovs,
+                    new int[0],
+                    new int[] { 0 },
+                    (povs) -> new JsonArray(IntStream.of(povs).mapToObj(BigDecimal::new).toList()),
+                    c -> c::callback
+                ),
+                // LEDColor[]
                 createTestCase(
                     "AddressableLED",
                     "<data",
@@ -99,7 +225,7 @@ public class DevicesTest {
                         } catch(JsonException e) {
                             throw new RuntimeException(e);
                         }
-                    }).collect(Collectors.toList())),
+                    }).toList()),
                     c -> c::callback
                 )
             };
