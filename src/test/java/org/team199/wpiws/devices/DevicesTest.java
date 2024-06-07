@@ -249,7 +249,7 @@ public class DevicesTest {
 
         // A custom implementation of assertEquals that correctly handles arrays
         private void assertEquals(Object expected, Object actual) {
-            if(expected != null && expected.getClass().isArray()) {
+            if(expected instanceof Object[]) {
                 assertArrayEquals((Object[]) expected, (Object[]) actual);
             } else {
                 assertEquals(expected, actual);
