@@ -121,6 +121,7 @@ public class DevicesTest {
                     .callback(eq(deviceName1), eq(false));
             // Sets after cancellation should not trigger the callback
             verifyNoMoreInteractions(nonNotifiedCallbackAfterValueInit);
+
         } finally {
             callbacks
                     .forEach(AccelerometerSim::cancelStaticInitializedCallback);
@@ -333,6 +334,7 @@ public class DevicesTest {
                         .callback(eq(deviceName), eq(defaultValue.val1));
                 // Sets after cancellation should not trigger the callback
                 verifyNoMoreInteractions(nonNotifiedCallbackAfterValueInit);
+
             } finally {
                 callbacks.forEach(callback -> callbackCancellationFunction
                         .accept(sim, callback));
