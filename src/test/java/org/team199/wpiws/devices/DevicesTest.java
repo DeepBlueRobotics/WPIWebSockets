@@ -256,8 +256,8 @@ public class DevicesTest {
                 callbacks.forEach(callback -> callbackCancellationFunction
                         .accept(sim, callback));
 
-                // Reset the value to the default. (The other tests may check this if the sim is
-                // static)
+                // Reset the value to the default.
+                // (The other tests may check this if the sim is static)
                 setValueFromRobot(deviceName, defaultValue);
             }
         }
@@ -286,8 +286,8 @@ public class DevicesTest {
                 // No messages should've been broadcast back to the robot
                 connectionProcessor.verifyNoInteractions();
             } finally {
-                // Reset the value to the default. (The other tests may check this if the sim is
-                // static)
+                // Reset the value to the default.
+                // (The other tests may check this if the sim is static)
                 setValueFromRobot(deviceName, defaultValue);
             }
         }
@@ -339,8 +339,8 @@ public class DevicesTest {
                                         .matches(arg))),
                         never());
             } finally {
-                // Reset the value to the default. (The other tests may check this if the sim is
-                // static)
+                // Reset the value to the default.
+                // (The other tests may check this if the sim is static)
                 setValueFromRobot(deviceName, defaultValue);
             }
         }
