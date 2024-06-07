@@ -128,13 +128,8 @@ public class DevicesTest {
         }
     }
 
-    /**
-     * @param <T> the sim type
-     * @param <U> the parameter type
-     * @param <R> the callback type
-     */
     @RunWith(Parameterized.class)
-    public static class DataTests<T, U, R> {
+    public static class DataTests<SimType, VarType, CallbackType> {
 
         @Parameters(name = "{index}: {0}")
         public static Object[] callbacksToTest() {
@@ -221,13 +216,16 @@ public class DevicesTest {
                             c -> c::callback)};
         }
 
-        private static <T, U, R> Object[] createTestCase(String typeName,
-                String valueName, Function<String, T> constructor,
-                TriFunction<T, R, Boolean, R> callbackRegistrationFunction,
-                BiConsumer<T, R> callbackCancellationFunction,
-                Function<T, U> getterFunction, BiConsumer<T, U> setterFunction,
-                U defaultValue, U alternateValue, Function<U, ?> serializer,
-                Function<ObjectCallback<U>, R> callbackConverter) {
+        private static <SimType, VarType, CallbackType> Object[] createTestCase(
+                String typeName, String valueName,
+                Function<String, SimType> constructor,
+                TriFunction<SimType, CallbackType, Boolean, CallbackType> callbackRegistrationFunction,
+                BiConsumer<SimType, CallbackType> callbackCancellationFunction,
+                Function<SimType, VarType> getterFunction,
+                BiConsumer<SimType, VarType> setterFunction,
+                VarType defaultValue, VarType alternateValue,
+                Function<VarType, ?> serializer,
+                Function<ObjectCallback<VarType>, CallbackType> callbackConverter) {
             return new Object[] {"%s-'%s'".formatted(typeName, valueName), // testName
                     constructor, callbackConverter,
                     callbackRegistrationFunction, callbackCancellationFunction,
@@ -238,13 +236,15 @@ public class DevicesTest {
                     typeName, valueName};
         }
 
-        private static <U, R> Object[] createTestCase(String typeName,
+        private static <VarType, CallbackType> Object[] createTestCase(
+                String typeName,
                 String valueName,
-                BiFunction<R, Boolean, R> callbackRegistrationFunction,
-                Consumer<R> callbackCancellationFunction,
-                Supplier<U> getterFunction, Consumer<U> setterFunction,
-                U defaultValue, U alternateValue, Function<U, ?> serializer,
-                Function<ObjectCallback<U>, R> callbackConverter) {
+                BiFunction<CallbackType, Boolean, CallbackType> callbackRegistrationFunction,
+                Consumer<CallbackType> callbackCancellationFunction,
+                Supplier<VarType> getterFunction,
+                Consumer<VarType> setterFunction, VarType defaultValue,
+                VarType alternateValue, Function<VarType, ?> serializer,
+                Function<ObjectCallback<VarType>, CallbackType> callbackConverter) {
             return createTestCase(typeName, valueName, (name) -> null,
                     (sim, callback,
                             initialNotify) -> callbackRegistrationFunction
@@ -259,27 +259,30 @@ public class DevicesTest {
         @Test
         public void testCallback() {
             String deviceName = getDeviceName("testCallback");
-            T sim = constructor.apply(deviceName);
+            SimType sim = constructor.apply(deviceName);
             if (sim == null)
                 deviceName = ""; // If a device is static, it's called with deviceName=""
 
-            ArrayList<R> callbacks = new ArrayList<>();
+            ArrayList<CallbackType> callbacks = new ArrayList<>();
             try {
 
                 // First, we'll run our test case
-                ObjectCallback<U> notifiedCallbackBeforeValueInit = mock();
+                ObjectCallback<VarType> notifiedCallbackBeforeValueInit =
+                        mock();
                 callbacks.add(registerCallback(sim,
                         notifiedCallbackBeforeValueInit, true));
-                ObjectCallback<U> nonNotifiedCallbackBeforeValueInit = mock();
+                ObjectCallback<VarType> nonNotifiedCallbackBeforeValueInit =
+                        mock();
                 callbacks.add(registerCallback(sim,
                         nonNotifiedCallbackBeforeValueInit, false));
 
                 setValueFromRobot(deviceName, alternateValue);
 
-                ObjectCallback<U> notifiedCallbackAfterValueInit = mock();
+                ObjectCallback<VarType> notifiedCallbackAfterValueInit = mock();
                 callbacks.add(registerCallback(sim,
                         notifiedCallbackAfterValueInit, true));
-                ObjectCallback<U> nonNotifiedCallbackAfterValueInit = mock();
+                ObjectCallback<VarType> nonNotifiedCallbackAfterValueInit =
+                        mock();
                 callbacks.add(registerCallback(sim,
                         nonNotifiedCallbackAfterValueInit, false));
 
@@ -345,7 +348,8 @@ public class DevicesTest {
             }
         }
 
-        private R registerCallback(T sim, ObjectCallback<U> callback,
+        private CallbackType registerCallback(SimType sim,
+                ObjectCallback<VarType> callback,
                 boolean initialNotify) {
             return callbackRegistrationFunction.apply(sim,
                     callbackConverter.apply(callback), initialNotify);
@@ -354,7 +358,7 @@ public class DevicesTest {
         @Test
         public void testRobotSetter() {
             String deviceName = getDeviceName("testRobotSetter");
-            T sim = constructor.apply(deviceName);
+            SimType sim = constructor.apply(deviceName);
             if (sim == null)
                 deviceName = ""; // If a device is static, it's called with deviceName=""
 
@@ -380,7 +384,7 @@ public class DevicesTest {
             assumeNotNull(setterFunction); // If the setter doesn't exist, we can't test it
 
             String deviceName = getDeviceName("testSimSetter");
-            T sim = constructor.apply(deviceName);
+            SimType sim = constructor.apply(deviceName);
             if (sim == null)
                 deviceName = ""; // If a device is static, it's called with deviceName=""
             String finalDeviceName = deviceName; // For lambdas
@@ -429,7 +433,7 @@ public class DevicesTest {
         }
 
         private void setValueFromRobot(String deviceName,
-                Pair<U, Object> newValue) {
+                Pair<VarType, Object> newValue) {
             MessageProcessor.process(deviceName, typeName,
                     Arrays.asList(new WSValue(valueName, newValue.val2)));
         }
@@ -454,21 +458,21 @@ public class DevicesTest {
         @Parameter(0)
         public String testName;
         @Parameter(1)
-        public Function<String, T> constructor;
+        public Function<String, SimType> constructor;
         @Parameter(2)
-        public Function<ObjectCallback<U>, R> callbackConverter;
+        public Function<ObjectCallback<VarType>, CallbackType> callbackConverter;
         @Parameter(3)
-        public TriFunction<T, R, Boolean, R> callbackRegistrationFunction;
+        public TriFunction<SimType, CallbackType, Boolean, CallbackType> callbackRegistrationFunction;
         @Parameter(4)
-        public BiConsumer<T, R> callbackCancellationFunction;
+        public BiConsumer<SimType, CallbackType> callbackCancellationFunction;
         @Parameter(5)
-        public Function<T, U> getterFunction;
+        public Function<SimType, VarType> getterFunction;
         @Parameter(6)
-        public BiConsumer<T, U> setterFunction;
+        public BiConsumer<SimType, VarType> setterFunction;
         @Parameter(7)
-        public Pair<U, Object> defaultValue;
+        public Pair<VarType, Object> defaultValue;
         @Parameter(8)
-        public Pair<U, Object> alternateValue;
+        public Pair<VarType, Object> alternateValue;
         @Parameter(9)
         public String typeName;
         @Parameter(10)
