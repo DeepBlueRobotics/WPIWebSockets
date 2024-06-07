@@ -61,41 +61,6 @@ public class DevicesTest {
     @RunWith(Parameterized.class)
     public static class DataTests<T, U, R> {
 
-        private static <T, U, R> Object[] createTestCase(String typeName,
-                String valueName, Function<String, T> constructor,
-                TriFunction<T, R, Boolean, R> callbackRegistrationFunction,
-                BiConsumer<T, R> callbackCancellationFunction,
-                Function<T, U> getterFunction, BiConsumer<T, U> setterFunction,
-                U defaultValue, U alternateValue, Function<U, ?> serializer,
-                Function<ObjectCallback<U>, R> callbackConverter) {
-            return new Object[] {"%s-'%s'".formatted(typeName, valueName), // testName
-                    constructor, callbackConverter,
-                    callbackRegistrationFunction, callbackCancellationFunction,
-                    getterFunction, setterFunction,
-                    new Pair<>(defaultValue, serializer.apply(defaultValue)), // defaultValue
-                    new Pair<>(alternateValue,
-                            serializer.apply(alternateValue)), // alternateValue
-                    typeName, valueName};
-        }
-
-        private static <U, R> Object[] createTestCase(String typeName,
-                String valueName,
-                BiFunction<R, Boolean, R> callbackRegistrationFunction,
-                Consumer<R> callbackCancellationFunction,
-                Supplier<U> getterFunction, Consumer<U> setterFunction,
-                U defaultValue, U alternateValue, Function<U, ?> serializer,
-                Function<ObjectCallback<U>, R> callbackConverter) {
-            return createTestCase(typeName, valueName, (name) -> null,
-                    (sim, callback,
-                            initialNotify) -> callbackRegistrationFunction
-                                    .apply(callback, initialNotify),
-                    (sim, callback) -> callbackCancellationFunction
-                            .accept(callback),
-                    (sim) -> getterFunction.get(),
-                    (sim, value) -> setterFunction.accept(value), defaultValue,
-                    alternateValue, serializer, callbackConverter);
-        }
-
         @Parameters(name = "{index}: {0}")
         public static Object[] callbacksToTest() {
             return new Object[] {
@@ -172,6 +137,41 @@ public class DevicesTest {
                                         }
                                     }).toList()),
                             c -> c::callback)};
+        }
+
+        private static <T, U, R> Object[] createTestCase(String typeName,
+                String valueName, Function<String, T> constructor,
+                TriFunction<T, R, Boolean, R> callbackRegistrationFunction,
+                BiConsumer<T, R> callbackCancellationFunction,
+                Function<T, U> getterFunction, BiConsumer<T, U> setterFunction,
+                U defaultValue, U alternateValue, Function<U, ?> serializer,
+                Function<ObjectCallback<U>, R> callbackConverter) {
+            return new Object[] {"%s-'%s'".formatted(typeName, valueName), // testName
+                    constructor, callbackConverter,
+                    callbackRegistrationFunction, callbackCancellationFunction,
+                    getterFunction, setterFunction,
+                    new Pair<>(defaultValue, serializer.apply(defaultValue)), // defaultValue
+                    new Pair<>(alternateValue,
+                            serializer.apply(alternateValue)), // alternateValue
+                    typeName, valueName};
+        }
+
+        private static <U, R> Object[] createTestCase(String typeName,
+                String valueName,
+                BiFunction<R, Boolean, R> callbackRegistrationFunction,
+                Consumer<R> callbackCancellationFunction,
+                Supplier<U> getterFunction, Consumer<U> setterFunction,
+                U defaultValue, U alternateValue, Function<U, ?> serializer,
+                Function<ObjectCallback<U>, R> callbackConverter) {
+            return createTestCase(typeName, valueName, (name) -> null,
+                    (sim, callback,
+                            initialNotify) -> callbackRegistrationFunction
+                                    .apply(callback, initialNotify),
+                    (sim, callback) -> callbackCancellationFunction
+                            .accept(callback),
+                    (sim) -> getterFunction.get(),
+                    (sim, value) -> setterFunction.accept(value), defaultValue,
+                    alternateValue, serializer, callbackConverter);
         }
 
         @Test
