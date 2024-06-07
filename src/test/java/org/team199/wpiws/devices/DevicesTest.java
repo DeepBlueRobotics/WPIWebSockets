@@ -29,6 +29,7 @@ import org.team199.wpiws.TriFunction;
 import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.MessageProcessor;
 import org.team199.wpiws.connection.WSValue;
+import org.team199.wpiws.interfaces.BooleanCallback;
 import org.team199.wpiws.interfaces.ObjectCallback;
 import org.team199.wpiws.types.LEDColor;
 
@@ -39,18 +40,91 @@ import com.github.cliftonlabs.json_simple.Jsoner;
 @RunWith(Enclosed.class)
 public class DevicesTest {
 
-    public static class InitializationTests {
+    @Test
+    public void testStaticInitializationCallback() {
+        String deviceName1 = "DevicesTest.testStaticInitializationCallback-1";
+        String deviceName2 = "DevicesTest.testStaticInitializationCallback-2";
 
-        @Test
-        public void testInitializationCallback() {
+        ArrayList<BooleanCallback> callbacks = new ArrayList<>();
+        try {
 
+            // First, we'll run our test case
+            BooleanCallback notifiedCallbackBeforeValueInit = mock();
+            callbacks.add(AccelerometerSim.registerStaticInitializedCallback(
+                    notifiedCallbackBeforeValueInit, true));
+            BooleanCallback nonNotifiedCallbackBeforeValueInit = mock();
+            callbacks.add(AccelerometerSim.registerStaticInitializedCallback(
+                    nonNotifiedCallbackBeforeValueInit, false));
+
+            MessageProcessor.process(deviceName1, "Accel",
+                    Arrays.asList(new WSValue("<init", true)));
+            MessageProcessor.process(deviceName2, "Accel",
+                    Arrays.asList(new WSValue("<init", true)));
+
+            BooleanCallback notifiedCallbackAfterValueInit = mock();
+            callbacks.add(AccelerometerSim.registerStaticInitializedCallback(
+                    notifiedCallbackAfterValueInit, true));
+            BooleanCallback nonNotifiedCallbackAfterValueInit = mock();
+            callbacks.add(AccelerometerSim.registerStaticInitializedCallback(
+                    nonNotifiedCallbackAfterValueInit, false));
+
+            MessageProcessor.process(deviceName1, "Accel",
+                    Arrays.asList(new WSValue("<init", true)));
+            MessageProcessor.process(deviceName1, "Accel",
+                    Arrays.asList(new WSValue("<init", false)));
+
+            callbacks
+                    .forEach(AccelerometerSim::cancelStaticInitializedCallback);
+
+            MessageProcessor.process(deviceName1, "Accel",
+                    Arrays.asList(new WSValue("<init", true)));
+
+            // Now, we'll check that we saw all the correct invocations
+            InOrder order;
+
+            order = inOrder(notifiedCallbackBeforeValueInit);
+            order.verify(notifiedCallbackBeforeValueInit)
+                    .callback(eq(deviceName1), eq(true));
+            order.verify(notifiedCallbackBeforeValueInit)
+                    .callback(eq(deviceName2), eq(true));
+            // Repeat sets should not trigger the callback
+            order.verify(notifiedCallbackBeforeValueInit)
+                    .callback(eq(deviceName1), eq(false));
+            // Sets after cancellation should not trigger the callback
+            verifyNoMoreInteractions(notifiedCallbackBeforeValueInit);
+
+            order = inOrder(nonNotifiedCallbackBeforeValueInit);
+            order.verify(nonNotifiedCallbackBeforeValueInit)
+                    .callback(eq(deviceName1), eq(true));
+            order.verify(nonNotifiedCallbackBeforeValueInit)
+                    .callback(eq(deviceName2), eq(true));
+            // Repeat sets should not trigger the callback
+            order.verify(nonNotifiedCallbackBeforeValueInit)
+                    .callback(eq(deviceName1), eq(false));
+            // Sets after cancellation should not trigger the callback
+            verifyNoMoreInteractions(nonNotifiedCallbackBeforeValueInit);
+
+            order = inOrder(notifiedCallbackAfterValueInit);
+            order.verify(notifiedCallbackAfterValueInit)
+                    .callback(eq(deviceName1), eq(true));
+            order.verify(notifiedCallbackAfterValueInit)
+                    .callback(eq(deviceName2), eq(true));
+            // Repeat sets should not trigger the callback
+            order.verify(notifiedCallbackAfterValueInit)
+                    .callback(eq(deviceName1), eq(false));
+            // Sets after cancellation should not trigger the callback
+            verifyNoMoreInteractions(notifiedCallbackAfterValueInit);
+
+            order = inOrder(nonNotifiedCallbackAfterValueInit);
+            // Repeat sets should not trigger the callback
+            order.verify(nonNotifiedCallbackAfterValueInit)
+                    .callback(eq(deviceName1), eq(false));
+            // Sets after cancellation should not trigger the callback
+            verifyNoMoreInteractions(nonNotifiedCallbackAfterValueInit);
+        } finally {
+            callbacks
+                    .forEach(AccelerometerSim::cancelStaticInitializedCallback);
         }
-
-        @Test
-        public void testStaticInitializationCallback() {
-
-        }
-
     }
 
     /**
@@ -64,6 +138,13 @@ public class DevicesTest {
         @Parameters(name = "{index}: {0}")
         public static Object[] callbacksToTest() {
             return new Object[] {
+                    // Test initialized callback
+                    createTestCase("Accel", "<init", AccelerometerSim::new,
+                            AccelerometerSim::registerInitializedCallback,
+                            AccelerometerSim::cancelInitializedCallback,
+                            AccelerometerSim::getInitialized,
+                            AccelerometerSim::setInitialized, false, true,
+                            Function.identity(), c -> c::callback),
                     // Boolean
                     createTestCase("DIO", "<>value", DIOSim::new,
                             DIOSim::registerValueCallback,
