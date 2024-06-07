@@ -1,4 +1,4 @@
-package org.team199.wpiws;
+package org.team199.wpiws.interfaces;
 
 @FunctionalInterface
 public interface TriFunction<T, U, R, S> {

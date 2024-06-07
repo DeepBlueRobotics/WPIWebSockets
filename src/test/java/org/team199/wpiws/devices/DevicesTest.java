@@ -25,12 +25,12 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;
 import org.mockito.MockedStatic;
 import org.team199.wpiws.Pair;
-import org.team199.wpiws.TriFunction;
 import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.MessageProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.BooleanCallback;
 import org.team199.wpiws.interfaces.ObjectCallback;
+import org.team199.wpiws.interfaces.TriFunction;
 import org.team199.wpiws.types.LEDColor;
 
 import com.github.cliftonlabs.json_simple.JsonArray;
@@ -132,7 +132,7 @@ public class DevicesTest {
     public static class DataTests<SimType, VarType, CallbackType> {
 
         @Parameters(name = "{index}: {0}")
-        public static Object[] callbacksToTest() {
+        public static Object[] getTestCases() {
             return new Object[] {
                     // Test initialized callback
                     createTestCase("Accel", "<init", AccelerometerSim::new,
@@ -479,7 +479,8 @@ public class DevicesTest {
         public String valueName;
 
         private String getDeviceName(String testMethodName) {
-            return "DevicesTest.%s-%s".formatted(testMethodName, testName);
+                return "DevicesTest.DataTests.%s-%s".formatted(testMethodName,
+                                testName);
         }
 
     }
