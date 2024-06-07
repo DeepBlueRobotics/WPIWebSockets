@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
+import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;
 import org.mockito.MockedStatic;
 import org.team199.wpiws.Pair;
@@ -282,7 +283,7 @@ public class DevicesTest {
                 assertDeepEquals(alternateValue.val1,
                         getterFunction.apply(sim));
 
-                // No messages should've been broadcast back to the
+                // No messages should've been broadcast back to the robot
                 connectionProcessor.verifyNoInteractions();
             } finally {
                 // Reset the value to the default. (The other tests may check this if the sim is
@@ -304,22 +305,22 @@ public class DevicesTest {
             try (MockedStatic<ConnectionProcessor> connectionProcessor =
                     mockStatic(ConnectionProcessor.class)) {
 
+                // Checks the WSValue passed to ConnectionProcessor.broadcastMessage
+                ArgumentMatcher<WSValue> dataValueMatcher = arg ->
+                // Some sims send the raw value, some send a serialized version.
+                // If it doesn't throw an exception during serialization, it's
+                // probably fine
+                Objects.equals(arg, new WSValue(valueName, alternateValue.val1))
+                        || Objects.equals(arg,
+                                new WSValue(valueName, alternateValue.val2));
+
                 assertDeepEquals(defaultValue.val1, getterFunction.apply(sim));
                 setterFunction.accept(sim, alternateValue.val1);
                 assertDeepEquals(alternateValue.val1,
                         getterFunction.apply(sim));
                 connectionProcessor.verify(() -> ConnectionProcessor
                         .broadcastMessage(eq(finalDeviceName), eq(typeName),
-                                (WSValue) argThat(arg ->
-                                // Some sims send the raw value, some send a serialized version.
-                                // If it doesn't throw an exception during serialization, it's
-                                // probably fine
-                                Objects.equals(arg,
-                                        new WSValue(valueName,
-                                                alternateValue.val1))
-                                        || Objects.equals(arg, new WSValue(
-                                                valueName,
-                                                alternateValue.val2)))));
+                                (WSValue) argThat(dataValueMatcher)));
 
                 // The robot code should be re-notified every time set is called
                 setterFunction.accept(sim, alternateValue.val1);
@@ -327,20 +328,16 @@ public class DevicesTest {
                         getterFunction.apply(sim));
                 connectionProcessor.verify(() -> ConnectionProcessor
                         .broadcastMessage(eq(finalDeviceName), eq(typeName),
-                                (WSValue) argThat(arg ->
-                                // Some sims send the raw value, some send a serialized version.
-                                // If it doesn't throw an exception during serialization, it's
-                                // probably fine
-                                Objects.equals(arg,
-                                        new WSValue(valueName,
-                                                alternateValue.val1))
-                                        || Objects.equals(arg,
-                                                new WSValue(valueName,
-                                                        alternateValue.val2)))),
+                                (WSValue) argThat(dataValueMatcher)),
                         times(2) // Two times total
                 );
 
-                connectionProcessor.verifyNoMoreInteractions();
+                // No other messages should've been sent for this device
+                connectionProcessor.verify(() -> ConnectionProcessor
+                        .broadcastMessage(eq(finalDeviceName), eq(typeName),
+                                argThat((WSValue arg) -> !dataValueMatcher
+                                        .matches(arg))),
+                        never());
             } finally {
                 // Reset the value to the default. (The other tests may check this if the sim is
                 // static)
