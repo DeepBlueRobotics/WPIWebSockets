@@ -7,7 +7,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -20,7 +19,6 @@ import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.InOrder;
 import org.mockito.MockedStatic;
-import org.mockito.internal.matchers.Equality;
 import org.team199.wpiws.Pair;
 import org.team199.wpiws.TriFunction;
 import org.team199.wpiws.connection.ConnectionProcessor;
@@ -31,7 +29,6 @@ import org.team199.wpiws.types.LEDColor;
 
 import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonException;
-import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 
 @RunWith(Enclosed.class)
