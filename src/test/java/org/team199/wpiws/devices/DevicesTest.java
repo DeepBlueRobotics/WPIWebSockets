@@ -14,8 +14,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
 
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
@@ -155,8 +153,8 @@ public class DevicesTest {
                 ),
                 // String
                 createTestCase(
+                    "DriverStation",
                     ">game_data",
-                    ">accum_value",
                     DriverStationSim::registerGameDataCallback,
                     DriverStationSim::cancelGameDataCallback,
                     DriverStationSim::getGameData,
@@ -177,7 +175,11 @@ public class DevicesTest {
                     JoystickSim::setButtons,
                     new boolean[0],
                     new boolean[] { false },
-                    (buttons) -> new JsonArray(Arrays.asList(buttons)),
+                    (buttons) -> {
+                        JsonArray arr = new JsonArray();
+                        for(boolean b: buttons) arr.add(b);
+                        return arr;
+                    },
                     c -> c::callback
                 ),
                 // Double[]
@@ -191,7 +193,7 @@ public class DevicesTest {
                     JoystickSim::setAxes,
                     new double[0],
                     new double[] { 0 },
-                    (axes) -> new JsonArray(DoubleStream.of(axes).mapToObj(BigDecimal::new).toList()),
+                    (axes) -> new JsonArray(Arrays.stream(axes).mapToObj(BigDecimal::new).toList()),
                     c -> c::callback
                 ),
                 // Integer[]
@@ -205,7 +207,7 @@ public class DevicesTest {
                     JoystickSim::setPovs,
                     new int[0],
                     new int[] { 0 },
-                    (povs) -> new JsonArray(IntStream.of(povs).mapToObj(BigDecimal::new).toList()),
+                    (povs) -> new JsonArray(Arrays.stream(povs).mapToObj(BigDecimal::new).toList()),
                     c -> c::callback
                 ),
                 // LEDColor[]
@@ -235,6 +237,7 @@ public class DevicesTest {
         public void testCallback() {
             String deviceName = getDeviceName("testCallback");
             T sim = constructor.apply(deviceName);
+            if(sim == null) deviceName = ""; // If a device is static, it's called with deviceName=""
 
             ArrayList<R> callbacks = new ArrayList<>();
             try {
@@ -310,6 +313,9 @@ public class DevicesTest {
             } finally {
                 callbacks.forEach(callback -> callbackCancellationFunction
                         .accept(sim, callback));
+
+                // Reset the value to the default. (The other tests may check this if the sim is static)
+                setValueFromRobot(deviceName, defaultValue);
             }
         }
 
@@ -323,6 +329,7 @@ public class DevicesTest {
         public void testRobotSetter() {
             String deviceName = getDeviceName("testRobotSetter");
             T sim = constructor.apply(deviceName);
+            if(sim == null) deviceName = ""; // If a device is static, it's called with deviceName=""
 
             try (MockedStatic<ConnectionProcessor> connectionProcessor =
                     mockStatic(ConnectionProcessor.class)) {
@@ -333,6 +340,9 @@ public class DevicesTest {
 
                 // No messages should've been broadcast back to the
                 connectionProcessor.verifyNoInteractions();
+            } finally {
+                // Reset the value to the default. (The other tests may check this if the sim is static)
+                setValueFromRobot(deviceName, defaultValue);
             }
         }
 
@@ -342,25 +352,40 @@ public class DevicesTest {
 
             String deviceName = getDeviceName("testSimSetter");
             T sim = constructor.apply(deviceName);
+            if(sim == null) deviceName = ""; // If a device is static, it's called with deviceName=""
+            String finalDeviceName = deviceName; // For lambdas
 
             try (MockedStatic<ConnectionProcessor> connectionProcessor =
                     mockStatic(ConnectionProcessor.class)) {
 
-                assertDeepEquals(defaultValue, getterFunction.apply(sim));
+                assertDeepEquals(defaultValue.val1, getterFunction.apply(sim));
                 setterFunction.accept(sim, alternateValue.val1);
                 assertDeepEquals(alternateValue.val1, getterFunction.apply(sim));
                 connectionProcessor.verify(() -> ConnectionProcessor
-                        .broadcastMessage(deviceName, typeName, eq(
-                                new WSValue(valueName, connectionProcessor))));
+                        .broadcastMessage(eq(finalDeviceName), eq(typeName), (WSValue) argThat(arg ->
+                            // Some sims send the raw value, some send a serialized version.
+                            // If it doesn't throw an exception during serialization, it's probably fine
+                            Objects.equals(arg, new WSValue(valueName, alternateValue.val1)) ||
+                            Objects.equals(arg, new WSValue(valueName, alternateValue.val2))
+                        )));
 
                 // The robot code should be re-notified every time set is called
                 setterFunction.accept(sim, alternateValue.val1);
                 assertDeepEquals(alternateValue.val1, getterFunction.apply(sim));
-                connectionProcessor.verify(() -> ConnectionProcessor
-                        .broadcastMessage(eq(deviceName), eq(typeName), eq(
-                                new WSValue(valueName, connectionProcessor))));
+                connectionProcessor.verify(
+                    () -> ConnectionProcessor.broadcastMessage(eq(finalDeviceName), eq(typeName),  (WSValue) argThat(arg ->
+                        // Some sims send the raw value, some send a serialized version.
+                        // If it doesn't throw an exception during serialization, it's probably fine
+                        Objects.equals(arg, new WSValue(valueName, alternateValue.val1)) ||
+                        Objects.equals(arg, new WSValue(valueName, alternateValue.val2))
+                    )),
+                        times(2) // Two times total
+                    );
 
                 connectionProcessor.verifyNoMoreInteractions();
+            } finally {
+                // Reset the value to the default. (The other tests may check this if the sim is static)
+                setValueFromRobot(deviceName, defaultValue);
             }
         }
 
@@ -377,6 +402,7 @@ public class DevicesTest {
         private String formatObject(Object obj) {
             if(obj == null) return "<null>";
             if(obj instanceof Object[]) return Arrays.toString((Object[]) obj);
+            if(obj instanceof String) return "\"%s\"".formatted(obj);
             return obj.toString();
         }
 

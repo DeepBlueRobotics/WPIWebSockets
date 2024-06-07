@@ -61,9 +61,14 @@ public class WSValue {
         if (obj instanceof WSValue) {
             WSValue other = (WSValue) obj;
             return Objects.equals(key, other.getKey())
-                    && Objects.equals(value, other.getValue());
+                    && Objects.deepEquals(value, other.getValue());
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "WSValue[key=\"%s\",value=%s]".formatted(key, value);
     }
 
 }
