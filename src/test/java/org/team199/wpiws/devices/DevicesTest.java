@@ -57,8 +57,8 @@ public class DevicesTest {
                     nonNotifiedCallbackBeforeValueInit, false));
 
             // Repeat sets should not trigger the callback
-			TestUtils.setValueFromRobot(deviceName1, "Accel", "<init", true);
-			TestUtils.setValueFromRobot(deviceName2, "Accel", "<init", true);
+            TestUtils.setValueFromRobot(deviceName1, "Accel", "<init", true);
+            TestUtils.setValueFromRobot(deviceName2, "Accel", "<init", true);
 
             BooleanCallback notifiedCallbackAfterValueInit = mock();
             callbacks.add(AccelerometerSim.registerStaticInitializedCallback(
@@ -67,14 +67,14 @@ public class DevicesTest {
             callbacks.add(AccelerometerSim.registerStaticInitializedCallback(
                     nonNotifiedCallbackAfterValueInit, false));
 
-			TestUtils.setValueFromRobot(deviceName1, "Accel", "<init", true);
-			TestUtils.setValueFromRobot(deviceName1, "Accel", "<init", false);
+            TestUtils.setValueFromRobot(deviceName1, "Accel", "<init", true);
+            TestUtils.setValueFromRobot(deviceName1, "Accel", "<init", false);
 
             callbacks
                     .forEach(AccelerometerSim::cancelStaticInitializedCallback);
 
             // Sets after cancellation should not trigger the callback
-			TestUtils.setValueFromRobot(deviceName1, "Accel", "<init", true);
+            TestUtils.setValueFromRobot(deviceName1, "Accel", "<init", true);
 
             // Now, we'll check that we saw all the correct invocations
             InOrder order;
@@ -226,8 +226,7 @@ public class DevicesTest {
         }
 
         private static <VarType, CallbackType> Object[] createTestCase(
-                String typeName,
-                String valueName,
+                String typeName, String valueName,
                 BiFunction<CallbackType, Boolean, CallbackType> callbackRegistrationFunction,
                 Consumer<CallbackType> callbackCancellationFunction,
                 Supplier<VarType> getterFunction,
@@ -334,8 +333,7 @@ public class DevicesTest {
         }
 
         private CallbackType registerCallback(SimType sim,
-                ObjectCallback<VarType> callback,
-                boolean initialNotify) {
+                ObjectCallback<VarType> callback, boolean initialNotify) {
             return callbackRegistrationFunction.apply(sim,
                     callbackConverter.apply(callback), initialNotify);
         }
@@ -419,8 +417,8 @@ public class DevicesTest {
 
         private void setValueFromRobot(String deviceName,
                 Pair<VarType, Object> newValue) {
-			TestUtils.setValueFromRobot(deviceName, typeName, valueName,
-					newValue.val2);
+            TestUtils.setValueFromRobot(deviceName, typeName, valueName,
+                    newValue.val2);
         }
 
         private void assertDeepEquals(Object expected, Object actual) {
@@ -464,8 +462,8 @@ public class DevicesTest {
         public String valueName;
 
         private String getDeviceName(String testMethodName) {
-                return "DevicesTest.DataTests.%s-%s".formatted(testMethodName,
-                                testName);
+            return "DevicesTest.DataTests.%s-%s".formatted(testMethodName,
+                    testName);
         }
 
     }
