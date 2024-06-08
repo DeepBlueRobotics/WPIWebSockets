@@ -88,7 +88,9 @@ public class SimDeviceSimTest {
 				callbacks.add(sim.registerValueChangedCallback(valueName,
 						nonNotifiedCallbackAfterValueInit, false));
 
+				// Repeat sets should not trigger the callback
 				setValueFromRobot(deviceName, alternateValue);
+
 				setValueFromRobot(deviceName, defaultValue);
 
 				// Sets on other values should not trigger the callback
@@ -97,6 +99,7 @@ public class SimDeviceSimTest {
 
 				callbacks.forEach(sim::cancelValueChangedCallback);
 
+				// Sets after cancellation should not trigger the callback
 				setValueFromRobot(deviceName, alternateValue);
 
 				// Now, we'll check that we saw all the correct invocations
@@ -107,34 +110,27 @@ public class SimDeviceSimTest {
 						.callback(eq(valueName), eq(null));
 				order.verify(notifiedCallbackBeforeValueInit)
 						.callback(eq(valueName), eq(alternateValue.toString()));
-				// Repeat sets should not trigger the callback
 				order.verify(notifiedCallbackBeforeValueInit)
 						.callback(eq(valueName), eq(defaultValue.toString()));
-				// Sets after cancellation should not trigger the callback
 				verifyNoMoreInteractions(notifiedCallbackBeforeValueInit);
 
 				order = inOrder(nonNotifiedCallbackBeforeValueInit);
 				order.verify(nonNotifiedCallbackBeforeValueInit)
 						.callback(eq(valueName), eq(alternateValue.toString()));
-				// Repeat sets should not trigger the callback
 				order.verify(nonNotifiedCallbackBeforeValueInit)
 						.callback(eq(valueName), eq(defaultValue.toString()));
-				// Sets after cancellation should not trigger the callback
 				verifyNoMoreInteractions(nonNotifiedCallbackBeforeValueInit);
 
 				order = inOrder(notifiedCallbackAfterValueInit);
 				order.verify(notifiedCallbackAfterValueInit)
 						.callback(eq(valueName), eq(alternateValue.toString()));
-				// Repeat sets should not trigger the callback
 				order.verify(notifiedCallbackAfterValueInit)
 						.callback(eq(valueName), eq(defaultValue.toString()));
 				verifyNoMoreInteractions(notifiedCallbackAfterValueInit);
 
 				order = inOrder(nonNotifiedCallbackAfterValueInit);
-				// Repeat sets should not trigger the callback
 				order.verify(nonNotifiedCallbackAfterValueInit)
 						.callback(eq(valueName), eq(defaultValue.toString()));
-				// Sets after cancellation should not trigger the callback
 				verifyNoMoreInteractions(nonNotifiedCallbackAfterValueInit);
 
 			} finally {

@@ -56,6 +56,7 @@ public class DevicesTest {
             callbacks.add(AccelerometerSim.registerStaticInitializedCallback(
                     nonNotifiedCallbackBeforeValueInit, false));
 
+            // Repeat sets should not trigger the callback
 			TestUtils.setValueFromRobot(deviceName1, "Accel", "<init", true);
 			TestUtils.setValueFromRobot(deviceName2, "Accel", "<init", true);
 
@@ -72,6 +73,7 @@ public class DevicesTest {
             callbacks
                     .forEach(AccelerometerSim::cancelStaticInitializedCallback);
 
+            // Sets after cancellation should not trigger the callback
 			TestUtils.setValueFromRobot(deviceName1, "Accel", "<init", true);
 
             // Now, we'll check that we saw all the correct invocations
@@ -82,10 +84,8 @@ public class DevicesTest {
                     .callback(eq(deviceName1), eq(true));
             order.verify(notifiedCallbackBeforeValueInit)
                     .callback(eq(deviceName2), eq(true));
-            // Repeat sets should not trigger the callback
             order.verify(notifiedCallbackBeforeValueInit)
                     .callback(eq(deviceName1), eq(false));
-            // Sets after cancellation should not trigger the callback
             verifyNoMoreInteractions(notifiedCallbackBeforeValueInit);
 
             order = inOrder(nonNotifiedCallbackBeforeValueInit);
@@ -93,10 +93,8 @@ public class DevicesTest {
                     .callback(eq(deviceName1), eq(true));
             order.verify(nonNotifiedCallbackBeforeValueInit)
                     .callback(eq(deviceName2), eq(true));
-            // Repeat sets should not trigger the callback
             order.verify(nonNotifiedCallbackBeforeValueInit)
                     .callback(eq(deviceName1), eq(false));
-            // Sets after cancellation should not trigger the callback
             verifyNoMoreInteractions(nonNotifiedCallbackBeforeValueInit);
 
             order = inOrder(notifiedCallbackAfterValueInit);
@@ -104,17 +102,13 @@ public class DevicesTest {
                     .callback(eq(deviceName1), eq(true));
             order.verify(notifiedCallbackAfterValueInit)
                     .callback(eq(deviceName2), eq(true));
-            // Repeat sets should not trigger the callback
             order.verify(notifiedCallbackAfterValueInit)
                     .callback(eq(deviceName1), eq(false));
-            // Sets after cancellation should not trigger the callback
             verifyNoMoreInteractions(notifiedCallbackAfterValueInit);
 
             order = inOrder(nonNotifiedCallbackAfterValueInit);
-            // Repeat sets should not trigger the callback
             order.verify(nonNotifiedCallbackAfterValueInit)
                     .callback(eq(deviceName1), eq(false));
-            // Sets after cancellation should not trigger the callback
             verifyNoMoreInteractions(nonNotifiedCallbackAfterValueInit);
 
         } finally {
@@ -281,7 +275,9 @@ public class DevicesTest {
                 callbacks.add(registerCallback(sim,
                         nonNotifiedCallbackAfterValueInit, false));
 
+                // Repeat sets should not trigger the callback
                 setValueFromRobot(deviceName, alternateValue);
+
                 if (setterFunction != null) {
                     // Check that we also get callback notifications from the setter function
                     setterFunction.accept(sim, defaultValue.val1);
@@ -293,6 +289,7 @@ public class DevicesTest {
                 callbacks.forEach(callback -> callbackCancellationFunction
                         .accept(sim, callback));
 
+                // Sets after cancellation should not trigger the callback
                 setValueFromRobot(deviceName, alternateValue);
 
                 // Now, we'll check that we saw all the correct invocations
@@ -303,34 +300,27 @@ public class DevicesTest {
                         .callback(eq(deviceName), eq(defaultValue.val1));
                 order.verify(notifiedCallbackBeforeValueInit)
                         .callback(eq(deviceName), eq(alternateValue.val1));
-                // Repeat sets should not trigger the callback
                 order.verify(notifiedCallbackBeforeValueInit)
                         .callback(eq(deviceName), eq(defaultValue.val1));
-                // Sets after cancellation should not trigger the callback
                 verifyNoMoreInteractions(notifiedCallbackBeforeValueInit);
 
                 order = inOrder(nonNotifiedCallbackBeforeValueInit);
                 order.verify(nonNotifiedCallbackBeforeValueInit)
                         .callback(eq(deviceName), eq(alternateValue.val1));
-                // Repeat sets should not trigger the callback
                 order.verify(nonNotifiedCallbackBeforeValueInit)
                         .callback(eq(deviceName), eq(defaultValue.val1));
-                // Sets after cancellation should not trigger the callback
                 verifyNoMoreInteractions(nonNotifiedCallbackBeforeValueInit);
 
                 order = inOrder(notifiedCallbackAfterValueInit);
                 order.verify(notifiedCallbackAfterValueInit)
                         .callback(eq(deviceName), eq(alternateValue.val1));
-                // Repeat sets should not trigger the callback
                 order.verify(notifiedCallbackAfterValueInit)
                         .callback(eq(deviceName), eq(defaultValue.val1));
                 verifyNoMoreInteractions(notifiedCallbackAfterValueInit);
 
                 order = inOrder(nonNotifiedCallbackAfterValueInit);
-                // Repeat sets should not trigger the callback
                 order.verify(nonNotifiedCallbackAfterValueInit)
                         .callback(eq(deviceName), eq(defaultValue.val1));
-                // Sets after cancellation should not trigger the callback
                 verifyNoMoreInteractions(nonNotifiedCallbackAfterValueInit);
 
             } finally {
