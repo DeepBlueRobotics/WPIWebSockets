@@ -22,11 +22,203 @@ import org.team199.wpiws.Pair;
 import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.ObjectCallback;
+import org.team199.wpiws.interfaces.SimDeviceCallback;
 import org.team199.wpiws.interfaces.TestUtils;
 import org.team199.wpiws.interfaces.TriConsumer;
 
 @RunWith(Enclosed.class)
 public class SimDeviceSimTest {
+
+	@Test
+	public void testEnumerateDevices() {
+		String prefix = getDeviceName("testEnumerateDevices");
+		TestUtils.assertArrayEqualsIgnoringOrder(new String[0],
+				SimDeviceSim.enumerateDevices(prefix + "-prefix"));
+
+		String simInitializedSimName = prefix + "-prefix-initializedBySim";
+		String robotInitializedSimName = prefix + "-prefix-initializedByRobot";
+		String nonPrefixedSimName = prefix + "-noPrefix";
+
+		SimDeviceSim simInitializedSim =
+				new SimDeviceSim(simInitializedSimName);
+		@SuppressWarnings("unused")
+		SimDeviceSim robotInitializedSim =
+				new SimDeviceSim(robotInitializedSimName);
+		SimDeviceSim nonPrefixedSim = new SimDeviceSim(nonPrefixedSimName);
+
+		simInitializedSim.set("value", "data");
+		TestUtils.setValueFromRobot(robotInitializedSimName, "SimDevice",
+				"<value", "data");
+		nonPrefixedSim.set("value", "data");
+
+		TestUtils.assertArrayEqualsIgnoringOrder(
+				new String[] {simInitializedSimName, robotInitializedSimName},
+				SimDeviceSim.enumerateDevices(prefix + "-prefix"));
+	}
+
+	@Test
+	public void testEnumerateValues() {
+		SimDeviceSim device =
+				new SimDeviceSim(getDeviceName("testEnumerateValues"));
+
+		TestUtils.assertArrayEqualsIgnoringOrder(new String[0],
+				device.enumerateValues("prefix"));
+
+		device.set("prefix-value1", "value1");
+		device.set("prefix-value2", "value2");
+		device.set("noPrefix-value3", "value3");
+
+		TestUtils.assertArrayEqualsIgnoringOrder(
+				new String[] {"prefix-value1", "prefix-value2"},
+				device.enumerateValues("prefix"));
+	}
+
+	@Test
+	public void testDeviceCreatedCallback() {
+		ArrayList<Pair<String, SimDeviceCallback>> callbacks =
+				new ArrayList<>();
+		try {
+
+			// First, we'll run our test case
+			SimDeviceCallback notifiedCallbackBeforeFirstDeviceInit = mock();
+			callbacks.add(SimDeviceSim.registerDeviceCreatedCallback("prefix",
+					notifiedCallbackBeforeFirstDeviceInit, true));
+			SimDeviceCallback nonNotifiedCallbackBeforeFirstDeviceInit = mock();
+			callbacks.add(SimDeviceSim.registerDeviceCreatedCallback("prefix",
+					nonNotifiedCallbackBeforeFirstDeviceInit, false));
+
+			// Try initializing a device through the API
+			new SimDeviceSim("prefix-device1").set("value", "data");
+
+			SimDeviceCallback notifiedCallbackAfterFirstDeviceInit = mock();
+			callbacks.add(SimDeviceSim.registerDeviceCreatedCallback("prefix",
+					notifiedCallbackAfterFirstDeviceInit, true));
+			SimDeviceCallback nonNotifiedCallbackAfterFirstDeviceInit = mock();
+			callbacks.add(SimDeviceSim.registerDeviceCreatedCallback("prefix",
+					nonNotifiedCallbackAfterFirstDeviceInit, false));
+
+			// Try initializing a value through WS
+			TestUtils.setValueFromRobot("prefix-device2", "SimDevice",
+					"<value2", "data2");
+
+			// Initializing a device with the wrong prefix should not call the callbacks
+			new SimDeviceSim("noPrefix-device").set("value", "data");
+
+
+			callbacks.forEach(SimDeviceSim::cancelDeviceCreatedCallback);
+
+			new SimDeviceSim("prefix-device3").set("value", "data");
+
+			// Now, we'll check that we saw all the correct invocations
+			InOrder order;
+
+			order = inOrder(notifiedCallbackBeforeFirstDeviceInit);
+			order.verify(notifiedCallbackBeforeFirstDeviceInit)
+					.callback(eq("prefix-device1"));
+			order.verify(notifiedCallbackBeforeFirstDeviceInit)
+					.callback(eq("prefix-device2"));
+			verifyNoMoreInteractions(notifiedCallbackBeforeFirstDeviceInit);
+
+			order = inOrder(nonNotifiedCallbackBeforeFirstDeviceInit);
+			order.verify(nonNotifiedCallbackBeforeFirstDeviceInit)
+					.callback(eq("prefix-device1"));
+			order.verify(nonNotifiedCallbackBeforeFirstDeviceInit)
+					.callback(eq("prefix-device2"));
+			verifyNoMoreInteractions(nonNotifiedCallbackBeforeFirstDeviceInit);
+
+			order = inOrder(notifiedCallbackAfterFirstDeviceInit);
+			order.verify(notifiedCallbackAfterFirstDeviceInit)
+					.callback(eq("prefix-device1"));
+			order.verify(notifiedCallbackAfterFirstDeviceInit)
+					.callback(eq("prefix-device2"));
+			verifyNoMoreInteractions(notifiedCallbackAfterFirstDeviceInit);
+
+			order = inOrder(nonNotifiedCallbackAfterFirstDeviceInit);
+			order.verify(nonNotifiedCallbackAfterFirstDeviceInit)
+					.callback(eq("prefix-device2"));
+			verifyNoMoreInteractions(nonNotifiedCallbackAfterFirstDeviceInit);
+
+
+		} finally {
+			callbacks.forEach(SimDeviceSim::cancelDeviceCreatedCallback);
+		}
+	}
+
+	@Test
+	public void testValueCreatedCallback() {
+		SimDeviceSim sim =
+				new SimDeviceSim(getDeviceName("testValueCreatedCallback"));
+
+		ArrayList<ObjectCallback<String>> callbacks = new ArrayList<>();
+		try {
+
+			// First, we'll run our test case
+			ObjectCallback<String> notifiedCallbackBeforeFirstValueInit =
+					mock();
+			callbacks.add(sim.registerValueCreatedCallback(
+					notifiedCallbackBeforeFirstValueInit, true));
+			ObjectCallback<String> nonNotifiedCallbackBeforeFirstValueInit =
+					mock();
+			callbacks.add(sim.registerValueCreatedCallback(
+					nonNotifiedCallbackBeforeFirstValueInit, false));
+
+			// Try initializing a value through the API
+			sim.set("value1", "data1");
+
+			ObjectCallback<String> notifiedCallbackAfterFirstValueInit = mock();
+			callbacks.add(sim.registerValueCreatedCallback(
+					notifiedCallbackAfterFirstValueInit, true));
+			ObjectCallback<String> nonNotifiedCallbackAfterFirstValueInit =
+					mock();
+			callbacks.add(sim.registerValueCreatedCallback(
+					nonNotifiedCallbackAfterFirstValueInit, false));
+
+			// Try initializing a value through WS
+			TestUtils.setValueFromRobot(sim.id, "SimDevice", "<value2",
+					"data2");
+
+			// Setting new data should not trigger the
+			sim.set("value1", "newData1");
+
+
+			callbacks.forEach(sim::cancelValueCreatedCallback);
+
+			sim.set("value3", "data3");
+
+			// Now, we'll check that we saw all the correct invocations
+			InOrder order;
+
+			order = inOrder(notifiedCallbackBeforeFirstValueInit);
+			order.verify(notifiedCallbackBeforeFirstValueInit)
+					.callback(eq("value1"), eq("data1"));
+			order.verify(notifiedCallbackBeforeFirstValueInit)
+					.callback(eq("value2"), eq("data2"));
+			verifyNoMoreInteractions(notifiedCallbackBeforeFirstValueInit);
+
+			order = inOrder(nonNotifiedCallbackBeforeFirstValueInit);
+			order.verify(nonNotifiedCallbackBeforeFirstValueInit)
+					.callback(eq("value1"), eq("data1"));
+			order.verify(nonNotifiedCallbackBeforeFirstValueInit)
+					.callback(eq("value2"), eq("data2"));
+			verifyNoMoreInteractions(nonNotifiedCallbackBeforeFirstValueInit);
+
+			order = inOrder(notifiedCallbackAfterFirstValueInit);
+			order.verify(notifiedCallbackAfterFirstValueInit)
+					.callback(eq("value1"), eq("data1"));
+			order.verify(notifiedCallbackAfterFirstValueInit)
+					.callback(eq("value2"), eq("data2"));
+			verifyNoMoreInteractions(notifiedCallbackAfterFirstValueInit);
+
+			order = inOrder(nonNotifiedCallbackAfterFirstValueInit);
+			order.verify(nonNotifiedCallbackAfterFirstValueInit)
+					.callback(eq("value2"), eq("data2"));
+			verifyNoMoreInteractions(nonNotifiedCallbackAfterFirstValueInit);
+
+
+		} finally {
+			callbacks.forEach(sim::cancelValueCreatedCallback);
+		}
+	}
 
 	private static String getDeviceName(String testMethodName) {
 		return "SimDeviceSimTest.%s".formatted(testMethodName);
