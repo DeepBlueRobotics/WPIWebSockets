@@ -15,6 +15,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
@@ -205,6 +206,37 @@ public class DevicesTest {
                             c -> c::callback)};
         }
 
+        /**
+         * Uses the given information to construct the necessary parameters to run a test.
+         *
+         * @param <SimType> the type of sim device being tested
+         * @param <VarType> the type of variable being tested
+         * @param <CallbackType> the type of callbacks being used in the test
+         * @param typeName the WS type name of the device being tested
+         * @param valueName the WS name of the value being tested
+         * @param constructor a function that can be used to construct an instance of the sim device
+         *        type being tested
+         * @param callbackRegistrationFunction a function that can be used to register a callback on
+         *        the variable being tested
+         * @param callbackCancellationFunction a function that can be used to cancel the callback
+         *        returned by the {@code callbackRegistrationFunction}
+         * @param getterFunction a function that can be used to get the value of the value being
+         *        tested
+         * @param setterFunction a function that can be used to set the value of the value being
+         *        tested. If the value cannot be set through the API, {@code null} may be used,
+         *        however, this will prevent the {@code testSimSetter} test from being run.
+         * @param defaultValue the default value of the variable being tested before it has been set
+         *        by the robot or the simulator
+         * @param alternateValue an alternative example of this value type that can be used for
+         *        testing
+         * @param serializer a function that can convert the example values into their
+         *        JSON-object-serialized form
+         * @param callbackConverter a function that can be used to convert the generalized callbacks
+         *        used by the tests into the specific callback types necessary for the supplied
+         *        functions. In most cases, passing {@code c => c::callback} will allow Java to
+         *        figure it out.
+         * @return an Object array containing the parameters necessary to run the test case
+         */
         private static <SimType, VarType, CallbackType> Object[] createTestCase(
                 String typeName, String valueName,
                 Function<String, SimType> constructor,
@@ -225,6 +257,37 @@ public class DevicesTest {
                     typeName, valueName};
         }
 
+        /**
+         * A variation of
+         * {@link #createTestCase(String, String, BiFunction, Consumer, Supplier, Consumer, Object, Object, Function, Function)}
+         * that is targeted towards test cases that analyze a static variable (one which does not
+         * require a sim device instance)
+         *
+         * @param <VarType> the type of variable being tested
+         * @param <CallbackType> the type of callbacks being used in the test
+         * @param typeName the WS type name of the device being tested
+         * @param valueName the WS name of the value being tested
+         * @param callbackRegistrationFunction a function that can be used to register a callback on
+         *        the variable being tested
+         * @param callbackCancellationFunction a function that can be used to cancel the callback
+         *        returned by the {@code callbackRegistrationFunction}
+         * @param getterFunction a function that can be used to get the value of the value being
+         *        tested
+         * @param setterFunction a function that can be used to set the value of the value being
+         *        tested. If the value cannot be set through the API, {@code null} may be used,
+         *        however, this will prevent the {@code testSimSetter} test from being run.
+         * @param defaultValue the default value of the variable being tested before it has been set
+         *        by the robot or the simulator
+         * @param alternateValue an alternative example of this value type that can be used for
+         *        testing
+         * @param serializer a function that can convert the example values into their
+         *        JSON-object-serialized form
+         * @param callbackConverter a function that can be used to convert the generalized callbacks
+         *        used by the tests into the specific callback types necessary for the supplied
+         *        functions. In most cases, passing {@code c => c::callback} will allow Java to
+         *        figure it out.
+         * @return an Object array containing the parameters necessary to run the test case
+         */
         private static <VarType, CallbackType> Object[] createTestCase(
                 String typeName, String valueName,
                 BiFunction<CallbackType, Boolean, CallbackType> callbackRegistrationFunction,
@@ -332,6 +395,16 @@ public class DevicesTest {
             }
         }
 
+        /**
+         * Registers a callback for the variable being tested on a sim device instance
+         *
+         * @param sim the sim device to register the callback on
+         * @param callback the callback to register
+         * @param initialNotify whether the callback should be called immediately with the current
+         *        value of the variable
+         * @return an object that can be passed to the {@link #callbackCancellationFunction} to
+         *         cancel the callback
+         */
         private CallbackType registerCallback(SimType sim,
                 ObjectCallback<VarType> callback, boolean initialNotify) {
             return callbackRegistrationFunction.apply(sim,
@@ -415,12 +488,26 @@ public class DevicesTest {
             }
         }
 
+        /**
+         * A wrapper around {@link TestUtils#setValueFromRobot(String, String, String, Object)} that
+         * auto-fills some of the parameters from the members of this class.
+         *
+         * @param deviceName the name of the device to set the value on
+         * @param newValue the new value to set
+         */
         private void setValueFromRobot(String deviceName,
                 Pair<VarType, Object> newValue) {
             TestUtils.setValueFromRobot(deviceName, typeName, valueName,
                     newValue.val2);
         }
 
+        /**
+         * A variation of {@link Assert#assertEquals(Object, Object)} that uses
+         * {@link Objects#deepEquals(Object, Object)}
+         *
+         * @param expected the expected object
+         * @param actual the actual object
+         */
         private void assertDeepEquals(Object expected, Object actual) {
             assertTrue(
                     "Expected: %s but got %s".formatted(formatObject(expected),
@@ -428,6 +515,13 @@ public class DevicesTest {
                     Objects.deepEquals(expected, actual));
         }
 
+        /**
+         * A utility function used by {@link #assertDeepEquals} to stringify objects in the event of
+         * an error
+         *
+         * @param obj the object to stringify
+         * @return the stringified object
+         */
         private String formatObject(Object obj) {
             if (obj == null)
                 return "<null>";
@@ -461,6 +555,13 @@ public class DevicesTest {
         @Parameter(10)
         public String valueName;
 
+        /**
+         * Creates a device name that will not conflict with devices from other tests. Devices names
+         * for the same test case will always be equal.
+         *
+         * @param testMethodName the name of the test being run
+         * @return a device name unique to the given test
+         */
         private String getDeviceName(String testMethodName) {
             return "DevicesTest.DataTests.%s-%s".formatted(testMethodName,
                     testName);

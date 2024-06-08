@@ -220,6 +220,13 @@ public class SimDeviceSimTest {
         }
     }
 
+    /**
+     * Creates a device name that will not conflict with devices from other tests. Devices names for
+     * the same test case will always be equal.
+     *
+     * @param testMethodName the name of the test being run
+     * @return a device name unique to the given test
+     */
     private static String getDeviceName(String testMethodName) {
         return "SimDeviceSimTest.%s".formatted(testMethodName);
     }
@@ -238,6 +245,23 @@ public class SimDeviceSimTest {
                     .flatMap(Arrays::stream).toArray();
         }
 
+        /**
+         * Uses the given information to construct the necessary parameters to run a test. This
+         * method creates three test cases that simulate values that are a a robot input, a robot
+         * output, and a bidirectional value, respectively.
+         *
+         * @param <VarType> the type of variable being tested
+         * @param valueName a name for the variable. This will be included in the test name. This is
+         *        not a WS name.
+         * @param setterFunction the specific SimDeviceSim function to use to set the value of the
+         *        variable
+         * @param defaultValue the "default" value of the variable. For SimDeviceSim, get() always
+         *        returns `null` by default, but we still need a specific value for testing.
+         *        Ensuring that this is "falsy" will prevent any conflicts.
+         * @param alternateValue an alternative example of this value type that can be used for
+         *        testing
+         * @return an Object array containing the generated test cases
+         */
         private static <VarType> Object[][] createTestCase(String valueName,
                 TriConsumer<SimDeviceSim, String, VarType> setterFunction,
                 VarType defaultValue, VarType alternateValue) {
@@ -404,6 +428,13 @@ public class SimDeviceSimTest {
             }
         }
 
+        /**
+         * A wrapper around {@link TestUtils#setValueFromRobot(String, String, String, Object)} that
+         * auto-fills some of the parameters from the members of this class.
+         *
+         * @param deviceName the name of the device to set the value on
+         * @param newValue the new value to set
+         */
         private void setValueFromRobot(String deviceName, VarType newValue) {
             TestUtils.setValueFromRobot(deviceName, "SimDevice", wsValueName,
                     newValue);
@@ -423,6 +454,13 @@ public class SimDeviceSimTest {
         public boolean bidirectional;
         private String wsValueName;
 
+        /**
+         * Creates a device name that will not conflict with devices from other tests. Devices names
+         * for the same test case will always be equal.
+         *
+         * @param testMethodName the name of the test being run
+         * @return a device name unique to the given test
+         */
         private String getDeviceName(String testMethodName) {
             return "SimDeviceSimTest.DataTests.%s-%s".formatted(testMethodName,
                     testName);
