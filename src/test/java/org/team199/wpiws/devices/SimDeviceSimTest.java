@@ -19,11 +19,11 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;
 import org.mockito.MockedStatic;
 import org.team199.wpiws.Pair;
+import org.team199.wpiws.TestUtils;
 import org.team199.wpiws.connection.ConnectionProcessor;
 import org.team199.wpiws.connection.WSValue;
 import org.team199.wpiws.interfaces.ObjectCallback;
 import org.team199.wpiws.interfaces.SimDeviceCallback;
-import org.team199.wpiws.interfaces.TestUtils;
 import org.team199.wpiws.interfaces.TriConsumer;
 
 @RunWith(Enclosed.class)

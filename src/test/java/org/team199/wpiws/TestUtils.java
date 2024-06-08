@@ -1,4 +1,4 @@
-package org.team199.wpiws.interfaces;
+package org.team199.wpiws;
 
 import static org.junit.Assert.*;
 
