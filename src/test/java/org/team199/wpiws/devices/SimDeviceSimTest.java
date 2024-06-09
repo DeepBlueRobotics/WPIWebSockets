@@ -237,18 +237,18 @@ public class SimDeviceSimTest {
         @Parameters(name = "{index}: {0}")
         public static Object[] testCases() {
             return Arrays.stream(new Object[][] {
-                    createTestCase("BooleanValue", SimDeviceSim::set, false,
+                    createTestCases("BooleanValue", SimDeviceSim::set, false,
                             true),
-                    createTestCase("DoubleValue", SimDeviceSim::set, 0.0, 0.1),
-                    createTestCase("StringValue", SimDeviceSim::set, "",
+                    createTestCases("DoubleValue", SimDeviceSim::set, 0.0, 0.1),
+                    createTestCases("StringValue", SimDeviceSim::set, "",
                             "data")})
                     .flatMap(Arrays::stream).toArray();
         }
 
         /**
-         * Uses the given information to construct the necessary parameters to run a test. This
-         * method creates three test cases that simulate values that are a a robot input, a robot
-         * output, and a bidirectional value, respectively.
+         * Uses the given information to construct the necessary parameters to run a group of tests.
+         * This method creates three test cases that simulate values that are a a robot input, a
+         * robot output, and a bidirectional value, respectively.
          *
          * @param <VarType> the type of variable being tested
          * @param valueName a name for the variable. This will be included in the test name. This is
@@ -262,7 +262,7 @@ public class SimDeviceSimTest {
          *        testing
          * @return an Object array containing the generated test cases
          */
-        private static <VarType> Object[][] createTestCase(String valueName,
+        private static <VarType> Object[][] createTestCases(String valueName,
                 TriConsumer<SimDeviceSim, String, VarType> setterFunction,
                 VarType defaultValue, VarType alternateValue) {
             return new Object[][] {

@@ -134,7 +134,7 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
         if (getState().existingValues.add(name)) {
             getState().valueCreatedCallbacks.forEach(callCallback);
         }
-        if (!value.equals(getState().values.put(name, value))) {
+        if (!Objects.equals(value, getState().values.put(name, value))) {
             getState().valueChangedCallbacks.stream().filter(callbackPair -> callbackPair.val1.equals(name)).map(FETCH_VALUE_CALLBACK).forEach(callCallback);
         }
         if(notifyRobot) {
