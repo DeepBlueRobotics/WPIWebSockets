@@ -24,7 +24,7 @@ public class LEDColor implements Jsonable {
 
     @Override
     public String toJson() {
-        return String.format("{\"r\":%d,\"g\": %d\"b\": %d}", r, g, b);
+        return "{\"r\":%d,\"g\":%d,\"b\":%d}".formatted(r, g, b);
     }
 
     @Override
@@ -46,6 +46,20 @@ public class LEDColor implements Jsonable {
         public Object getValue() {
             return new Exception("Message is missing required key: " + getKey());
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof LEDColor) {
+            LEDColor other = (LEDColor) obj;
+            return r == other.r && g == other.g && b == other.b;
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "LEDColor[r=%d,g=%d,b=%d]".formatted(r, g, b);
     }
 
 }

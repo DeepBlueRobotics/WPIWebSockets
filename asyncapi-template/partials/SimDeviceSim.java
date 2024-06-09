@@ -130,13 +130,11 @@ public class SimDeviceSim extends StateDevice<SimDeviceSim.State> {
         if(EXISTING_DEVICES.add(id)) {
             DEVICE_CALLBACKS.stream().filter(APPLIES_TO_ME).map(FETCH_DEVICE_CALLBACK).forEach(CALL_DEVICE_CALLBACK);
         }
-        getState().values.put(name, value);
         Consumer<ObjectCallback<String>> callCallback = callback -> callback.callback(name, value);
-        if(!getState().existingValues.contains(name)) {
-            getState().existingValues.add(name);
+        if (getState().existingValues.add(name)) {
             getState().valueCreatedCallbacks.forEach(callCallback);
         }
-        if(get(value) == null || !value.equals(get(value))) {
+        if (!Objects.equals(value, getState().values.put(name, value))) {
             getState().valueChangedCallbacks.stream().filter(callbackPair -> callbackPair.val1.equals(name)).map(FETCH_VALUE_CALLBACK).forEach(callCallback);
         }
         if(notifyRobot) {
