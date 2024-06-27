@@ -57,7 +57,7 @@ task generateDeviceFiles(type: NpxTask) {
     workingDir = buildDir // Because templateDir can't be under it
     command = '@asyncapi/generator@1.17.25'
     args = ['--force-write',
-        '-o', "${outputDir}/org/team199/wpiws/devices",
+        '-o', "${outputDir}/org/carlmontrobotics/wpiws/devices",
         "https://raw.githubusercontent.com/DeepBlueRobotics/allwpilib/c1fc86033a4b5ebda451de657fc2546eb3f431fb/simulation/halsim_ws_core/doc/wpilib-ws.yaml",
         file(archiveTemplate.archiveFile).toURI()]
 
