@@ -12,7 +12,6 @@ import org.carlmontrobotics.wpiws.Pair;
 import org.carlmontrobotics.wpiws.TestUtils;
 import org.carlmontrobotics.wpiws.connection.ConnectionProcessor;
 import org.carlmontrobotics.wpiws.connection.WSValue;
-import org.carlmontrobotics.wpiws.devices.SimDeviceSim;
 import org.carlmontrobotics.wpiws.interfaces.ObjectCallback;
 import org.carlmontrobotics.wpiws.interfaces.SimDeviceCallback;
 import org.carlmontrobotics.wpiws.interfaces.TriConsumer;
