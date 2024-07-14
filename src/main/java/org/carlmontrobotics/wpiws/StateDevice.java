@@ -72,6 +72,10 @@ public abstract class StateDevice<T> {
                 ((BiConsumer<Integer, Boolean>)robotStateProcessor).accept(bd.intValue(), false);
             } else if (requestedType == Double.class) {
                 ((BiConsumer<Double, Boolean>)robotStateProcessor).accept(bd.doubleValue(), false);
+            } else if (requestedType == Boolean.class) {
+                // Workaround for https://github.com/wpilibsuite/allwpilib/issues/6835
+                ((BiConsumer<Boolean, Boolean>) robotStateProcessor)
+                        .accept(bd.intValue() != 0, false);
             } else {
                 isInvalidValue = true;
             }
